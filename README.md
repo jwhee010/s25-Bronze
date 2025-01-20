@@ -10,3 +10,5 @@ Team Bronze - Spring 2025
   - murrayray7 - Chase Murray - cmurr002@odu.edu
   - abenh001 - Andrew Benham - abenh001@odu.edu
   - hqaiy001 - Hadeel Qaiymah - hqaiy001@odu.edu
+  - cscthoe001 - Colin Thoe - cthoe001@odu.edu
+
