@@ -4,18 +4,19 @@ const cors = require('cors')
 
 // changed port number to 80
 const app = express();
-const  PORT = 80;
+const PORT = 80;
 app.use(cors());
 app.use(express.json())
 
 // Route to get all posts
-app.get("/api/get", (req,res)=>{
-db.query("SELECT * FROM user", (err,result)=>{
-    if(err) {
-    console.log(err)
-    } 
-res.send(result)
-});   });
+app.get("/api/get", (req, res) => {
+    db.query("SELECT * FROM user", (err, result) => {
+        if (err) {
+            console.log(err)
+        }
+        res.send(result)
+    });
+});
 
 /* Commenting everything else out for now
 
@@ -73,6 +74,6 @@ console.log(err)
 
 */
 
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
 })
