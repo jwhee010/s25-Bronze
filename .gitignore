@@ -4,6 +4,8 @@
 
 node_modules
 
+db.js
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
