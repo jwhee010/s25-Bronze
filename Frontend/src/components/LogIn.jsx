@@ -1,10 +1,19 @@
 import React from "react";
+import { useState } from 'react';
 import './LogIn.css';
 
 const LogIn = () => {
     return(
         <div className = 'wrapper'>
-            <p>This is for LogIn</p>
+            <p>Sign In</p>
+            <form>
+                <label>Username</label>
+                <input type ="text" placholder = "Username"></input>
+            </form>
+            <form>
+                <label>Password</label>
+                <input type ="text" placeholder = "Password"></input>
+            </form>
         
         
         
