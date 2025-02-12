@@ -18,6 +18,28 @@ app.get("/api/get", (req, res) => {
     });
 });
 
+app.post("/login", (req, res) => {
+    const userName = req.body.userName;
+    const passwordHash = req.body.passwordHash;
+
+    db.query(
+        "SELECT * FROM user Where userName = ? AND passwordHash = ?",
+        [userName, passwordHash],
+        (err, result) => {
+            if(err) {
+                res.send({err: err});
+            }
+
+            if(result.length > 0) {
+                res.send(result);
+            }
+            else {
+                res.send({message: "Login failed. Please check your username and password and try again."})
+            }
+        }
+    );
+})
+
 /* Commenting everything else out for now
 
 // Route to get one post
