@@ -22,7 +22,7 @@ const LogIn = () => {
             <p>Sign In</p>
             <form>
                 <label>Username</label>
-                <input type ="text" placholder = "Username" onChange = {(e) => {
+                <input type ="text" placeholder = "Username" onChange = {(e) => {
                     setUsername(e.target.value);
                 }}></input>
             </form>

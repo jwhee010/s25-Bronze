@@ -1,5 +1,10 @@
 const express = require('express');
+
+// This requirement will utilize a MySQL database 
+// from the db.js of each individual team member, locally.
 const db = require('./config/db')
+
+
 const cors = require('cors')
 
 // changed port number to 80
