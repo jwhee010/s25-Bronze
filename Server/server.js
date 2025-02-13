@@ -28,7 +28,7 @@ app.post("/login", (req, res) => {
     const passwordHash = req.body.passwordHash;
 
     db.query(
-        "SELECT * FROM user Where userName = ? AND passwordHash = ?",
+        "SELECT lastName FROM user Where userName = ? AND passwordHash = ?",
         [userName, passwordHash],
         (err, result) => {
             if(err) {
@@ -36,7 +36,11 @@ app.post("/login", (req, res) => {
             }
 
             if(result.length > 0) {
-                res.send(result);
+                //res.send(result);
+                res.send({
+                    message: "Login successful! Welcome Mr/Mrs ",
+                    lastName: result[0].lastName,
+                })
             }
             else {
                 res.send({message: "Login failed. Please check your username and password and try again."})
