@@ -1,0 +1,28 @@
+.footer{
+    height: 20px;
+}
+
+a{
+   
+   margin-top: 20px;
+   font-weight: bold;
+   background-color: rgba(36, 72, 46, 0.68);
+   border-radius: 5px;
+   display: inline-block;
+}
+
+a:link{
+    color:goldenrod;
+}
+
+a:hover{
+    color:peachpuff;
+}
+
+a:visited{
+    color:rgb(117, 174, 137);
+}
+
+a:active{
+    color:mediumslateblue;
+}

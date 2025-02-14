@@ -50,28 +50,36 @@ const LogIn = () => {
 
     return (
         <div className='wrapper'>
-            <p>Sign In</p>
+            <h1 class = "hStyling">Sign In</h1>
+
             <form onSubmit={login}> {/* onSumbit allows for button or enter key */}
-                <label>Username</label>
+                <label>Username </label>
                 <input type="text" required placeholder="Username" onChange={(e) => { {/* "required" prevents empty submission*/}
                     setUsername(e.target.value);
                     
                 }}></input>
             </form>
+
             <form>
-                <label>Password</label>
+                <label>Password </label>
                 <input type="password" required placeholder="Password" onChange={(e) => {
                     setPassword(e.target.value);
                 }}></input>
             </form>
-            <button onClick={login}>Sign In</button> {/* Sumbit allows for button or enter key */}
+
+            <button class="button1" onClick={login}>Login</button> {/* Sumbit allows for button or enter key */}
 
             {/* this message changes depending upon what happened */}
             {/*{message && <p>{message}</p>}*/} {/* This is an output method im not sure about yet*/}
             <p>{message}</p>
 
-        </div>
+          
+            <button class = "button button2" onClick = {() => alert("Not Yet Implemented")} >
+            Need an account? Click Here to Sign Up!
+            </button>
 
+
+        </div>
     );
 
 

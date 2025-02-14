@@ -1,8 +1,60 @@
 .wrapper{
+    font-family:monospace;
+    font-size:large;
     width:500px;
 
     background-color: rgb(94, 67, 50);
-    border: 2px solid slategray;
+    border: 2px solid rgb(93, 145, 111);
     border-radius: 20px;
     padding:30px 40px;
 }
+/*Sign in Header*/
+.hStyling{
+   margin-bottom: 30px;
+   font-size: 30px;
+   color: goldenrod;
+    
+}
+
+  /*Buttons*/
+.button1{
+    background-color: black;
+    border: 1px solid goldenrod;
+    color: burlywood;
+
+
+}
+
+.button2{
+    color:goldenrod;
+    background-color: transparent;
+}
+
+.button2:hover
+{
+    color:peachpuff;
+    border-color: gold;
+}
+
+.button2:active{
+    color:gold;
+}
+
+  /*Input Fields*/
+input[type=text], input[type = password] {
+    border: darkgoldenrod;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color:black;
+    font-size: 17px;
+    background-color: darkgrey;
+   
+  }
+
+  input[type=text]:focus, input[type = password]:focus{
+    background-color: burlywood;
+ 
+  }
+
+
+  /**/
