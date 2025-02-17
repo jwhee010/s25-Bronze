@@ -1,0 +1,23 @@
+.header
+{
+    color:rgb(228, 235, 235);
+    font-size: 40px;
+    margin: 0 auto;
+    text-align: center;
+    width:500px;
+    height:60px;
+    padding: 8px;
+    padding-bottom: 100px;
+    margin-bottom: 30px;
+    background-color: rgba(56, 74, 69, 0.881);
+    border-radius: 10px;
+    
+    
+}
+
+.styleName
+{
+    color:rgb(167, 251, 173);
+    font-weight: bold;
+}
+

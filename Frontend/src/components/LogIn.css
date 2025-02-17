@@ -3,10 +3,11 @@
     font-size:large;
     width:500px;
 
-    background-color: rgb(94, 67, 50);
+    background-color: rgba(76, 63, 55, 0.953);
     border: 2px solid rgb(93, 145, 111);
     border-radius: 20px;
     padding:30px 40px;
+    margin: 0 auto;
 }
 /*Sign in Header*/
 .hStyling{
