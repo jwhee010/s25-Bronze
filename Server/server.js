@@ -39,8 +39,9 @@ app.post("/login", (req, res) => {
                 //res.send(result);
                 res.send({
                     message: "Login successful! Welcome Mr/Mrs ",
-                    lastName: result[0].lastName,
-                })
+                    lastName: result[0].lastName
+                }),
+                db.query("UPDATE user SET lastLogin = NOW() WHERE UserName = ?", [userName]);
             }
             else {
                 res.send({message: "Login failed. Please check your username and password and try again."})
