@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from 'react';
 import Axios from "axios";
 import './LogIn.css';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -10,7 +11,9 @@ const LogIn = () => {
     const [userName, setUsername] = useState("");
     const [passwordHash, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [firstname, setFirstName] = useState(""); 
     const [lastName, setLastName] = useState(""); 
+    const navigate = useNavigate(); // work in progress
 
     // await does not work outside an async function
     const login = async (event) => {
@@ -25,12 +28,15 @@ const LogIn = () => {
             console.log(response); // **
             if (response.data.message) {
                 //setMessage(response.data.message);
+                setFirstName(response.data.firstName);
                 setLastName(response.data.lastName);
-                setMessage(`Login successful! Welcome Mr/Ms ${response.data.lastName}` );
+                setMessage(`Login successful! Welcome ${response.data.firstName} ${response.data.lastName}` );
+                // navigate('/Dashboard') work in progress
             }
             else {
+                setFirstName(response.data.firstName);
                 setLastName(response.data.lastName);                                        // gotta change this
-                setMessage(`Login successful! Welcome Mr/Ms ${response.data.lastName}` );   // gotta change this
+                setMessage(`Login unsuccessful! try again.` );   // gotta change this
             }
         } catch (error) {
             console.error("Some error happened:, ", error);

@@ -28,7 +28,7 @@ app.post("/login", (req, res) => {
     const passwordHash = req.body.passwordHash;
 
     db.query(
-        "SELECT lastName FROM user Where userName = ? AND passwordHash = ?",
+        "SELECT firstName, lastName FROM user Where userName = ? AND passwordHash = ?",
         [userName, passwordHash],
         (err, result) => {
             if(err) {
@@ -39,6 +39,7 @@ app.post("/login", (req, res) => {
                 //res.send(result);
                 res.send({
                     message: "Login successful! Welcome Mr/Mrs ",
+                    firstName: result[0].firstName,
                     lastName: result[0].lastName
                 }),
                 db.query("UPDATE user SET lastLogin = NOW() WHERE UserName = ?", [userName]);
