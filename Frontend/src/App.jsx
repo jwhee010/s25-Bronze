@@ -1,21 +1,21 @@
-import { useState } from 'react'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css'
 import LogIn from './components/LogIn'
-import Footer from './components/Footer'
-import LogInHeader from './components/LogInHeader'
+import Dashboard from './components/Dashboard'
 
 
-function App() {
+export default function App() {
 
   return (
-    <div> 
-    <LogInHeader/>
-    <LogIn/>
-    <Footer/>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LogIn />} />
+        <Route path="/main" element={<Dashboard />} />
+      </Routes>
+    </Router>
    
    
-  )
+  );
 }
-
-export default App
