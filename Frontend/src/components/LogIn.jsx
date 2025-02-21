@@ -3,6 +3,8 @@ import { useState } from 'react';
 import axios from "axios";
 import './LogIn.css';
 import { useNavigate } from 'react-router-dom';
+import LogInHeader from "./LogInHeader";
+import Footer from "./Footer";
 
 
 
@@ -39,7 +41,9 @@ function LogIn(props) {
 
     // JSX structure for login form
     return (
-        <div className="flex items-center justify-center min-h-screen">
+        <div>
+            <LogInHeader></LogInHeader>
+        <div className="flex items-center justify-center min-h-screen, wrapper">
             <div className="mx-auto p-6 bg-white rounded-md shadow-md">
                 <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
                 <form onSubmit={handleSubmit}>
@@ -67,6 +71,8 @@ function LogIn(props) {
                     {errorMessage && <p className="text-red-500 text-sm whitespace-pre-line text-center mt-4 ">{errorMessage}</p>} {/* Display error message if exists */}
                 </form>
             </div>
+        </div>
+        <Footer></Footer>
         </div>
     );
 }
