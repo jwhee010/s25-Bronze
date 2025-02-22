@@ -3,10 +3,10 @@ import './LogInHeader.css'
 function LogInHeader(){
 return(
 
-<h1 class = "header">  
+<h1 className = "header">  
    <pre>
    Welcome to<br/>
-   <span class = "styleName">
+   <span className = "styleName">
     🌾LivelyShelfs🌾
     </span>
    </pre>
