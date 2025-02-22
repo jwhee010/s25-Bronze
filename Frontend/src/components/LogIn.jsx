@@ -45,7 +45,7 @@ function LogIn(props) {
             <LogInHeader></LogInHeader>
         <div className="flex items-center justify-center min-h-screen, wrapper">
             <div className="mx-auto p-6 bg-white rounded-md shadow-md">
-                <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+                <h2 className="text-2xl font-semibold mb-6 text-center hStyling">Login</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="username" className="block mb-2">Username:</label>

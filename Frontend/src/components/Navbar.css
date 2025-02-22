@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+
+
+.linkwrapper{
+    margin: 0 auto;
+    width: 200px;
+    height: 60px;
+    padding: 10px, 20px;
+    padding-bottom: 15px;
+    border-radius: 15px;
+    border: solid rgb(98, 114, 101);
+    background-color: rgb(120, 107, 87);
+}

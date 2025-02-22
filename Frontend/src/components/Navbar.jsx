@@ -6,9 +6,16 @@ const Navbar = () => {
     return (
         <nav>
             <ul>
-                <li><Link to="/main">Home</Link></li>
-                <li><Link to="/calendar">Calendar</Link></li>
-                <li><Link to="/list">List</Link></li>
+                <li className = "linkwrapper"><Link to="/main">Home</Link></li>
+                <br/>
+                <li className = "linkwrapper"><Link to="/calendar">Calendar</Link></li>
+                <br/>
+                <li className = "linkwrapper"><Link to="/list">List</Link></li>
+                <br/>
+                <li className = "linkwrapper"><Link to="/main">ShelfFriends</Link></li>
+                <br/>
+                <li className = "linkwrapper"><Link to="/main">Settings</Link></li>
+
             </ul>
         </nav>
     );

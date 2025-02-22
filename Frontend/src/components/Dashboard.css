@@ -1,0 +1,47 @@
+.dashwrapper{
+
+    font-family:monospace;
+    font-size:large;
+    width:900px;
+    height: 495px;
+    background-color: rgba(76, 63, 55, 0.953);
+    border: 2px solid rgb(93, 145, 111);
+    border-radius: 20px;
+    padding:30px 40px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+
+.mainheader{
+    font-family:monospace;
+    color:gold;
+    font-size: 40px;
+    margin: 0 auto;
+    text-align: center;
+    width:500px;
+    height:60px;
+    padding: 8px;
+    padding-bottom: 100px;
+    margin-bottom: 10px;
+    background-color: rgba(56, 74, 69, 0.881);
+    border-radius: 10px;
+
+}
+
+.greeting{
+    font-size: 20px;
+    padding-top: 10px;
+    color:antiquewhite;
+}
+
+.logout{
+    border: 1px solid goldenrod;
+    font-weight: bold;
+}
+
+.navigation{
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(131, 201, 155);
+}
