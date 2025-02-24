@@ -15,12 +15,14 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
     const sql = 'SELECT * FROM user WHERE username = ? AND passwordHash = ?';
+    const update = 'UPDATE user SET lastLogin = NOW() WHERE UserName = ?';
     db.query(sql, [username, password], (err, result) => {
         if (err) {
             res.status(500).json({ message: 'An error occurred while processing your request.' });
         } else {
             if (result.length > 0) {
                 res.status(200).json({ message: 'Login successful' });
+                db.query(update, [username]);
             } else {
                 res.status(401).json({ message: 'Login failed. Invalid username or password.' });
             }
