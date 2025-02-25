@@ -21,7 +21,19 @@ app.post('/login', (req, res) => {
             res.status(500).json({ message: 'An error occurred while processing your request.' });
         } else {
             if (result.length > 0) {
-                res.status(200).json({ message: 'Login successful' });
+
+                // the user info is stored in this
+                const user = result[0];
+
+                res.status(200).json({ 
+                    message: 'Login successful', 
+
+                    // this returns the user's first and last name.
+                    // in theory, a similar method should work for other 
+                    // objects, such as inventorys or food items.
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                });
                 db.query(update, [username]);
             } else {
                 res.status(401).json({ message: 'Login failed. Invalid username or password.' });

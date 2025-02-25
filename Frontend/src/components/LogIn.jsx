@@ -14,6 +14,12 @@ function LogIn(props) {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
+    // variables for the first and last name.
+    // In theory, a similar method should work for 
+    // other objects, such as invetories or food items.
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+
     // Initialize useNavigate hook for navigation
     const navigate = useNavigate();
 
@@ -29,6 +35,16 @@ function LogIn(props) {
 
             // If login successful, redirect to MainPage
             if (response.status === 200) {
+
+                // first and last name are locally stored upon logging in.
+                // In theory, a similar method can be used to store 
+                // other objects, such as inventorys or food items.
+                setFirstName(response.data.firstName); // Store first name
+                setLastName(response.data.lastName); // Store last name
+                localStorage.setItem('firstName', response.data.firstName); // Optional: Persist the name in local storage
+                localStorage.setItem('lastName', response.data.lastName);
+
+                // navigation to the dashboard
                 navigate('/main');
             }
         } catch (error) {
