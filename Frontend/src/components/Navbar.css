@@ -1,14 +1,45 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
 
+.sidebar{
+    background-color: rgba(56, 74, 69, 0.881);
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    color: gold;
+}
 
-
-.linkwrapper{
+.linkwrapper {
     margin: 0 auto;
     width: 200px;
-    height: 60px;
+    height: 40px;
     padding: 10px, 20px;
     padding-bottom: 15px;
     border-radius: 15px;
-    border: solid rgb(98, 114, 101);
-    background-color: rgb(120, 107, 87);
+    /* border: solid rgb(98, 114, 101);
+    background-color: rgb(120, 107, 87); */
+    background-color: transparent;
+    color: inherit;
+}
+
+.linkwrapper a {
+    background-color: transparent;
+    color: white;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    text-decoration: none;
+    background-color: white;
+}
+
+.icon {
+    padding-right: 10px;
 }

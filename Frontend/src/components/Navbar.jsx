@@ -1,23 +1,36 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Navbar.css'
+import { FaHouse, FaCalendar, FaListCheck, FaUserGroup, FaGear } from 'react-icons/fa6';
+import './Navbar.css';
 
 const Navbar = () => {
     return (
-        <nav>
-            <ul>
-                <li className = "linkwrapper"><Link to="/main">Home</Link></li>
-                <br/>
-                <li className = "linkwrapper"><Link to="/calendar">Calendar</Link></li>
-                <br/>
-                <li className = "linkwrapper"><Link to="/list">List</Link></li>
-                <br/>
-                <li className = "linkwrapper"><Link to="/main">ShelfFriends</Link></li>
-                <br/>
-                <li className = "linkwrapper"><Link to="/main">Settings</Link></li>
-
-            </ul>
-        </nav>
+        <div className="sidebar">
+            <h2>LivelyShelfs</h2>
+            <nav>
+                <ul>
+                    <li className = "linkwrapper"><Link to="/main">
+                        <FaHouse className="icon" />Home</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/calendar">
+                        <FaCalendar className="icon" />Calendar</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/list">
+                        <FaListCheck className="icon" />List</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/shelfFriends">
+                        <FaUserGroup className="icon" />ShelfFriends</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/settings">
+                        <FaGear className="icon" />Settings</Link>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     );
 };
 

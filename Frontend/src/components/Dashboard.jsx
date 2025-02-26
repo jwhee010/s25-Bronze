@@ -29,17 +29,18 @@ function Dashboard(props) {
         <>
        
         <div className={`relative min-h-screen flex`}>
+            <Navbar />
             <h1 className="mainheader" >
-                Main Page<br/>
+                Dashboard<br/>
                 {/* fetch the firstname and lastname of the user who logged in */}
                 <div>
                     <h2 className='greeting'>Welcome, {firstName} {lastName}</h2>
                 </div>
             </h1>
-            <div className="container max-w-screen-xl mx-auto flex flex-col justify-center items-center dashwrapper">
+            {/* <div className="container max-w-screen-xl mx-auto flex flex-col justify-center items-center dashwrapper">
                 <p className = "navigation">Navigation</p>
-                 <Navbar />
-            </div>
+                <Navbar />
+            </div> */}
                 <button onClick={handleLogout} className=" bg-blue-500 text-white mt-12 py-2 px-12 rounded-md hover:bg-blue-600 logout">
                    Logout
                 </button>
