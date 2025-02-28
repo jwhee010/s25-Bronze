@@ -7,7 +7,10 @@ const Calendar = () => {
         <div>
             <Navbar />
             <h1>Calendar</h1>
+        
             <FullCalendar/>
+           
+
         </div>
     );
 };

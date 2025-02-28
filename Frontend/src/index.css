@@ -19,6 +19,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+
+/*Full Calendar General Styling*/
+--fc-border-color:rgb(163, 164, 164);
+
 }
 
 
