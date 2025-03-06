@@ -11,6 +11,28 @@ app.use(express.json())
 // from the db.js of each individual team member, locally.
 const db = require('./config/db')
 
+const jwt = require('jsonwebtoken');  // For creating JWT tokens
+const secretKey = 'veryVERYsecret';
+
+// Middleware to verify JWT and get UserID
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, secretKey);  // Verify the token
+        req.user = decoded;  // Attach the decoded user data to the request
+        next();
+    } catch (error) {
+        res.status(401).json({ message: 'Invalid or expired token' });
+    }
+};
+
+
+
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -25,14 +47,22 @@ app.post('/login', (req, res) => {
                 // the user info is stored in this
                 const user = result[0];
 
+                // shove all the user info into a token
+                const token = jwt.sign(
+                    { 
+                        id: user.id, // this is NOT the userID from the database!!! tokens have their own id :)
+                        username: user.userName,
+                        email: user.email, 
+                        firstName: user.firstName,
+                        lastName: user.lastName
+                    }, 
+                    secretKey,
+                { expiresIn: '1h' }  // Optional: Set an expiration time for the token
+            );
                 res.status(200).json({ 
                     message: 'Login successful', 
 
-                    // this returns the user's first and last name.
-                    // in theory, a similar method should work for other 
-                    // objects, such as inventorys or food items.
-                    firstName: user.firstName,
-                    lastName: user.lastName,
+                    token: token,  // Send token
                 });
                 db.query(update, [username]);
             } else {

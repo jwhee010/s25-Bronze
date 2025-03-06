@@ -36,13 +36,8 @@ function LogIn(props) {
             // If login successful, redirect to MainPage
             if (response.status === 200) {
 
-                // first and last name are locally stored upon logging in.
-                // In theory, a similar method can be used to store 
-                // other objects, such as inventorys or food items.
-                setFirstName(response.data.firstName); // Store first name
-                setLastName(response.data.lastName); // Store last name
-                localStorage.setItem('firstName', response.data.firstName); // Optional: Persist the name in local storage
-                localStorage.setItem('lastName', response.data.lastName);
+                // retrieve the user token
+                localStorage.setItem('authToken', response.data.token);
 
                 // navigation to the dashboard
                 navigate('/main');
