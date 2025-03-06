@@ -1,5 +1,14 @@
 // Online, tutorials may refer to this file as index.js
 
+const mysql = require('mysql')
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "St.Nezuko2025!",
+    database: "livelyshelfsdb"
+})
+
+
 const express = require('express');
 const cors = require('cors')
 
@@ -9,7 +18,7 @@ app.use(express.json())
 
 // This requirement will utilize a MySQL database 
 // from the db.js of each individual team member, locally.
-const db = require('./config/db')
+//const db = require('./config/db')
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
