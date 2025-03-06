@@ -1,8 +1,17 @@
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import './FullCalendar.css'
+import React, { useState } from 'react';
+
+
 
 export default function Calendar() {
+
+   const handleEventClick = (clickInfo) =>{
+    alert(clickInfo.event.title);
+   }
+
+
   return (
     <FullCalendar
       plugins={[ dayGridPlugin ]}
@@ -15,8 +24,13 @@ export default function Calendar() {
         { title: 'event 2', date: '2025-02-28' }
       ]}
 
-     
+      eventClick={handleEventClick}
+
+
 
     />
+
+
+  
   )
 }
