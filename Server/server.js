@@ -24,7 +24,8 @@ const verifyToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, secretKey);  // Verify the token
-        req.user = decoded;  // Attach the decoded user data to the request
+        //req.user = decoded;  // Attach the decoded user data to the request
+        req.user = { UserID: decoded.UserID };
         next();
     } catch (error) {
         res.status(401).json({ message: 'Invalid or expired token' });
@@ -54,7 +55,8 @@ app.post('/login', (req, res) => {
                         username: user.userName,
                         email: user.email, 
                         firstName: user.firstName,
-                        lastName: user.lastName
+                        lastName: user.lastName,
+                        UserID: user.UserID,
                     }, 
                     secretKey,
                 { expiresIn: '1h' }  // Optional: Set an expiration time for the token
@@ -69,6 +71,25 @@ app.post('/login', (req, res) => {
                 res.status(401).json({ message: 'Login failed. Invalid username or password.' });
             }
         }
+    });
+});
+
+// retrive food name and expiration date for display on the calendar
+app.get('/calendar', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT inventory.Expiration, food_item.FoodName
+    FROM inventory
+    JOIN food_item ON inventory.FoodID = food_item.FoodItemID
+    WHERE inventory.UserID = ?`;
+
+    db.query(sql, [ UserID ], (error, results) => {
+        if(error) {
+            return res.status(500).json('Error executing query');
+        }
+
+        console.log('Query results:', results);
+        res.status(200).json({ foodItems: results });
     });
 });
 

@@ -33,7 +33,9 @@ function Dashboard(props) {
                 setUser({
                     firstName: decodedToken.firstName,
                     lastName: decodedToken.lastName,
-                    email: decodedToken.email,  
+                    email: decodedToken.email,
+                    UserID: decodedToken.UserID,
+
                 });
 
                 // token error stuff

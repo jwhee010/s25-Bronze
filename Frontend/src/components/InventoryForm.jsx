@@ -21,23 +21,23 @@ return(
         <h1 className={active ? "close" : "open"}>
 
             <form id="inputToInventory">
-                <label for="itemName">Item Name</label>
+                <label htmlFor="itemName">Item Name</label>
                 <input type="text" id="itemName"></input>
                 <br></br>
 
-                <lable for="itemQuantity">Item Quantity</lable>
+                <label htmlFor="itemQuantity">Item Quantity</label>
                 <input type="number" id="itemQuantity"></input>
                 <br></br>
 
-                <label for="purchaseDate">Purchase Date</label>
+                <label htmlFor="purchaseDate">Purchase Date</label>
                 <input type="text" id="purchaseDate"></input>
                 <br></br>
 
-                <label for="stored">Where will this be Stored?</label>
+                <label htmlFor="stored">Where will this be Stored?</label>
                 <input type="text" id="stored"></input>
                 <br></br>
 
-                <lable for="shareBool">Sharable?</lable>
+                <label htmlFor="shareBool">Sharable?</label>
                 <input type="checkbox"></input>
                 <br></br>
                 
