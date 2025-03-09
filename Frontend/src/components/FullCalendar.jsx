@@ -6,11 +6,15 @@ import './FullCalendar.css'
 import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import EventDialog from './EventDialog.jsx';
+
+
+
 
 
 
 export default function Calendar() {
-
+ 
   const [foodItems, setFoodItems] = useState([]);
 
   const getFoodItems = async(token) => {
@@ -43,9 +47,12 @@ export default function Calendar() {
     }
   }, []);
 
+
+   // Event Interaction, to mark items as used or spoiled
   const handleEventClick = (clickInfo) =>{
-    alert(clickInfo.event.title);
-  }
+          alert(clickInfo.event.title);
+        <EventDialog/>
+  } 
 
   const displayFoodItems = () => {
     if(foodItems.length == 0) {
