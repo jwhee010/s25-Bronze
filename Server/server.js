@@ -75,29 +75,48 @@ app.post('/login', (req, res) => {
 });
 
 // retrive food name and expiration date for display on the calendar
+// Retrieve food name and expiration date for display on the calendar
 app.get('/calendar', verifyToken, async (req, res) => {
     const { UserID } = req.user;
 
     const sql = `SELECT inventory.Expiration, food_item.FoodName
-    FROM inventory
-    JOIN food_item ON inventory.FoodID = food_item.FoodItemID
-    WHERE inventory.UserID = ?`;
+                 FROM inventory 
+                 JOIN food_item ON inventory.FoodID = food_item.FoodItemID 
+                 WHERE inventory.UserID = ?`;
 
-    db.query(sql, [ UserID ], (error, results) => {
-        if(error) {
-            return res.status(500).json('Error executing query');
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: 'Error executing query' });
         }
-
         console.log('Query results:', results);
         res.status(200).json({ foodItems: results });
     });
 });
 
-const PORT = process.env.PORT || 80;
+// New API route to get food item quantities
+app.get('/food-quantity', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
 
+    const sql = `SELECT inventory.Quantity, food_item.FoodName 
+                 FROM inventory 
+                 JOIN food_item ON inventory.FoodID = food_item.FoodItemID 
+                 WHERE inventory.UserID = ?`;
+
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+        console.log('Quantity results:', results);
+        res.status(200).json({ foodQuantities: results });
+    });
+});
+
+// Server Setup
+const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`)
-})
+    console.log(`Server is running on ${PORT}`);
+});
+
 
 
 // This code is from before the feb 20 change
