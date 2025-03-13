@@ -14,10 +14,10 @@ import EventDialog from './EventDialog.jsx';
 
 
 export default function Calendar() {
- 
   const [foodItems, setFoodItems] = useState([]);
+  const [foodQuantities, setFoodQuantities] = useState([]); // New state for food quantities
 
-  const getFoodItems = async(token) => {
+  const getFoodItems = async (token) => {
     try {
       const response = await axios.get('http://localhost:80/calendar', {
         headers: {
@@ -25,11 +25,26 @@ export default function Calendar() {
         }
       });
 
-      console.log('Food items retrived:', response.data.foodItems);
-
+      console.log('Food items retrieved:', response.data.foodItems);
       setFoodItems(response.data.foodItems);
-    } catch(error) {
-        console.error('Error retriving food items:', error);
+    } catch (error) {
+      console.error('Error retrieving food items:', error);
+    }
+  };
+
+  // ✅ New function to fetch food quantities
+  const getFoodQuantities = async (token) => {
+    try {
+      const response = await axios.get('http://localhost:80/food-quantity', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log('Food quantities retrieved:', response.data.foodQuantities);
+      setFoodQuantities(response.data.foodQuantities);
+    } catch (error) {
+      console.error('Error retrieving food quantities:', error);
     }
   };
 
@@ -38,30 +53,29 @@ export default function Calendar() {
 
     try {
       const decodedToken = jwtDecode(token);
-    
       getFoodItems(token);
-
-    } catch(error) {
-        console.error('Token decoding error:', error);
-
+      getFoodQuantities(token); // ✅ Fetch food quantities on load
+    } catch (error) {
+      console.error('Token decoding error:', error);
     }
   }, []);
 
+  // Event Interaction, to mark items as used or spoiled
+  const handleEventClick = (clickInfo) => {
+    alert(clickInfo.event.title);
+    <EventDialog />
+  };
 
-   // Event Interaction, to mark items as used or spoiled
-  const handleEventClick = (clickInfo) =>{
-          alert(clickInfo.event.title);
-        <EventDialog/>
-  } 
-
+  // ✅ Updated function to display food items & their quantities
   const displayFoodItems = () => {
-    if(foodItems.length == 0) {
+    if (foodItems.length === 0 && foodQuantities.length === 0) {
       return <p>No food items found</p>;
     }
     return foodItems.map((item, index) => (
       <div key={index}>
         <p>Food Name: {item.FoodName}</p>
         <p>Expiration Date: {item.Expiration}</p>
+        <p>Quantity: {foodQuantities.find(q => q.name === item.FoodName)?.quantity || 'N/A'}</p> {/* ✅ Match quantity */}
       </div>
     ));
   };
@@ -69,36 +83,24 @@ export default function Calendar() {
   return (
     <>
       <FullCalendar
-        plugins={[ dayGridPlugin, listPlugin]}
-
-        initialView="dayGridMonth" 
-
+        plugins={[dayGridPlugin, listPlugin]}
+        initialView="dayGridMonth"
         headerToolbar={{
           left: 'prev,next,today',
-          center:'title',
-          right:'dayGridMonth, listMonth'
-
-
+          center: 'title',
+          right: 'dayGridMonth, listMonth'
         }}
-     
         events={[
-          {title: 'event 3', date: '2025-03-10'},
+          { title: 'event 3', date: '2025-03-10' },
           { title: 'event 1', date: '2025-03-27' },
           { title: 'event 2', date: '2025-03-28' }
         ]}
-
         eventClick={handleEventClick}
-
-
-
       />
-      <div style={{color: 'black'}}>
+      <div style={{ color: 'black' }}>
         <h2>Food Items</h2>
         {displayFoodItems()}
       </div>
     </>
-
-
-  
   );
 }
