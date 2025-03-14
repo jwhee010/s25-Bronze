@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from "./Navbar"
 import FullCalendar from './FullCalendar.jsx'
 import InventoryForm from './InventoryForm.jsx';
+import FoodCheckform from './FoodCheckform.jsx'
 
 const Calendar = () => {
     return (
@@ -11,6 +12,7 @@ const Calendar = () => {
         
             <FullCalendar/>
             <InventoryForm/>
+            <FoodCheckform/>
 
             
            

@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import EventDialog from './EventDialog.jsx';
-
+import FoodCheckform from './FoodCheckform.jsx';
 
 
 
@@ -48,11 +48,16 @@ export default function Calendar() {
   }, []);
 
 
-   // Event Interaction, to mark items as used or spoiled
+   //Event Interaction, to mark items as used or spoiled
+
+   //(Currently) Copies the event title to clipboard
+   //Paste the event title to the consumed/spoiled form
   const handleEventClick = (clickInfo) =>{
-          alert(clickInfo.event.title);
-        <EventDialog/>
+           alert(clickInfo.event.title + ' Copied to Clipboard');
+        navigator.clipboard.writeText(clickInfo.event.title);
   } 
+
+
 
   const displayFoodItems = () => {
     if(foodItems.length == 0) {
@@ -86,6 +91,8 @@ export default function Calendar() {
           { title: 'event 1', date: '2025-03-27' },
           { title: 'event 2', date: '2025-03-28' }
         ]}
+
+        editable={true}
 
         eventClick={handleEventClick}
 
