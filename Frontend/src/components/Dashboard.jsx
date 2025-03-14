@@ -5,6 +5,7 @@ import './Dashboard.css';
 import { jwtDecode } from 'jwt-decode'; // for token decoding
 import axios from "axios";
 import LogIn from './LogIn';
+import InvTrendLineChart from './InvTrendLineChart';
 
 
 
@@ -64,8 +65,8 @@ function Dashboard(props) {
                 Dashboard<br/>
                 {/* fetch the firstname and lastname of the user who logged in */}
                 <div>
-                    <h2 className='greeting'>Welcome, {user.firstName} {user.lastName}</h2> <br></br>
-                    <h2 className='greeting'>Email: {user.email}</h2>  {/* Display email */}
+                    <h2 className='greeting'>Welcome, {user.firstName} {user.lastName}</h2> 
+                    <h2 className='email'>Email: {user.email}</h2>  {/* Display email */}
                 </div>
             </h1>
             {/* <div className="container max-w-screen-xl mx-auto flex flex-col justify-center items-center dashwrapper">
@@ -75,6 +76,18 @@ function Dashboard(props) {
                 <button onClick={handleLogout} className=" bg-blue-500 text-white mt-12 py-2 px-12 rounded-md hover:bg-blue-600 logout">
                    Logout
                 </button>
+
+                {/* Trends charts---------- */}
+              <h3 className='trendHeader'>
+                Here's How Much You've Wasted 
+                <br/>
+                During This Year
+              
+              
+              </h3>
+                <InvTrendLineChart/>
+
+
 
         </div>
         </>

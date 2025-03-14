@@ -1,0 +1,17 @@
+
+.css-10vg0a6-MuiResponsiveChart-container{
+    background-color: rgba(77, 71, 63, 0.826);
+    border-radius: 5px;
+    margin-left: 8px;
+}
+
+.MuiChartsAxis-tickLabel{
+    color:white;
+}
+
+.trendHeader{
+    font-weight: bold;
+    font-family: monospace;
+    font-size:30px;
+    color:rgb(231, 98, 58);
+}
