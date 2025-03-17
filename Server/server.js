@@ -81,11 +81,12 @@ app.get('/calendar', verifyToken, async (req, res) => {
 
     const sql = `SELECT inventory.Expiration, food_item.FoodName
                  FROM inventory 
-                 JOIN food_item ON inventory.FoodID = food_item.FoodItemID 
+                 JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                  WHERE inventory.UserID = ?`;
 
     db.query(sql, [UserID], (error, results) => {
         if (error) {
+            console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
         console.log('Query results:', results);
@@ -99,11 +100,12 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
 
     const sql = `SELECT inventory.Quantity, food_item.FoodName 
                  FROM inventory 
-                 JOIN food_item ON inventory.FoodID = food_item.FoodItemID 
+                 JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                  WHERE inventory.UserID = ?`;
 
     db.query(sql, [UserID], (error, results) => {
         if (error) {
+            console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
         console.log('Quantity results:', results);
