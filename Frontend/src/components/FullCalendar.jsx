@@ -17,6 +17,8 @@ export default function Calendar() {
   const [foodItems, setFoodItems] = useState([]);
   const [foodQuantities, setFoodQuantities] = useState([]); // New state for food quantities
 
+  const [events, setFoodAsEvents] = useState([]); // for converting food items from database into events on the calendar
+
   const getFoodItems = async (token) => {
     try {
       const response = await axios.get('http://localhost:80/calendar', {
@@ -27,6 +29,14 @@ export default function Calendar() {
 
       console.log('Food items retrieved:', response.data.foodItems);
       setFoodItems(response.data.foodItems);
+
+      const events = response.data.foodItems.map(item => ({
+        title: item.FoodName,
+        date: item.Expiration
+      }));
+
+      setFoodAsEvents(events);
+
     } catch (error) {
       console.error('Error retrieving food items:', error);
     }
@@ -100,11 +110,7 @@ export default function Calendar() {
           center: 'title',
           right: 'dayGridMonth, listMonth'
         }}
-        events={[
-          { title: 'event 3', date: '2025-03-10' },
-          { title: 'event 1', date: '2025-03-27' },
-          { title: 'event 2', date: '2025-03-28' }
-        ]}
+        events={events}
 
         editable={true}
 
