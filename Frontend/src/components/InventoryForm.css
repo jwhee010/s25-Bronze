@@ -1,0 +1,35 @@
+.formbutton{
+    background-color: transparent;
+    width: 250px;
+    height: 50px;
+    position: fixed;
+    top: 50px;
+    right: 0;
+    margin-right:90px;
+    color: gold;
+}
+
+.invbutton{
+    background-color: rgb(105, 183, 126);
+}
+
+.form{
+    width: 200px;
+    height: 300px;
+}
+
+
+.open {
+    display: block;
+    background-color: rgba(56, 74, 69, 0.881);
+    width: 250px;
+    height: 260px;
+     font-size:medium;
+     border-radius: 25px;
+     padding:15px;
+  }
+  
+  .close {
+    display: none;
+  }
+  

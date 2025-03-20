@@ -1,0 +1,54 @@
+.fc
+{
+
+background-color:rgba(92, 85, 80, 0.901);
+border-radius: 10px;
+border-width:5px;
+
+padding: 20px;
+height: 600px;
+width:600px;
+}
+
+
+
+
+/*Toolbar*/
+.fc-toolbar{
+
+    background-color: rgb(124, 117, 107);
+    border-radius: 10px;
+    padding: 5px;
+}
+.fc-toolbar-title{
+    font-family:monospace;
+    font-weight:bold;
+    color: gold;
+}
+
+/*Events or Cells*/
+.fc-col-header-cell-cushion{
+
+    background-color: antiquewhite;
+    padding: 5px;
+    margin-bottom: 10px;
+    
+  
+}
+
+.fc-col-header-cell{
+  font-weight:bold;
+}
+
+ .fc-event{
+    margin: 20px;
+    border-width:5px;
+}
+
+.fc-daygrid-day-number{
+    background-color: transparent;
+    color:antiquewhite;
+}
+
+
+

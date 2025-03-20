@@ -34,9 +34,18 @@
     color:antiquewhite;
 }
 
+.email{
+    font-size: 20px;
+    padding-top: 10px;
+    color:rgba(250, 235, 215, 0.399);
+}
+
 .logout{
+    margin-top:5px;
+    margin-bottom:30px;
     border: 1px solid goldenrod;
     font-weight: bold;
+    
 }
 
 .navigation{
