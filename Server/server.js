@@ -89,7 +89,7 @@ app.get('/calendar', verifyToken, async (req, res) => {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
-        console.log('Query results:', results);
+        
         res.status(200).json({ foodItems: results });
     });
 });
@@ -108,7 +108,7 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
-        console.log('Quantity results:', results);
+        
         res.status(200).json({ foodQuantities: results });
     });
 });

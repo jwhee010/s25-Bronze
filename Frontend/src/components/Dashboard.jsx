@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import for navigation
 import Navbar from './Navbar';
 import './Dashboard.css';
 import { jwtDecode } from 'jwt-decode'; // for token decoding
-import axios from "axios";
-import LogIn from './LogIn';
 import InvTrendLineChart from './InvTrendLineChart';
 import InvTrendPieChartWaste from './InvTrendPieChartWaste';
 
 
-function Dashboard(props) {
+function Dashboard() {
     const navigate = useNavigate(); // Initialize useNavigate
 
     // Initialize firstname, lastname, email
@@ -79,7 +77,7 @@ function Dashboard(props) {
 
                 {/* Trends charts---------- */}
               <h3 className='trendHeader'>
-                Here's How Much You've Wasted 
+                Here&apos;s How Much You&apos;ve Wasted 
                 <br/>
                 During This Year
               
@@ -87,7 +85,7 @@ function Dashboard(props) {
               </h3>
                 <InvTrendLineChart/>
             <h3 className='trendHeader'>
-                Top Five You've Wasted The Most
+                Top Five You&apos;ve Wasted The Most
                 <br/> During This Month
             </h3>
             <InvTrendPieChartWaste/>
