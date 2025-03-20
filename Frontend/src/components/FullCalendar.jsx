@@ -62,7 +62,6 @@ export default function Calendar() {
     const token = localStorage.getItem('authToken');
 
     try {
-      const decodedToken = jwtDecode(token);
       getFoodItems(token);
       getFoodQuantities(token); // ✅ Fetch food quantities on load
     } catch (error) {
