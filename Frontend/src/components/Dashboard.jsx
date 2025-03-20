@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode'; // for token decoding
 import axios from "axios";
 import LogIn from './LogIn';
 import InvTrendLineChart from './InvTrendLineChart';
-
+import InvTrendPieChartWaste from './InvTrendPieChartWaste';
 
 
 function Dashboard(props) {
@@ -86,6 +86,11 @@ function Dashboard(props) {
               
               </h3>
                 <InvTrendLineChart/>
+            <h3 className='trendHeader'>
+                Top Five You've Wasted The Most
+                <br/> During This Month
+            </h3>
+            <InvTrendPieChartWaste/>
 
 
 
