@@ -80,7 +80,12 @@ export default function Calendar() {
       <div key={index}>
         <p>Food Name: {item.FoodName}</p>
         <p>Expiration Date: {item.Expiration}</p>
-        <p>Quantity: {foodQuantities.find(q => q.name === item.FoodName)?.quantity || 'N/A'}</p> {/* ✅ Match quantity */}
+        <p>
+  Quantity: {foodQuantities.length > 0 
+    ? foodQuantities.find(q => q.FoodName.trim().toLowerCase() === item.FoodName.trim().toLowerCase())?.Quantity || 'N/A' 
+    : 'Loading...'}
+</p>
+
       </div>
     ));
   };
