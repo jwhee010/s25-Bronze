@@ -7,6 +7,8 @@ import Calendar from './components/Calendar';
 import List from './components/List';
 import ShelfFriends from './components/ShelfFriends';
 import Settings from './components/Settings';
+import FriendList from './components/FriendList';
+
 
 
 export default function App() {
@@ -21,7 +23,20 @@ export default function App() {
         <Route path="/list" element={<List />} />
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />
-      </Routes>
+        <Route path="/friends" element={<FriendList />} />
+
+    </Routes>
+    <Route path="/" element={<Navigate to="/login" replace />} />
+    <Route path="/login" element={<LogIn />} />
+    <Route path="/main" element={<Dashboard />} />
+    <Route path="/calendar" element={<Calendar />} />
+    <Route path="/list" element={<List />} />
+    <Route path="/shelffriends" element={<ShelfFriends />} />
+    <Route path="/settings" element={<Settings />} />
+    
+    {/*  New Route for Friends List */}
+    <Route path="/friends" element={<FriendList />} />
+      
     </Router>
    
    
