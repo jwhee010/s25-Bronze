@@ -25,7 +25,7 @@ export default function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/friends" element={<FriendList />} />
 
-    </Routes>
+  
     <Route path="/" element={<Navigate to="/login" replace />} />
     <Route path="/login" element={<LogIn />} />
     <Route path="/main" element={<Dashboard />} />
@@ -36,7 +36,7 @@ export default function App() {
     
     {/*  New Route for Friends List */}
     <Route path="/friends" element={<FriendList />} />
-      
+        </Routes>
     </Router>
    
    
