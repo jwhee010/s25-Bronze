@@ -140,175 +140,6 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
     });
 });
 
-// Server Setup
-const PORT = process.env.PORT || 80;
-app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`);
-});
-
-
-
-// This code is from before the feb 20 change
-/* 
-app.get("/api/get", (req, res) => {
-    db.query("SELECT * FROM user", (err, result) => {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -359,8 +190,11 @@ app.post('/removeFoodQuantity', (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 80;
 
+
+
+// Server Setup
+const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
 });
