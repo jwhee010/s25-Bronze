@@ -113,6 +113,33 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
     });
 });
 
+app.post('/friends/add', verifyToken, (req, res) => {
+    if (!req.body || !req.body.friendId) {
+        return res.status(400).json({ message: 'Friend ID is required' });
+    }
+
+    const { friendId } = req.body;
+    const userId = req.user.UserID;
+
+    const sql = `INSERT INTO friends (user_id, friend_id) VALUES (?, ?)`;
+    db.query(sql, [userId, friendId], (error, result) => {
+        if (error) return res.status(500).json({ message: 'Error adding friend' });
+        res.status(200).json({ message: 'Friend added successfully' });
+    });
+});
+
+
+app.delete('/friends/remove', verifyToken, (req, res) => {
+    const { friendId } = req.body;
+    const userId = req.user.UserID;
+
+    const sql = `DELETE FROM friends WHERE user_id = ? AND friend_id = ?`;
+    db.query(sql, [userId, friendId], (error, result) => {
+        if (error) return res.status(500).json({ message: 'Error removing friend' });
+        res.status(200).json({ message: 'Friend removed successfully' });
+    });
+});
+
 // Server Setup
 const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
