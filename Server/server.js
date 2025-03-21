@@ -190,7 +190,34 @@ app.post('/removeFoodQuantity', (req, res) => {
     });
 });
 
+// update status of a given item to consumed
+app.post('/consumeFood', verifyToken, (req, res) => {
+    const { InventoryID } = req.body;
+    const { UserID } = req.user;
 
+    if (!InventoryID) {
+        return res.status(400).json({ message: 'InventoryID is required' });
+    }
+
+    const updateQuery = `
+        UPDATE inventory 
+        SET ExpirationStatus = 'consumed' 
+        WHERE InventoryID = ? AND UserID = ?;
+    `;
+
+    db.query(updateQuery, [InventoryID, UserID], (error, result) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error updating food status' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Food item not found or already consumed' });
+        }
+
+        res.status(200).json({ message: 'Food item status updated to consumed successfully' });
+    });
+});
 
 
 // Server Setup
