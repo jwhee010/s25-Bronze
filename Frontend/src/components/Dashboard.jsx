@@ -71,9 +71,6 @@ function Dashboard() {
                 <p className = "navigation">Navigation</p>
                 <Navbar />
             </div> */}
-                <button onClick={handleLogout} className=" bg-blue-500 text-white mt-12 py-2 px-12 rounded-md hover:bg-blue-600 logout">
-                   Logout
-                </button>
 
                 {/* Trends charts---------- */}
               <h3 className='trendHeader'>
@@ -89,6 +86,11 @@ function Dashboard() {
                 <br/> During This Month
             </h3>
             <InvTrendPieChartWaste/>
+
+            <button onClick={handleLogout} className="logout">
+                   Logout
+            </button>
+
 
 
 
