@@ -1,15 +1,15 @@
 // Online, tutorials may refer to this file as index.js
 
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
 // This requirement will utilize a MySQL database 
 // from the db.js of each individual team member, locally.
-const db = require('./config/db')
+const db = require('./config/db');
 
 const jwt = require('jsonwebtoken');  // For creating JWT tokens
 const secretKey = 'veryVERYsecret';
@@ -140,50 +140,88 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
     });
 });
 
+
+
+
+// Add or update quantity of Food Item in Inventory and display updated Inventory
+app.post('/addOrUpdateFood', (req, res) => {
+    const { InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus } = req.body;
+
+    const query = `
+    INSERT INTO inventory (InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) AS new
+    ON DUPLICATE KEY UPDATE
+        UserID = new.UserID,
+        FoodID = new.FoodID,
+        PurchaseDate = new.PurchaseDate,
+        Quantity = inventory.Quantity + new.Quantity,
+        Expiration = new.Expiration,
+        Storage = new.Storage,
+        ExpirationStatus = new.ExpirationStatus,
+        SharingStatus = new.SharingStatus;
+    SELECT * FROM livelyshelfsdb.inventory;
+    `;
+
+    db.query(query, [InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus], (err, result) => {
+        if (err) {
+            res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
+        } else {
+            res.status(200).json({ message: 'Food item added or updated successfully.' });
+        }
+    });
+});
+
+// Remove quantity of Food Item from Inventory and display updated Inventory
+app.post('/removeFoodQuantity', (req, res) => {
+    const { InventoryID, UserID, FoodID, quantityToRemove } = req.body;
+
+    const updateQuery = `
+        UPDATE inventory 
+            SET Quantity = Quantity - ?
+            WHERE InventoryID = ? AND UserID = ? AND FoodID = ?;
+        SELECT * FROM livelyshelfsdb.inventory;
+    `;
+
+    db.query(query, [InventoryID], (err, result) => {
+        if (err) {
+            res.status(500).json({ message: 'An error occurred while removing the food from inventory.' });
+        } else {
+            res.status(200).json({ message: 'Food removed from inventory successfully.' });
+        }
+    });
+});
+
+// update status of a given item to consumed
+app.post('/consumeFood', verifyToken, (req, res) => {
+    const { InventoryID } = req.body;
+    const { UserID } = req.user;
+
+    if (!InventoryID) {
+        return res.status(400).json({ message: 'InventoryID is required' });
+    }
+
+    const updateQuery = `
+        UPDATE inventory 
+        SET ExpirationStatus = 'consumed' 
+        WHERE InventoryID = ? AND UserID = ?;
+    `;
+
+    db.query(updateQuery, [InventoryID, UserID], (error, result) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error updating food status' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Food item not found or already consumed' });
+        }
+
+        res.status(200).json({ message: 'Food item status updated to consumed successfully' });
+    });
+});
+
+
 // Server Setup
 const PORT = process.env.PORT || 80;
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
 });
-
-
-
-// This code is from before the feb 20 change
-/* 
-app.get("/api/get", (req, res) => {
-    db.query("SELECT * FROM user", (err, result) => {
-        if (err) {
-            console.log(err)
-        }
-        res.send(result)
-    });
-});
-
-app.post("/login", (req, res) => {
-    const userName = req.body.userName;
-    const passwordHash = req.body.passwordHash;
-
-    db.query(
-        "SELECT firstName, lastName FROM user Where userName = ? AND passwordHash = ?",
-        [userName, passwordHash],
-        (err, result) => {
-            if(err) {
-                res.send({err: err});
-            }
-
-            if(result.length > 0) {
-                //res.send(result);
-                res.send({
-                    message: "Login successful! Welcome Mr/Mrs ",
-                    firstName: result[0].firstName,
-                    lastName: result[0].lastName
-                }),
-                db.query("UPDATE user SET lastLogin = NOW() WHERE UserName = ?", [userName]);
-            }
-            else {
-                res.send({message: "Login failed. Please check your username and password and try again."})
-            }
-        }
-    );
-})
-*/

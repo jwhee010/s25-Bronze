@@ -96,7 +96,7 @@ CREATE TABLE `food_item` (
 
 LOCK TABLES `food_item` WRITE;
 /*!40000 ALTER TABLE `food_item` DISABLE KEYS */;
-INSERT INTO `food_item` VALUES (1,'apple',2,'number'),(2,'banana',2,'number'),(3,'tomato',4,'number'),(4,'carrot',3,'nuumber'),(5,'broccoli',5,'oz'),(6,'spinach',6,'oz'),(7,'potatoe',10,'number'),(8,'orange',6,'number'),(9,'strawberries',3,'oz'),(10,'blueberries',4,'oz'),(11,'cucumber',5,'number');
+INSERT INTO `food_item` VALUES (1,'apple',2,'number'),(2,'banana',2,'number'),(3,'tomato',4,'number'),(4,'carrot',3,'nuumber'),(5,'broccoli',5,'oz'),(6,'spinach',6,'oz'),(7,'potato',10,'number'),(8,'orange',6,'number'),(9,'strawberries',3,'oz'),(10,'blueberries',4,'oz'),(11,'cucumber',5,'number');
 /*!40000 ALTER TABLE `food_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -349,7 +349,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-02-28 01:46:01'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com',NULL),(3,'demo1_user','Jayson','Tatum','password12','jaysontatum@yahoo.com',NULL),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com',NULL);
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-02-28 01:46:01'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com',NULL),(3,'demo1_user','Jayson','Tatum','password12','jaysontatum@yahoo.com',NULL),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-20 18:39:58');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -366,4 +366,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-17 19:39:04
+-- Dump completed on 2025-03-20 19:15:06
