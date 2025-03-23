@@ -148,18 +148,13 @@ app.post('/addOrUpdateFood', (req, res) => {
     const { InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus } = req.body;
 
     const query = `
-    INSERT INTO inventory (InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) AS new
+    INSERT INTO inventory (UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
     ON DUPLICATE KEY UPDATE
-        UserID = new.UserID,
-        FoodID = new.FoodID,
-        PurchaseDate = new.PurchaseDate,
-        Quantity = inventory.Quantity + new.Quantity,
-        Expiration = new.Expiration,
-        Storage = new.Storage,
-        ExpirationStatus = new.ExpirationStatus,
-        SharingStatus = new.SharingStatus;
-    SELECT * FROM livelyshelfsdb.inventory;
-    `;
+        Quantity = Quantity + VALUES(Quantity),
+        Expiration = VALUES(Expiration),
+        Storage = VALUES(Storage),
+        ExpirationStatus = VALUES(ExpirationStatus),
+        SharingStatus = VALUES(SharingStatus);`;
 
     db.query(query, [InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus], (err, result) => {
         if (err) {
@@ -219,11 +214,11 @@ app.post('/consumeFood', verifyToken, (req, res) => {
     });
 });
 
+// Function to select the five highest wasted food items from the
+// analytics table and sorts them from most to least wasted
 app.get('/topWaste', verifyToken, async (req, res) => {
     const { UserID } = req.user;
     
-    // Query to select the five highest wasted food items from the
-    // analytics table and sorts them from most to least wasted
     const sql = `SELECT analytics.Quantity, food_item.FoodName 
                  FROM analytics 
                  JOIN food_item ON analytics.FoodItemID = food_item.FoodItemID 
@@ -240,6 +235,7 @@ app.get('/topWaste', verifyToken, async (req, res) => {
         res.status(200).json({ foodItems: results });
     });
 });
+
 
 
 // Server Setup
