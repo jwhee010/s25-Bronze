@@ -144,24 +144,49 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
 
 
 // Add or update quantity of Food Item in Inventory and display updated Inventory
-app.post('/addOrUpdateFood', (req, res) => {
-    const { InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus } = req.body;
+app.post('/addOrUpdateFood', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const {FoodName, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus} = req.body;
+    
+    const foodQuery = `SELECT FoodItemID, DefaultShelfLife FROM food_item WHERE FoodName = ?`;
 
-    const query = `
-    INSERT INTO inventory (UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
-    ON DUPLICATE KEY UPDATE
-        Quantity = Quantity + VALUES(Quantity),
-        Expiration = VALUES(Expiration),
-        Storage = VALUES(Storage),
-        ExpirationStatus = VALUES(ExpirationStatus),
-        SharingStatus = VALUES(SharingStatus);`;
-
-    db.query(query, [InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus], (err, result) => {
+    db.query(foodQuery, [FoodName], (err, results) => {
         if (err) {
-            res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
-        } else {
-            res.status(200).json({ message: 'Food item added or updated successfully.' });
+            return res.status(500).json({ message: 'Error retrieving FoodItemID' });
         }
+
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'Food item not found in database' });
+        }
+
+        const {FoodItemID, DefaultShelfLife} = results[0];
+        
+        // declares a variable for the expiration date by using
+        // the purchase date as a base
+        let expirationDate = new Date(PurchaseDate);
+
+        // adds the default shelf life of the item to the expiration date
+        expirationDate.setDate(expirationDate.getDate() + DefaultShelfLife);
+
+        // Makes the date into the YYYY-MM-DD format for MySQL
+        let formattedExpiration = expirationDate.toISOString().split('T')[0];
+
+
+        const query = `
+        INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus) VALUES (?, ?, ?, ?, ?, ?, ?) 
+        ON DUPLICATE KEY UPDATE
+            Quantity = Quantity + VALUES(Quantity),
+            Expiration = VALUES(Expiration),
+            Storage = VALUES(Storage),
+            ExpirationStatus = VALUES(ExpirationStatus);`;
+
+        db.query(query, [UserID, FoodItemID, PurchaseDate, Quantity, formattedExpiration, Storage, ExpirationStatus], (err, result) => {
+            if (err) {
+                res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
+            } else {
+                res.status(200).json({ message: 'Food item added or updated successfully.' });
+            }
+        });
     });
 });
 
