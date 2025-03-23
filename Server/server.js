@@ -192,20 +192,20 @@ app.post('/removeFoodQuantity', (req, res) => {
 
 // update status of a given item to consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
-    const { InventoryID } = req.body;
+    const { FoodItemID } = req.body;
     const { UserID } = req.user;
 
-    if (!InventoryID) {
-        return res.status(400).json({ message: 'InventoryID is required' });
+    if (!FoodItemID) {
+        return res.status(400).json({ message: 'Food Item ID is required' });
     }
 
     const updateQuery = `
         UPDATE inventory 
         SET ExpirationStatus = 'consumed' 
-        WHERE InventoryID = ? AND UserID = ?;
+        WHERE FoodItemID = ? AND UserID = ?;
     `;
 
-    db.query(updateQuery, [InventoryID, UserID], (error, result) => {
+    db.query(updateQuery, [FoodItemID, UserID], (error, result) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ message: 'Error updating food status' });
@@ -221,20 +221,20 @@ app.post('/consumeFood', verifyToken, (req, res) => {
 
 // update the given status of an item to expired
 app.post('/expireFood', verifyToken, (req, res) => {
-    const { InventoryID } = req.body;
+    const { FoodItemID } = req.body;
     const { UserID } = req.user;
 
-    if (!InventoryID) {
-        return res.status(400).json({ message: 'InventoryID is required' });
+    if (!FoodItemID) {
+        return res.status(400).json({ message: 'Food Item ID is required' });
     }
 
     const updateQuery = `
         UPDATE inventory 
         SET ExpirationStatus = 'expired' 
-        WHERE InventoryID = ? AND UserID = ?;
+        WHERE FoodItemID = ? AND UserID = ?;
     `;
 
-    db.query(updateQuery, [InventoryID, UserID], (error, result) => {
+    db.query(updateQuery, [FoodItemID, UserID], (error, result) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ message: 'Error updating food status' });
