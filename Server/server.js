@@ -79,7 +79,7 @@ app.post('/login', (req, res) => {
 app.get('/calendar', verifyToken, async (req, res) => {
     const { UserID } = req.user;
 
-    const sql = `SELECT inventory.Expiration, food_item.FoodName
+    const sql = `SELECT inventory.Quantity, inventory.Expiration, food_item.FoodName
                  FROM inventory 
                  JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                  WHERE inventory.UserID = ?`;
@@ -90,6 +90,7 @@ app.get('/calendar', verifyToken, async (req, res) => {
             return res.status(500).json({ message: 'Error executing query' });
         }
         
+        console.log('Query results:', results);
         res.status(200).json({ foodItems: results });
     });
 });

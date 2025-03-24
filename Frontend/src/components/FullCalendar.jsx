@@ -31,7 +31,7 @@ export default function Calendar() {
       setFoodItems(response.data.foodItems);
 
       const events = response.data.foodItems.map(item => ({
-        title: item.FoodName,
+        title: `${item.FoodName} Quantity: ${item.Quantity}`,
         date: item.Expiration
       }));
 
