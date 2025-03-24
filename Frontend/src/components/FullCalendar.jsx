@@ -117,7 +117,7 @@ export default function Calendar() {
         eventColor='#629c59'
 
         editable={true}
-        eventLimit={false}
+        // eventLimit={false}
 
         eventMouseEnter= {function(info) {info.el.title = info.event.title + " "+ info.event.start;}}
 

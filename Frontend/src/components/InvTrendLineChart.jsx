@@ -27,7 +27,6 @@ export default function InvTrendLineChart() {
 
   const getExpiredItems = async(token) => {
 
-    console.log(token)
     try {
       const response = await axios.get('http://localhost:80/expired', {
         headers: {
@@ -42,8 +41,6 @@ export default function InvTrendLineChart() {
         const month = date.getMonth();
         wasteByMonth[month] += Number(item.Quantity);
       });
-
-      console.log(wasteByMonth);
 
       setExpiredItems(wasteByMonth);
     }
