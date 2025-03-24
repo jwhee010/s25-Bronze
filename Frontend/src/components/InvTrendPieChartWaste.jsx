@@ -42,6 +42,10 @@ export default function InvTrendPieChartWaste() {
 
     return (
         <PieChart
+        colors={['#F05A7E', '#F6C794', '#FFF6B3','#7C9D96',  '#6FC2D0']}
+
+        
+
             series={[
                 {
                     // This sets the pie chart data as the 
@@ -55,6 +59,14 @@ export default function InvTrendPieChartWaste() {
                     ]
                 }
             ]}
+
+            slotProps={{
+                legend: {
+                  labelStyle: {
+                    fontSize: 14,
+                    fill: 'white',
+                  },},}}
+
             width={400}
             height={200}
         />

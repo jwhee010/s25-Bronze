@@ -1,6 +1,11 @@
 import React from 'react';
-import { LineChart } from '@mui/x-charts/LineChart';
 import './InvTrendLineChart.css'
+import { LineChart } from '@mui/x-charts/LineChart';
+import { ThemeProvider } from '@emotion/react';
+
+
+
+
 
 
 const xLable = [
@@ -22,6 +27,9 @@ const xLable = [
 
 export default function InvTrendLineChart(){
     return(
+
+      
+
         <LineChart
         xAxis={[{
             scaleType: 'point', data:xLable,
@@ -34,29 +42,28 @@ export default function InvTrendLineChart(){
         },
       ]}
 
-      sx={{
+    
+     /*  sx={{
         ".MuiChartsAxis-root .MuiChartsAxis-line": {
-          stroke: '#e6f0ff',
+          fill: '#e6f0ff',
         },
         ".MuiChartsAxis-tickLabel": {
           fill:'#e6f0ff' ,
         },
         ".MuiChartsAxis-tick":{
-             stroke: '#e6f0ff',
-        }
-   
-      
-       
-       
-      
-}}
+             fill: '#e6f0ff',
+        } 
+        }}     
+        */
+
 
       width={500}
       height={300}
 
       grid={{vertial:true, horizontal:true}}
 
-
         />
+
+
     );
 }
