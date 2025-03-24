@@ -61,19 +61,19 @@ app.post('/login', (req, res) => {
 
                 // shove all the user info into a token
                 const token = jwt.sign(
-                    { 
+                    {
                         id: user.id, // this is NOT the userID from the database!!! tokens have their own id :)
                         username: user.userName,
-                        email: user.email, 
+                        email: user.email,
                         firstName: user.firstName,
                         lastName: user.lastName,
                         UserID: user.UserID,
-                    }, 
+                    },
                     secretKey,
-                { expiresIn: '1h' }  // Optional: Set an expiration time for the token
-            );
-                res.status(200).json({ 
-                    message: 'Login successful', 
+                    { expiresIn: '1h' }  // Optional: Set an expiration time for the token
+                );
+                res.status(200).json({
+                    message: 'Login successful',
 
                     token: token,  // Send token
                 });
@@ -90,17 +90,14 @@ app.post('/login', (req, res) => {
 app.get('/calendar', verifyToken, async (req, res) => {
     const { UserID } = req.user;
 
-    const sql = `SELECT inventory.Expiration, food_item.FoodName
-                 FROM inventory 
-                 JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
-                 WHERE inventory.UserID = ?`;
+    const sql = `SELECT inventory.Expiration, food_item.FoodName FROM inventory  JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID WHERE inventory.UserID = ?`;
 
     db.query(sql, [UserID], (error, results) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
-        
+
         res.status(200).json({ foodItems: results });
     });
 });
@@ -119,7 +116,7 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
-        
+
         res.status(200).json({ foodQuantities: results });
     });
 });
@@ -148,6 +145,24 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
     db.query(sql, [userId, friendId], (error, result) => {
         if (error) return res.status(500).json({ message: 'Error removing friend' });
         res.status(200).json({ message: 'Friend removed successfully' });
+    });
+});
+
+app.get('/sharing', verifyToken, async(req, res) => {
+    const {UserID} = req.user;
+    console.log(UserID);
+    const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
+                    WHERE inventory.UserID = ?`;
+    
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+             return res.status(500).json({message: 'Error getting inventory'});
+            }
+        res.status(200).json({foodItems: result})
     });
 });
 

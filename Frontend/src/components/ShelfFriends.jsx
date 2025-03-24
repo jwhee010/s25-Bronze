@@ -16,6 +16,8 @@ const socket = io('http://localhost:3000');
 //         </div>
 //     );
 // };
+import FriendList from "./FriendList";
+import Sharing from "./Sharing";
 
 const ShelfFriends = () => {
     const [messages, setMessages] = React.useState([]);
@@ -53,6 +55,8 @@ const ShelfFriends = () => {
         <div>
             <Navbar />
             <h1>ShelfFriends</h1>
+            <FriendList/>
+            <Sharing/>
             <h2>Messaging</h2>
 
             <div className="Shelf-Friends">
