@@ -1,9 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./InventoryForm.css";
 import axios from 'axios';
+import { common } from "@mui/material/colors";
 
 export default function InventoryForm() {
     const [active, setActive] = useState(false);
+
+    const [commonlyWasted, setWastedFood] = useState([]);
+
+    // Retrive top 5 wasted food from the database, originally done by Jaylen
+    const getWastedFood = async (token) => {
+        try {
+            const response = await axios.get('http://localhost:80/topWaste', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const wastedFood = response.data.foodItems.map((item, index) => ({
+                id: index,
+                value: item.Quantity,
+                label: item.FoodName
+            }));
+
+            setWastedFood(wastedFood);
+        }
+        catch(error) {
+            console.error('Error retrieving food items:', error)
+        }
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+
+        try {
+            getWastedFood(token);
+        } catch (error) {
+            console.error('Token decoding error:', error);
+        }
+    }, []);
+
+    // Compare foodName from the input form to commonly wasted food items
+    function checkIfWasted(commonlyWasted, foodName) {
+        for(let i = 0; i < commonlyWasted.length; i++) {
+            if (commonlyWasted[i].label.toLowerCase() === foodName.toLowerCase()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     const [inventoryFormData, setInventoryFormData] = useState({
         itemName: "",
         itemQuantity: "",
@@ -35,6 +82,16 @@ export default function InventoryForm() {
         e.preventDefault();
 
         try {
+
+            const foodName = inventoryFormData.itemName;
+            
+            const isWasted = checkIfWasted(commonlyWasted, foodName); 
+
+            // Alerts user if a food item is commonly wasted on form submission
+            if(isWasted) {
+                alert(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`)
+            }
+
             const token = localStorage.getItem("authToken");
 
             const response = await axios.post(

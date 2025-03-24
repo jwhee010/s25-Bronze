@@ -261,6 +261,25 @@ app.get('/topWaste', verifyToken, async (req, res) => {
     });
 });
 
+// Select and send the number of expired food items and when they expired\
+app.get('/expired', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT analytics.Quantity, analytics.DateExpired
+        FROM analytics
+        WHERE UserID = ? 
+        AND ExpirationStatus = 'expired'`;
+
+    db.query(sql, [UserID], (error, results) => {
+        if(error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query'});
+        }
+
+        res.status(200).json({ expiredItems: results });
+    });
+});
+
 
 
 // Server Setup
