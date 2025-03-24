@@ -140,7 +140,7 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
 app.get('/sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
     console.log(UserID);
-    const sql = `SELECT food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
+    const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
                     FROM inventory
                     JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                     WHERE inventory.UserID = ?`;

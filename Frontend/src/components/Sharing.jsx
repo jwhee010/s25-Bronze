@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./Sharing.css";
 
 export default function Sharing(){
     const [foodItems, setFoodItems] = useState([]);
@@ -15,13 +16,18 @@ export default function Sharing(){
         });
 
     console.log('Food items retrieved', response.data.foodItems);
-    setFoodItems(response.data.foodItems);
+    setFoodItems(response.data.foodItems || []);
     
     } catch (error) {
         console.error('Error retrieving food items:', error);
     };
 
-};
+    };
+
+    const shareFood = async () => {
+
+    }
+
 
     useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -39,8 +45,33 @@ export default function Sharing(){
 
     return(
         <div>
-            <button type="button" onClick={showFoodItems}> share food</button>
-            <button type = "button" onClick={sharedFoods}> food friends are sharing</button>
+           <h3>Share your food</h3>
+            {foodItems.length > 0 ? (
+                <table className="table-container">
+                    <thead>
+                        <tr>
+                            <th>Food Name</th>
+                            <th>Quantity</th>
+                            <th>Expiration Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foodItems.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.FoodName}</td>
+                                <td>{item.Quantity}</td>
+                                <td>{item.ExpirationStatus}</td>
+                                <td>
+                                    {/*Makes the the food item sharable or cancels the sharablity*/}
+                                    <button>Share</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No food items available</p>
+            )}
         </div>
     )
 }

@@ -1,0 +1,41 @@
+.table-container {
+    width: 100%;
+    margin: 20px auto;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th, .table-container td {
+    border: 2px solid hsl(0, 43%, 5%);
+    padding: 10px;
+    text-align: left;
+}
+
+.table-container th {
+    background-color: rgba(56, 74, 69, 0.881);
+    font-weight: bold;
+}
+
+.table-container tr{
+    background-color: rgba(56, 74, 69, 0.881);
+}
+
+.table-container tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.table-container button:hover {
+    background-color: #45a049;
+}
