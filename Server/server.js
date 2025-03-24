@@ -7,6 +7,17 @@ const app = express();
 app.use(cors());
 app.use(express.json())
 
+//********************************************************* */
+
+//Real Time Messaging Websocket
+const http = require('http');
+const { Server } = require('socket.io');
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+//********************************************************** */
+
 // This requirement will utilize a MySQL database 
 // from the db.js of each individual team member, locally.
 const db = require('./config/db')
@@ -139,6 +150,28 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
         res.status(200).json({ message: 'Friend removed successfully' });
     });
 });
+
+//*********************************************************** */
+// Handle WebSocket connections
+io.on('connection', (socket) => {
+    console.log('A user connected!');
+  
+    // Listen for incoming messages
+    socket.on('sendMessage', (message) => {
+      console.log('Message received:', message);
+      // Broadcast the message to all connected clients
+      io.emit('receiveMessage', message);
+    });
+  
+    // Handle disconnection
+    socket.on('disconnect', () => {
+      console.log('A user disconnected!');
+    });
+  });
+  
+  
+
+//*********************************************************** */
 
 // Server Setup
 const PORT = process.env.PORT || 80;
