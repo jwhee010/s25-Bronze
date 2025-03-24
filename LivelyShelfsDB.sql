@@ -58,6 +58,7 @@ CREATE TABLE `analytics` (
   `ExpirationStatus` varchar(45) DEFAULT NULL,
   `Quantity` varchar(45) DEFAULT NULL,
   `Status` varchar(45) DEFAULT NULL,
+  `DateExpired` date DEFAULT NULL,
   KEY `InventoryID_idx` (`UserID`),
   KEY `fk_foodItem_analytics_idx` (`FoodItemID`),
   CONSTRAINT `fk_foodItem_analytics` FOREIGN KEY (`FoodItemID`) REFERENCES `food_item` (`FoodItemID`),
@@ -71,7 +72,7 @@ CREATE TABLE `analytics` (
 
 LOCK TABLES `analytics` WRITE;
 /*!40000 ALTER TABLE `analytics` DISABLE KEYS */;
-INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared'),(1,3,'expired','2','unshared'),(1,5,'expired','6','unshared'),(1,8,'consumed','2','unshared'),(1,6,'consumed','5','unshared'),(1,2,'consumed','3','unshared'),(1,10,'expired','1','unshared'),(1,9,'expired','8','unshared'),(3,8,'expired','4','unshared'),(3,11,'expired','2','unshared'),(3,6,'expired','9','unshared'),(3,4,'expired','5','unshared'),(3,3,'expired','2','unshared'),(3,7,'consumed','6','unshared'),(3,9,'consumed','3','unshared'),(3,1,'expired','7','unshared');
+INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','4','unshared','2025-03-25'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-03-25'),(3,4,'expired','5','unshared','2025-03-25'),(3,3,'expired','2','unshared','2025-01-25'),(3,7,'consumed','6','unshared',NULL),(3,9,'consumed','3','unshared',NULL),(3,1,'expired','7','unshared','2025-03-25');
 /*!40000 ALTER TABLE `analytics` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -375,7 +376,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-23 05:37:12'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-03-20 20:11:41'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-03-23 05:58:08'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-20 18:39:58');
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 18:01:58'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-03-24 00:55:45'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-03-24 18:11:02'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-20 18:39:58');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -396,4 +397,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-23  6:12:46
+-- Dump completed on 2025-03-24 18:13:45
