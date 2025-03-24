@@ -144,29 +144,49 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
 
 
 // Add or update quantity of Food Item in Inventory and display updated Inventory
-app.post('/addOrUpdateFood', (req, res) => {
-    const { InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus } = req.body;
+app.post('/addOrUpdateFood', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const {FoodName, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus} = req.body;
+    
+    const foodQuery = `SELECT FoodItemID, DefaultShelfLife FROM food_item WHERE FoodName = ?`;
 
-    const query = `
-    INSERT INTO inventory (InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) AS new
-    ON DUPLICATE KEY UPDATE
-        UserID = new.UserID,
-        FoodID = new.FoodID,
-        PurchaseDate = new.PurchaseDate,
-        Quantity = inventory.Quantity + new.Quantity,
-        Expiration = new.Expiration,
-        Storage = new.Storage,
-        ExpirationStatus = new.ExpirationStatus,
-        SharingStatus = new.SharingStatus;
-    SELECT * FROM livelyshelfsdb.inventory;
-    `;
-
-    db.query(query, [InventoryID, UserID, FoodID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus, SharingStatus], (err, result) => {
+    db.query(foodQuery, [FoodName], (err, results) => {
         if (err) {
-            res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
-        } else {
-            res.status(200).json({ message: 'Food item added or updated successfully.' });
+            return res.status(500).json({ message: 'Error retrieving FoodItemID' });
         }
+
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'Food item not found in database' });
+        }
+
+        const {FoodItemID, DefaultShelfLife} = results[0];
+        
+        // declares a variable for the expiration date by using
+        // the purchase date as a base
+        let expirationDate = new Date(PurchaseDate);
+
+        // adds the default shelf life of the item to the expiration date
+        expirationDate.setDate(expirationDate.getDate() + DefaultShelfLife);
+
+        // Makes the date into the YYYY-MM-DD format for MySQL
+        let formattedExpiration = expirationDate.toISOString().split('T')[0];
+
+
+        const query = `
+        INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus) VALUES (?, ?, ?, ?, ?, ?, ?) 
+        ON DUPLICATE KEY UPDATE
+            Quantity = Quantity + VALUES(Quantity),
+            Expiration = VALUES(Expiration),
+            Storage = VALUES(Storage),
+            ExpirationStatus = VALUES(ExpirationStatus);`;
+
+        db.query(query, [UserID, FoodItemID, PurchaseDate, Quantity, formattedExpiration, Storage, ExpirationStatus], (err, result) => {
+            if (err) {
+                res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
+            } else {
+                res.status(200).json({ message: 'Food item added or updated successfully.' });
+            }
+        });
     });
 });
 
@@ -218,6 +238,48 @@ app.post('/consumeFood', verifyToken, (req, res) => {
         res.status(200).json({ message: 'Food item status updated to consumed successfully' });
     });
 });
+
+// Function to select the five highest wasted food items from the
+// analytics table and sorts them from most to least wasted
+app.get('/topWaste', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+    
+    const sql = `SELECT analytics.Quantity, food_item.FoodName 
+                 FROM analytics 
+                 JOIN food_item ON analytics.FoodItemID = food_item.FoodItemID 
+                 WHERE analytics.UserID = ? AND ExpirationStatus = 'expired'
+                 ORDER BY analytics.Quantity DESC
+                 LIMIT 5`;
+
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+        
+        res.status(200).json({ foodItems: results });
+    });
+});
+
+// Select and send the number of expired food items and when they expired\
+app.get('/expired', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT analytics.Quantity, analytics.DateExpired
+        FROM analytics
+        WHERE UserID = ? 
+        AND ExpirationStatus = 'expired'`;
+
+    db.query(sql, [UserID], (error, results) => {
+        if(error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query'});
+        }
+
+        res.status(200).json({ expiredItems: results });
+    });
+});
+
 
 // update the given status of an item to expired
 app.post('/expireFood', verifyToken, (req, res) => {

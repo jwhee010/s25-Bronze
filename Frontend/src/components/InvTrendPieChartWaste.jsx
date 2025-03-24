@@ -1,34 +1,75 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import './InvTrendPieChartWaste.css'
+import axios from 'axios';
 
-export default function InvTrendPieChartWaste(){
-    return(
-    <PieChart
-    series={[
+export default function InvTrendPieChartWaste() {
 
-        {
-            data:[
-                { id:0, value: 5, label:'Tomato'},
-                { id:1, value: 3, label:'Fish'},
-                { id:2, value: 2, label: 'Chips'},
-                {id:3, value: 6, label:'a'},
-                {id: 4,value: 9, label:':('}
-            ]
+    const [topWastedFood, setTopWastedFood] = useState([]);
 
+    // retrieves the five most wasted food items from the database
+    const getTopWastedFood = async (token) => {
+        try {
+            const response = await axios.get('http://localhost:80/topWaste', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const pieChartData = response.data.foodItems.map((item, index) => ({
+                id: index,
+                value: item.Quantity, // Set the waste quantity as value
+                label: item.FoodName // Set the food name as label
+            }));
+
+            setTopWastedFood(pieChartData);
         }
-    ]
-    }
-    width={400}
-    height={200}
-    
-    
-    />
 
+        catch (error) {
+            console.error('Error retrieving food items:', error)
+        }
+    };
 
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
 
+        try {
+            getTopWastedFood(token);
+        } catch (error) {
+            console.error('Token decoding error:', error);
+        }
+    }, []);
 
+    return (
+        <PieChart
+        colors={['#F05A7E', '#F6C794', '#FFF6B3','#7C9D96',  '#6FC2D0']}
 
+        
+
+            series={[
+                {
+                    // This sets the pie chart data as the 
+                    // items retreived from the database.
+
+                    // If there aren't any wasted items, then it
+                    // displays placeholder information that
+                    // congratulates the user
+                    data: topWastedFood.length > 0 ? topWastedFood : [
+                        { id: 0, value: 1, label: 'No wasted food!' }
+                    ]
+                }
+            ]}
+
+            slotProps={{
+                legend: {
+                  labelStyle: {
+                    fontSize: 14,
+                    fill: 'white',
+                  },},}}
+
+            width={400}
+            height={200}
+        />
 
     )
 
