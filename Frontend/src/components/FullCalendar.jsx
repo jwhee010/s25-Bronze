@@ -27,7 +27,7 @@ export default function Calendar() {
         }
       });
 
-      console.log('Food items retrieved:', response.data.foodItems);
+      //console.log('Food items retrieved:', response.data.foodItems);
       setFoodItems(response.data.foodItems);
 
       const events = response.data.foodItems.map(item => ({
@@ -51,7 +51,7 @@ export default function Calendar() {
         }
       });
 
-      console.log('Food quantities retrieved:', response.data.foodQuantities);
+      //console.log('Food quantities retrieved:', response.data.foodQuantities);
       setFoodQuantities(response.data.foodQuantities);
     } catch (error) {
       console.error('Error retrieving food quantities:', error);
