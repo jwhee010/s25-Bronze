@@ -221,32 +221,36 @@ app.post('/removeFoodQuantity', (req, res) => {
     });
 });
 
-// update status of a given item to consumed
+// update quantity of items consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
-    const { FoodItemID } = req.body;
+    const { FoodName, Quantity, Action } = req.body;
     const { UserID } = req.user;
 
-    if (!FoodItemID) {
-        return res.status(400).json({ message: 'Food Item ID is required' });
-    }
+    const foodQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
 
-    const updateQuery = `
-        UPDATE inventory 
-        SET ExpirationStatus = 'consumed' 
-        WHERE FoodItemID = ? AND UserID = ?;
-    `;
-
-    db.query(updateQuery, [FoodItemID, UserID], (error, result) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({ message: 'Error updating food status' });
+    db.query(foodQuery, [FoodName], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error retrieving FoodItemID' });
         }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Food item not found or already consumed' });
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'Food item not found in database' });
         }
 
-        res.status(200).json({ message: 'Food item status updated to consumed successfully' });
+    const { FoodItemID } = results[0];
+
+    const query = `
+            UPDATE inventory 
+            SET Quantity = Quantity - ? 
+            WHERE FoodItemID = ? AND UserID = ?;
+        `;
+
+        db.query(query, [Quantity, FoodItemID, UserID], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error updating food quantity' });
+            }
+            res.status(200).json({ message: 'Food quantity updated successfully' });
+        });
     });
 });
 
@@ -294,30 +298,34 @@ app.get('/expired', verifyToken, async (req, res) => {
 
 // update the given status of an item to expired
 app.post('/expireFood', verifyToken, (req, res) => {
-    const { FoodItemID } = req.body;
+    const { FoodName, Action } = req.body;
     const { UserID } = req.user;
 
-    if (!FoodItemID) {
-        return res.status(400).json({ message: 'Food Item ID is required' });
-    }
+    const foodQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
 
-    const updateQuery = `
-        UPDATE inventory 
-        SET ExpirationStatus = 'expired' 
-        WHERE FoodItemID = ? AND UserID = ?;
-    `;
-
-    db.query(updateQuery, [FoodItemID, UserID], (error, result) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({ message: 'Error updating food status' });
+    db.query(foodQuery, [FoodName], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error retrieving FoodItemID' });
         }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Food item not found or already expired' });
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'Food item not found in database' });
         }
 
-        res.status(200).json({ message: 'Food item status updated to expired successfully' });
+    const { FoodItemID } = results[0];
+
+    const query = `
+            UPDATE inventory 
+            SET ExpirationStatus = 'expired' 
+            WHERE FoodItemID = ? AND UserID = ?;
+        `;
+
+        db.query(query, [FoodItemID, UserID], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error updating food status' });
+            }
+            res.status(200).json({ message: 'Food status updated to expired' });
+        });
     });
 });
 
