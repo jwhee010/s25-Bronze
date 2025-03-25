@@ -119,7 +119,7 @@ export default function Calendar() {
         editable={true}
         // eventLimit={false}
 
-        eventMouseEnter= {function(info) {info.el.title = info.event.title + " "+ info.event.start;}}
+        eventMouseEnter= {function(info) {info.el.title = info.event.title + " "}}
 
         eventClick={handleEventClick}
       />

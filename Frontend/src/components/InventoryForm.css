@@ -11,6 +11,7 @@
 
 .invbutton{
     background-color: rgb(105, 183, 126);
+    margin-left: 30px;
 }
 
 .form{
@@ -27,9 +28,51 @@
      font-size:medium;
      border-radius: 25px;
      padding:15px;
+    margin-top: 5px;
   }
   
   .close {
     display: none;
   }
   
+
+  .labelText{
+    color:gold;
+    font-weight: bold;
+  }
+
+  input[type='number']{
+    width: 200px;
+    border-radius: 5px;
+    border-style:solid
+} 
+
+.submitB{
+    background-color: rgb(28, 49, 34);
+    color:rgb(164, 205, 166);
+    font-weight: bold;
+    margin:5px;
+}
+
+.submitB:hover {
+    background-color: rgb(149, 167, 154);
+    color:rgb(43, 60, 46);
+    font-weight: bold;
+    border-color: transparent;
+
+}
+
+.cancelB{
+    background-color: rgb(38, 48, 41);
+    color:whitesmoke;
+    font-weight: bold;
+    margin:5px;
+}
+
+.cancelB:hover{
+    background-color: rgb(148, 145, 159);
+    color:rgb(43, 60, 46);
+    font-weight: bold;
+    border-color: transparent;
+
+}

@@ -68,22 +68,22 @@ return(
               {/*   <label htmlFor="foodItemName">Item Name</label>
                 <input type="text" id="foodItemName"></input> */}
 
-                <label htmlFor="foodItem" >Food Item</label>
+                <label htmlFor="foodItem" className="labelText">Food Item</label>
                 <br/>
                 <select name="foodItem" id="foodItem">
                 </select>
                 <br/>
                 
-                <label htmlFor="foodItemQuant">Quantity</label>
+                <label htmlFor="foodItemQuant" className="labelText">Quantity</label>
                 <br/>
                 <input type="number" id="foodItemQuant"></input>
 
             </form>
             <br/>
 
-            <button onClick={closeItem}>Consumed</button>
-            <button onClick={closeItem}>Spoiled</button>
-            <button onClick={closeItem}>Cancel</button>
+            <button onClick={closeItem} className="consumeB">Consumed</button>
+            <button onClick={closeItem} className="spoilB">Spoiled</button>
+            <button onClick={closeItem} className="cancelB">Cancel</button>
         </h1>
 
     </div>

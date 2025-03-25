@@ -134,33 +134,33 @@ export default function InventoryForm() {
                 <div className={active ? "open" : "close"}>
 
                     <form id="inputToInventory" onSubmit={submitForm}>
-                        <label htmlFor="itemName">Item Name</label>
+                        <label htmlFor="itemName" className="labelText">Item Name</label>
                         <input type="text" id="itemName" value={inventoryFormData.itemName}
                             onChange={storeInput} required></input>
                         <br></br>
 
-                        <label htmlFor="itemQuantity">Item Quantity</label>
+                        <label htmlFor="itemQuantity" className="labelText">Item Quantity</label>
                         <input type="number" id="itemQuantity" value={inventoryFormData.itemQuantity}
                             onChange={storeInput} required></input>
                         <br></br>
 
-                        <label htmlFor="purchaseDate">Purchase Date</label>
+                        <label htmlFor="purchaseDate" className="labelText">Purchase Date</label>
                         <input type="text" id="purchaseDate" value={inventoryFormData.purchaseDate}
                             onChange={storeInput} required></input>
                         <br></br>
 
-                        <label htmlFor="stored">Where will this be Stored?</label>
+                        <label htmlFor="stored" className="labelText">Where will this be Stored?</label>
                         <input type="text" id="stored" value={inventoryFormData.stored}
                             onChange={storeInput} required></input>
                         <br></br>
 
                         {/** has to be implemented */}
-                        <label htmlFor="shareBool">Sharable?</label>
+                        <label htmlFor="shareBool" className="labelText">Sharable?</label>
                         <input type="checkbox"></input>
                         <br></br>
 
-                        <button type="submit">Submit</button>
-                        <button type="button" onClick={closeItem}>Cancel</button>
+                        <button type="submit" className="submitB">Submit</button>
+                        <button type="button" onClick={closeItem} className="cancelB">Cancel</button>
                     </form>
                 </div>
             )}

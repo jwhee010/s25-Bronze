@@ -74,17 +74,7 @@ export default function InvTrendLineChart() {
           color: "#ed3a2d",
         },
       ]}
-      sx={{
-        ".MuiChartsAxis-root .MuiChartsAxis-line": {
-          stroke: "#e6f0ff",
-        },
-        ".MuiChartsAxis-tickLabel": {
-          fill: "#e6f0ff",
-        },
-        ".MuiChartsAxis-tick": {
-          stroke: "#e6f0ff",
-        },
-      }}
+
       width={500}
       height={300}
       grid={{ vertial: true, horizontal: true }}

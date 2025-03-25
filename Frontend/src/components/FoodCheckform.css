@@ -12,6 +12,7 @@
 
 .invCheck{
     background-color: rgb(105, 183, 126);
+    margin-left: 30px;
 }
 
 .formStyle{
@@ -33,5 +34,67 @@
   .cclose {
     display: none;
   }
+
+
+  input[type='number']{
+    width: 200px;
+    border-radius: 5px;
+    border-style:solid
+} 
+
+  .labelText{
+    color:gold;
+    font-weight: bold;
+}
+
+/* cancel button */
+.cancelB{
+    background-color: rgb(38, 48, 41);
+    color:whitesmoke;
+    font-weight: bold;
+    margin:5px;
+}
+
+.cancelB:hover{
+    background-color: rgb(148, 145, 159);
+    color:rgb(43, 60, 46);
+    font-weight: bold;
+    border-color: transparent;
+}
+
+/* spoil button */
+.spoilB{
+    background-color: rgb(75, 52, 48);
+    color:rgb(187, 138, 138);
+    font-weight: bold;
+    margin:5px;
+
+}
+
+.spoilB:hover{
+    background-color: rgb(154, 101, 95);
+    color:rgb(43, 60, 46);
+    font-weight: bold;
+    border-color: transparent;
+
+}
+
+/* consume button */
+.consumeB{
+    background-color: rgb(37, 67, 46);
+    color:rgb(158, 198, 154);
+    font-weight: bold;
+    margin:5px;
+
+}
+
+.consumeB:hover{
+    background-color: rgb(141, 182, 147);
+    color:rgb(43, 60, 46);
+    font-weight: bold;
+    border-color: transparent;
+
+}
+
 
   
