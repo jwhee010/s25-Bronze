@@ -5,7 +5,18 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json())
+
+//********************************************************* */
+
+//Real Time Messaging Websocket
+const http = require('http');
+const { Server } = require('socket.io');
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+//********************************************************** */
 
 // This requirement will utilize a MySQL database 
 // from the db.js of each individual team member, locally.
@@ -50,19 +61,19 @@ app.post('/login', (req, res) => {
 
                 // shove all the user info into a token
                 const token = jwt.sign(
-                    { 
+                    {
                         id: user.id, // this is NOT the userID from the database!!! tokens have their own id :)
                         username: user.userName,
-                        email: user.email, 
+                        email: user.email,
                         firstName: user.firstName,
                         lastName: user.lastName,
                         UserID: user.UserID,
-                    }, 
+                    },
                     secretKey,
-                { expiresIn: '1h' }  // Optional: Set an expiration time for the token
-            );
-                res.status(200).json({ 
-                    message: 'Login successful', 
+                    { expiresIn: '1h' }  // Optional: Set an expiration time for the token
+                );
+                res.status(200).json({
+                    message: 'Login successful',
 
                     token: token,  // Send token
                 });
@@ -89,8 +100,7 @@ app.get('/calendar', verifyToken, async (req, res) => {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
-        
-        console.log('Query results:', results);
+
         res.status(200).json({ foodItems: results });
     });
 });
@@ -109,7 +119,7 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
         }
-        
+
         res.status(200).json({ foodQuantities: results });
     });
 });
@@ -311,6 +321,46 @@ app.post('/expireFood', verifyToken, (req, res) => {
     });
 });
 
+
+app.get('/sharing', verifyToken, async(req, res) => {
+    const {UserID} = req.user;
+    console.log(UserID);
+    const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
+                    WHERE inventory.UserID = ?`;
+    
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+             return res.status(500).json({message: 'Error getting inventory'});
+            }
+        res.status(200).json({foodItems: result})
+    });
+});
+
+//*********************************************************** */
+// Handle WebSocket connections
+io.on('connection', (socket) => {
+    console.log('A user connected!');
+  
+    // Listen for incoming messages
+    socket.on('sendMessage', (message) => {
+      console.log('Message received:', message);
+      // Broadcast the message to all connected clients
+      io.emit('receiveMessage', message);
+    });
+  
+    // Handle disconnection
+    socket.on('disconnect', () => {
+      console.log('A user disconnected!');
+    });
+  });
+  
+  
+
+//*********************************************************** */
 
 // Server Setup
 const PORT = process.env.PORT || 80;
