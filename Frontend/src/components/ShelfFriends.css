@@ -1,0 +1,38 @@
+.Shelf-Friends {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: auto;
+  }
+  
+  .message-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  
+  .message-item {
+    padding: 5px;
+    margin: 5px 0;
+    background: #f1f1f1;
+    border-radius: 5px;
+  }
+  
+  .message-input {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .message-input input {
+    flex: 1;
+    padding: 5px;
+  }
+  
+  .message-input button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
