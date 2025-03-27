@@ -14,7 +14,12 @@ const http = require('http');
 const { Server } = require('socket.io');
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+      origin: "*",
+      credentials: true,
+    },
+  });
 
 //********************************************************** */
 
@@ -297,23 +302,43 @@ app.get('/friendsSharing', verifyToken, async(req,res) => {
 });
 
 //*********************************************************** */
-// Handle WebSocket connections
-io.on('connection', (socket) => {
-    console.log('A user connected!');
+// // Handle WebSocket connections
+// io.on('connection', (socket) => {
+//     console.log('A user connected!');
   
-    // Listen for incoming messages
-    socket.on('sendMessage', (message) => {
-      console.log('Message received:', message);
+//     // Listen for incoming messages
+//     socket.on('sendMessage', (message) => {
+
+//         console.log('Message received:', message);
+
+//       // Broadcast the message to all connected clients
+//         io.emit('receiveMessage', message);
+//     });
+  
+//     // Handle disconnection
+//     socket.on('disconnect', () => {
+//       console.log('A user disconnected!');
+//     });
+//   });
+  // Handle WebSocket connections here
+io.on("connection", (socket) => {
+    console.log("A new user has connected", socket.id);
+  
+    // Listen for incoming messages from clients
+    socket.on("message", (message) => {
       // Broadcast the message to all connected clients
-      io.emit('receiveMessage', message);
+      io.emit("message", message);
     });
   
-    // Handle disconnection
-    socket.on('disconnect', () => {
-      console.log('A user disconnected!');
+    // Handle disconnections
+    socket.on("disconnect", () => {
+      console.log(socket.id, " disconnected");
     });
   });
   
+  server.listen(3000, () => {
+    console.log("Server is running on port 3000");
+  });
   
 
 //*********************************************************** */
