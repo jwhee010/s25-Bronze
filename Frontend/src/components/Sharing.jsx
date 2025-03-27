@@ -4,12 +4,14 @@ import "./Sharing.css";
 
 export default function Sharing() {
     const [foodItems, setFoodItems] = useState([]);
+    const [friendsSharing, setfriendsSharing] = useState([]);
     const [sharedStatus, setSharedStatus] = useState({});
 
-    // Fetch user's food items
+    // Fetch user's food items and stores in an array to be displayed
     const showFoodItems = async (token) => {
         try {
-            const response = await axios.get("http://localhost:80/sharing", {
+            const response = await axios.get("http://localhost:80/sharing", 
+            {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -22,11 +24,27 @@ export default function Sharing() {
         }
     };
 
+    const getFriendsFood = async(token) => {
+        try{
+            const response = await axios.get("http://localhost:80/friendsSharing",{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log("Friends Items retrieved", response.data);
+            setfriendsSharing(response.data || []);
+        } catch(error){
+            console.error("Error retrieving friends food items:", error);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem("authToken");
 
         if (token) {
             showFoodItems(token);
+            getFriendsFood(token);
         }
     }, []);
 
@@ -41,6 +59,7 @@ export default function Sharing() {
     return (
         <div>
             <h3>Share your food</h3>
+            
             {foodItems.length > 0 ? (
                 <table className="table-container">
                     <thead>
@@ -82,6 +101,8 @@ export default function Sharing() {
             ) : (
                 <p>No food items available</p>
             )}
+            
+        <h3>Requesut friends food</h3>
         </div>
     );
 }
