@@ -72,7 +72,7 @@ CREATE TABLE `analytics` (
 
 LOCK TABLES `analytics` WRITE;
 /*!40000 ALTER TABLE `analytics` DISABLE KEYS */;
-INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','4','unshared','2025-03-25'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-03-25'),(3,4,'expired','5','unshared','2025-03-25'),(3,3,'expired','2','unshared','2025-01-25'),(3,7,'consumed','6','unshared',NULL),(3,9,'consumed','3','unshared',NULL),(3,1,'expired','7','unshared','2025-03-25');
+INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','4','unshared','2025-04-26'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-02-11'),(3,4,'expired','5','unshared','2025-01-15'),(3,3,'expired','7','unshared','2025-01-25'),(3,7,'consumed','6','unshared',NULL),(3,9,'consumed','3','unshared',NULL),(3,1,'expired','5','unshared','2025-03-25'),(3,2,'expired','2','unshared','2025-01-16'),(3,5,'expired','2','unshared','2025-05-04'),(3,10,'expired','1','unshared','2025-06-07');
 /*!40000 ALTER TABLE `analytics` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -147,7 +147,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`InventoryID`),
   KEY `fk_userID_inv_idx` (`UserID`),
   CONSTRAINT `fk_userID_inv` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,7 +156,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (33,1,3,'2025-02-26','fresh','6','refrigerator','2025-03-07'),(34,2,6,'2025-02-27','fresh','6','refrigerator','2025-03-03'),(35,1,7,'2025-02-27','fresh','10','shelf','2025-03-03'),(36,1,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(37,2,4,'2025-02-26','fresh','4','shelf','2025-03-01'),(38,4,6,'2025-02-26','fresh','6400','refrigerator','2025-03-01'),(39,4,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(40,3,5,'2025-02-26','fresh','32','refrigerator','2025-03-01'),(41,1,1,'2025-03-23','fresh','5','refrigerator','2025-01-01'),(43,1,2,'2025-03-23','fresh','8','refrigerator','2025-03-30'),(45,3,3,'2025-03-20','fresh','2','refrigerator','2025-04-03'),(46,3,10,'2025-03-22','fresh','3','refrigerator','2025-04-05');
+INSERT INTO `inventory` VALUES (33,1,3,'2025-02-26','fresh','6','refrigerator','2025-03-07'),(34,2,6,'2025-02-27','fresh','6','refrigerator','2025-03-03'),(35,1,7,'2025-02-27','fresh','10','shelf','2025-03-03'),(36,1,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(37,2,4,'2025-02-26','fresh','4','shelf','2025-03-01'),(38,4,6,'2025-02-26','fresh','6400','refrigerator','2025-03-01'),(39,4,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(41,1,1,'2025-03-23','fresh','5','refrigerator','2025-01-01'),(43,1,2,'2025-03-23','fresh','8','refrigerator','2025-03-30'),(53,3,5,'2025-06-08','fresh','5','refrigerator','2025-06-13'),(54,3,6,'2025-06-08','fresh','4','refrigerator','2025-06-15'),(55,3,11,'2025-06-08','fresh','2','refrigerator','2025-06-22'),(56,3,2,'2025-06-03','fresh','0','shelf','2025-06-10'),(60,3,3,'2025-06-09','fresh','4','refrigerator','2025-06-23'),(61,3,2,'2025-06-08','fresh','3','shelf','2025-06-15');
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -376,7 +376,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 18:01:58'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-03-24 00:55:45'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-03-24 18:11:02'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-20 18:39:58');
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 19:53:10'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-03-26 13:58:16'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-03-26 13:42:37'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -397,4 +397,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-24 18:13:45
+-- Dump completed on 2025-03-27 18:01:22
