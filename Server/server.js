@@ -28,6 +28,7 @@ const io = new Server(server, {
 const db = require('./config/db')
 
 const jwt = require('jsonwebtoken');  // For creating JWT tokens
+const { error } = require('console');
 const secretKey = 'veryVERYsecret';
 
 // Middleware to verify JWT and get UserID
@@ -153,9 +154,9 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
     });
 });
 
+// selects the foods that a user can share
 app.get('/sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
-    console.log(UserID);
     const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
                     FROM inventory
                     JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
@@ -169,6 +170,26 @@ app.get('/sharing', verifyToken, async(req, res) => {
             }
         res.status(200).json({foodItems: result})
     });
+});
+
+// returns the food that your friends set to share.
+// query returns friends username, first name, last name, food item, the quantity of the food item
+app.get('/friendsSharing', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.AvailableQuantity, food_item.DefaultUnit from shelf_friend
+                join shared_item on shelf_friend.UserID_2 = shared_item.OwnerUserID
+                join inventory on shared_item.InventoryItemID = inventory.InventoryID
+                join food_item on inventory.FoodItemID = food_item.FoodItemID
+                join user on shared_item.OwnerUserID = user.UserID
+                where UserID_1 = ? and FriendStatus = "yes"`
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting friends foods'})
+        }
+        res.status(200).json({freindsSharing: result})
+    })
 });
 
 //*********************************************************** */
