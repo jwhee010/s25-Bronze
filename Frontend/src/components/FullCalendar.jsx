@@ -27,11 +27,11 @@ export default function Calendar() {
         }
       });
 
-      console.log('Food items retrieved:', response.data.foodItems);
+      //console.log('Food items retrieved:', response.data.foodItems);
       setFoodItems(response.data.foodItems);
 
       const events = response.data.foodItems.map(item => ({
-        title: item.FoodName,
+        title: `${item.FoodName} Quantity: ${item.Quantity}`,
         date: item.Expiration
       }));
 
@@ -51,7 +51,7 @@ export default function Calendar() {
         }
       });
 
-      console.log('Food quantities retrieved:', response.data.foodQuantities);
+      //console.log('Food quantities retrieved:', response.data.foodQuantities);
       setFoodQuantities(response.data.foodQuantities);
     } catch (error) {
       console.error('Error retrieving food quantities:', error);
@@ -80,24 +80,26 @@ export default function Calendar() {
   } 
 
 
+// This function that is currently commented out displays the food items in the
+// current user's inventory, along with their quantity values and their day of expiration.
 
-  const displayFoodItems = () => {
-    if (foodItems.length === 0 && foodQuantities.length === 0) {
-      return <p>No food items found</p>;
-    }
-    return foodItems.map((item, index) => (
-      <div key={index}>
-        <p>Food Name: {item.FoodName}</p>
-        <p>Expiration Date: {item.Expiration}</p>
-        <p>
-  Quantity: {foodQuantities.length > 0 
-    ? foodQuantities.find(q => q.FoodName.trim().toLowerCase() === item.FoodName.trim().toLowerCase())?.Quantity || 'N/A' 
-    : 'Loading...'}
-</p>
+//   const displayFoodItems = () => {
+//     if (foodItems.length === 0 && foodQuantities.length === 0) {
+//       return <p>No food items found</p>;
+//     }
+//     return foodItems.map((item, index) => (
+//       <div key={index}>
+//         <p>Food Name: {item.FoodName}</p>
+//         <p>Expiration Date: {item.Expiration}</p>
+//         <p>
+//   Quantity: {foodQuantities.length > 0 
+//     ? foodQuantities.find(q => q.FoodName.trim().toLowerCase() === item.FoodName.trim().toLowerCase())?.Quantity || 'N/A' 
+//     : 'Loading...'}
+// </p>
 
-      </div>
-    ));
-  };
+//       </div>
+//     ));
+//   };
 
   return (
     <>
@@ -115,13 +117,16 @@ export default function Calendar() {
         eventColor='#629c59'
 
         editable={true}
+        // eventLimit={false}
+
+        eventMouseEnter= {function(info) {info.el.title = info.event.title + " "}}
 
         eventClick={handleEventClick}
       />
-      <div style={{ color: 'black' }}>
+      {/* <div style={{ color: 'black' }}>
         <h2>Food Items</h2>
         {displayFoodItems()}
-      </div>
+      </div> */}
     </>
   );
 }

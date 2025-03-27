@@ -14,11 +14,7 @@ const Navbar = () => {
                     </li>
                     <br/>
                     <li className = "linkwrapper"><Link to="/calendar">
-                        <FaCalendar className="icon" />Calendar</Link>
-                    </li>
-                    <br/>
-                    <li className = "linkwrapper"><Link to="/list">
-                        <FaListCheck className="icon" />List</Link>
+                        <FaCalendar className="icon" />Inventory</Link>
                     </li>
                     <br/>
                     <li className = "linkwrapper"><Link to="/shelfFriends">

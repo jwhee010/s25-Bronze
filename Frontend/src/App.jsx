@@ -19,7 +19,6 @@ export default function App() {
         <Route path="/login" element={<LogIn />} />
         <Route path="/main" element={<Dashboard />} />
         <Route path="/calendar" element={<Calendar />} />
-        <Route path="/list" element={<List />} />
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/friends" element={<FriendList />} />

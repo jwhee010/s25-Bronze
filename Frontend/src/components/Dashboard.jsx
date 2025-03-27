@@ -77,13 +77,14 @@ function Dashboard() {
                 Here&apos;s How Much You&apos;ve Wasted 
                 <br/>
                 During This Year
-              
-              
+            
               </h3>
                 <InvTrendLineChart/>
             <h3 className='trendHeader'>
-                Top Five You&apos;ve Wasted The Most
-                <br/> During This Month
+                Top Five Items 
+                <br/>
+                You&apos;ve Wasted The Most
+                <br/> 
             </h3>
             <InvTrendPieChartWaste/>
 
