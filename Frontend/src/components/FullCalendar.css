@@ -29,9 +29,14 @@ width:600px;
 /*Events or Cells*/
 .fc-col-header-cell-cushion{
 
-    background-color: antiquewhite;
+    background-color: rgba(69, 68, 66, 0.938);
     padding: 5px;
+    width: 70px;
+    height: 30px;
     margin-bottom: 10px;
+
+    color:rgb(255, 235, 122);
+    font-weight: bold;
     
   
 }
@@ -50,5 +55,72 @@ width:600px;
     color:antiquewhite;
 }
 
+/* button css */
+.fc-dayGridMonth-button.fc-button.fc-button-primary{
+    background-color: rgb(72, 99, 99);
+    font-weight: bold;
+    color:rgb(185, 185, 185);
+    border-color: transparent;
+}
+
+.fc-dayGridMonth-button.fc-button.fc-button-primary.fc-button-active{
+    background-color: rgb(42, 57, 57);
+    font-weight: bold;
+    color:rgb(185, 185, 185);
+    border-color: rgb(42, 57, 57);
+}
+
+.fc-listMonth-button.fc-button.fc-button-primary{
+    background-color: rgb(72, 99, 99);
+    font-weight: bold;
+    color:rgb(185, 185, 185);
+    border-color: transparent;
+}
+
+.fc-listMonth-button.fc-button.fc-button-primary.fc-button-active{
+    background-color: rgb(42, 57, 57);
+    font-weight: bold;
+    color:rgb(185, 185, 185);
+    border-color: rgb(42, 57, 57);
+}
+
+
+/* list css */
+.fc-list-day-cushion.fc-cell-shaded{
+    background-color: rgba(55, 50, 47, 0.901);
+}
+
+.fc-listMonth-view.fc-view.fc-list.fc-list-sticky{
+    border-color: rgba(71, 65, 61, 0.938);
+    border-radius: 3px;
+}
+
+.fc-list-day-text{
+    color:whitesmoke;
+
+}
+
+.fc-list-event-title{
+    font-weight: bold;
+    font-family: monospace;
+    font-size: large;
+    color:goldenrod;
+}
+
+.fc-list-event-graphic{
+   color:antiquewhite;
+}
+
+.fc-list-event-time{
+    color: transparent;
+}
+
+.fc-list-day-side-text{
+    color:rgb(185, 185, 185);
+}
+
+.fc-list-table .fc-list-event:hover td {
+    background-color: rgba(133, 122, 116, 0.645)
+  }
 
 

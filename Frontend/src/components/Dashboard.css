@@ -36,16 +36,29 @@
 
 .email{
     font-size: 20px;
-    padding-top: 10px;
+    padding-top: 30px;
     color:rgba(250, 235, 215, 0.399);
 }
 
 .logout{
-    margin-top:5px;
-    margin-bottom:30px;
-    border: 1px solid goldenrod;
+    height: 50px;
+
+    margin-top:50px;
+    margin-bottom:10px;
+
+    border: 3px solid goldenrod;
+    background-color: rgb(54, 53, 52);
+
     font-weight: bold;
-    
+    color:goldenrod;
+}
+
+.logout:hover{
+
+    background-color: rgb(198, 193, 189);
+    border: 2px solid rgb(54, 53, 52);
+    color:rgb(54, 53, 52);
+
 }
 
 .navigation{

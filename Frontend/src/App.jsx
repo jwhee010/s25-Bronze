@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css'
 import LogIn from './components/LogIn'
@@ -24,19 +23,7 @@ export default function App() {
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/friends" element={<FriendList />} />
-
-  
-    <Route path="/" element={<Navigate to="/login" replace />} />
-    <Route path="/login" element={<LogIn />} />
-    <Route path="/main" element={<Dashboard />} />
-    <Route path="/calendar" element={<Calendar />} />
-    <Route path="/list" element={<List />} />
-    <Route path="/shelffriends" element={<ShelfFriends />} />
-    <Route path="/settings" element={<Settings />} />
-    
-    {/*  New Route for Friends List */}
-    <Route path="/friends" element={<FriendList />} />
-        </Routes>
+      </Routes>
     </Router>
    
    

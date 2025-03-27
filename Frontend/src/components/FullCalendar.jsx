@@ -62,7 +62,6 @@ export default function Calendar() {
     const token = localStorage.getItem('authToken');
 
     try {
-      const decodedToken = jwtDecode(token);
       getFoodItems(token);
       getFoodQuantities(token); // ✅ Fetch food quantities on load
     } catch (error) {
@@ -108,9 +107,12 @@ export default function Calendar() {
         headerToolbar={{
           left: 'prev,next,today',
           center: 'title',
-          right: 'dayGridMonth, listMonth'
+          right: 'dayGridMonth,listMonth'
         }}
         events={events}
+        // event styling:
+        eventBackgroundColor='#629c59'
+        eventColor='#629c59'
 
         editable={true}
 
