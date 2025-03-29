@@ -154,11 +154,15 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
 
 
 
-// Add or update quantity of Food Item in Inventory and display updated Inventory
+// Add or update quantity of Food Item in Inventory
 app.post('/addOrUpdateFood', verifyToken, (req, res) => {
     const { UserID } = req.user;
-    const {FoodName, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus} = req.body;
-    
+    const { FoodName, PurchaseDate, Quantity, Storage, ExpirationStatus } = req.body;
+
+    console.log("UserID:", UserID);
+    console.log("Request Body:", { FoodName, PurchaseDate, Quantity, Storage, ExpirationStatus });
+
+    // Query to retrieve FoodItemID and DefaultShelfLife
     const foodQuery = `SELECT FoodItemID, DefaultShelfLife FROM food_item WHERE FoodName = ?`;
 
     db.query(foodQuery, [FoodName], (err, results) => {
@@ -170,56 +174,115 @@ app.post('/addOrUpdateFood', verifyToken, (req, res) => {
             return res.status(400).json({ message: 'Food item not found in database' });
         }
 
-        const {FoodItemID, DefaultShelfLife} = results[0];
-        
-        // declares a variable for the expiration date by using
-        // the purchase date as a base
+        const { FoodItemID, DefaultShelfLife } = results[0];
+
+        // Calculate expiration date
         let expirationDate = new Date(PurchaseDate);
-
-        // adds the default shelf life of the item to the expiration date
         expirationDate.setDate(expirationDate.getDate() + DefaultShelfLife);
+        const formattedExpiration = expirationDate.toISOString().split('T')[0];
 
-        // Makes the date into the YYYY-MM-DD format for MySQL
-        let formattedExpiration = expirationDate.toISOString().split('T')[0];
+        // Check if the food item already exists in the inventory
+        const checkInventoryQuery = `
+            SELECT Quantity FROM inventory
+            WHERE UserID = ? AND FoodItemID = ? AND Storage = ?`;
 
-
-        const query = `
-        INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus) VALUES (?, ?, ?, ?, ?, ?, ?) 
-        ON DUPLICATE KEY UPDATE
-            Quantity = Quantity + VALUES(Quantity),
-            Expiration = VALUES(Expiration),
-            Storage = VALUES(Storage),
-            ExpirationStatus = VALUES(ExpirationStatus);`;
-
-        db.query(query, [UserID, FoodItemID, PurchaseDate, Quantity, formattedExpiration, Storage, ExpirationStatus], (err, result) => {
+        db.query(checkInventoryQuery, [UserID, FoodItemID, Storage], (err, inventoryResults) => {
             if (err) {
-                res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
+                return res.status(500).json({ message: 'Error checking inventory.' });
+            }
+
+            if (inventoryResults.length > 0) {
+                // Food item exists, update the record
+                const updateQuery = `
+                    UPDATE inventory
+                    SET Quantity = Quantity + ?, Expiration = ?, ExpirationStatus = ?
+                    WHERE UserID = ? AND FoodItemID = ? AND Storage = ?`;
+
+                db.query(updateQuery, [Quantity, formattedExpiration, ExpirationStatus, UserID, FoodItemID, Storage], (err, updateResult) => {
+                    if (err) {
+                        return res.status(500).json({ message: 'Error updating inventory.' });
+                    }
+                    res.status(200).json({ message: 'Food item quantity updated successfully.' });
+                });
             } else {
-                res.status(200).json({ message: 'Food item added or updated successfully.' });
+                // Food item does not exist, insert a new record
+                const insertQuery = `
+                    INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, ExpirationStatus, Quantity, Storage, Expiration) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+                db.query(insertQuery, [UserID, FoodItemID, PurchaseDate, ExpirationStatus, Quantity, Storage, formattedExpiration], (err, insertResult) => {
+                    if (err) {
+                        return res.status(500).json({ message: 'Error adding food item to inventory.' });
+                    }
+                    res.status(200).json({ message: 'Food item added successfully.' });
+                });
             }
         });
     });
 });
 
+
 // Remove quantity of Food Item from Inventory and display updated Inventory
-app.post('/removeFoodQuantity', (req, res) => {
-    const { InventoryID, UserID, FoodID, quantityToRemove } = req.body;
+app.post('/removeFoodQuantity', verifyToken, (req, res) => {
+    const { FoodName, Quantity, ExpirationDate } = req.body;
+    const UserID = req.user.UserID; // Retrieved from the JWT token in the middleware
 
-    const updateQuery = `
-        UPDATE inventory 
-            SET Quantity = Quantity - ?
-            WHERE InventoryID = ? AND UserID = ? AND FoodID = ?;
-        SELECT * FROM livelyshelfsdb.inventory;
-    `;
+    // Validate inputs
+    if (!FoodName || !Quantity || Quantity <= 0 || !ExpirationDate) {
+        return res.status(400).json({ message: 'Invalid request. Ensure FoodName, Quantity, and ExpirationDate are valid.' });
+    }
 
-    db.query(query, [InventoryID], (err, result) => {
+    // Resolve FoodItemID from FoodName
+    const getFoodItemIDQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
+
+    db.query(getFoodItemIDQuery, [FoodName], (err, foodItemResults) => {
         if (err) {
-            res.status(500).json({ message: 'An error occurred while removing the food from inventory.' });
-        } else {
-            res.status(200).json({ message: 'Food removed from inventory successfully.' });
+            console.error('Error fetching FoodItemID:', err);
+            return res.status(500).json({ message: 'Error processing the request.' });
         }
+
+        if (foodItemResults.length === 0) {
+            return res.status(404).json({ message: 'Food item not found.' });
+        }
+
+        const FoodItemID = foodItemResults[0].FoodItemID;
+
+        // Update the inventory, including ExpirationDate in the WHERE clause
+        const updateQuery = `
+            UPDATE inventory
+            SET Quantity = Quantity - ?
+            WHERE UserID = ? AND FoodItemID = ? AND Expiration = ? AND Quantity >= ?;
+        `;
+
+        db.query(updateQuery, [Quantity, UserID, FoodItemID, ExpirationDate, Quantity], (err, updateResults) => {
+            if (err) {
+                console.error('Error updating inventory:', err);
+                return res.status(500).json({ message: 'Error updating inventory.' });
+            }
+
+            // If quantity drops to zero or below, delete the corresponding record
+            const deleteQuery = `
+                DELETE FROM inventory
+                WHERE UserID = ? AND FoodItemID = ? AND Expiration = ? AND Quantity <= 0;
+            `;
+
+            db.query(deleteQuery, [UserID, FoodItemID, ExpirationDate], (err, deleteResults) => {
+                if (err) {
+                    console.error('Error deleting inventory item:', err);
+                    return res.status(500).json({ message: 'Error deleting inventory item.' });
+                }
+
+                // Response based on deletion
+                if (deleteResults.affectedRows > 0) {
+                    res.status(200).json({ message: 'Food item removed completely from inventory as quantity reached zero.' });
+                } else {
+                    res.status(200).json({ message: 'Food item quantity updated successfully!' });
+                }
+            });
+        });
     });
 });
+
 
 // update quantity of items consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
