@@ -370,7 +370,7 @@ app.get('/friendsSharing', verifyToken, async(req,res) => {
             console.log("error executing query")
             return res.status(500).json({message: 'Error getting friends foods'})
         }
-        res.status(200).json({freindsSharing: result})
+    res.status(200).json({friendsSharing: result})
     })
 });
 
