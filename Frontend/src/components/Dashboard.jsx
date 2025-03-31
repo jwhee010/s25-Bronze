@@ -5,6 +5,8 @@ import './Dashboard.css';
 import { jwtDecode } from 'jwt-decode'; // for token decoding
 import InvTrendLineChart from './InvTrendLineChart';
 import InvTrendPieChartWaste from './InvTrendPieChartWaste';
+import NotificationPane from './NotificationPane';
+import TemporaryDrawer from './NotificationPane';
 
 
 function Dashboard() {
@@ -59,6 +61,7 @@ function Dashboard() {
        
         <div className={`relative min-h-screen flex`}>
             <Navbar />
+            <NotificationPane/>
             <h1 className="mainheader" >
                 Dashboard<br/>
                 {/* fetch the firstname and lastname of the user who logged in */}
