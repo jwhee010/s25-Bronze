@@ -26,6 +26,7 @@ export default function Sharing() {
         }
     };
 
+    // Function gets the food items that shelf friends have set as shareable
     const getFriendsFood = async(token) => {
         try{
             const response = await axios.get("http://localhost:80/friendsSharing",{
@@ -39,13 +40,14 @@ export default function Sharing() {
                 console.log("Friends data", response.data.friendsSharing);
             } else {
                 console.warn("friendsSharing is missing in the response");
-                setfriendsSharing([]); // Fallback to empty array
+                setfriendsSharing([]);
             }
         } catch(error){
             console.error("Error retrieving friends food items:", error);
         }
     };
 
+    // functions gets the requests friends have made of the food that has been made shareable
     const getFoodRequset = async(token) =>{
         try{
             const response = await axios.get("http://localhost:80/friendsFoodRequests",{
@@ -65,6 +67,7 @@ export default function Sharing() {
         }
     };
 
+
     useEffect(() => {
         const token = localStorage.getItem("authToken");
 
@@ -75,13 +78,15 @@ export default function Sharing() {
         }
     }, []);
 
-    // Function to toggle share/cancel
+    // Function to toggle share/cancel food items that you have
     const toggleShare = (index) => {
         setSharedStatus((prevStatus) => ({
             ...prevStatus,
             [index]: !prevStatus[index] // Toggle between true and false
         }));
     };
+
+    // Function is used to toogle the reqeust and cancel requset
     const toggleRequest = (index) => {
         setRequested((prevRequested) => ({
           ...prevRequested,
@@ -89,12 +94,14 @@ export default function Sharing() {
         }));
       };
 
+    // function is used to toggle the accpet request for food items that shelffriends have requested
     const toggleAccept = (index) =>{
         setAcceptRequest((prevStatus) => ({
             ...prevStatus,
             [index]: !prevStatus[index],
         }));
     }
+
     return (
         <div>
             <h3>Share your food</h3>
