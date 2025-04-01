@@ -17,15 +17,18 @@
 .table-container th {
     background-color: rgba(56, 74, 69, 0.881);
     font-weight: bold;
+    text-align: center;
 }
 
 .table-container tr{
     background-color: rgba(56, 74, 69, 0.881);
+    height: 40px;
 }
 
 .table-container tr:hover {
     background-color: #f1f1f1;
 }
+
 
 .table-container button {
     background-color: #4CAF50;
@@ -33,7 +36,7 @@
     padding: 5px 10px;
     border: none;
     cursor: pointer;
-    border-radius: 9px;
+    border-radius: 9px;  
 }
 
 .table-container button:hover {

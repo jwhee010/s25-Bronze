@@ -358,7 +358,7 @@ app.get('/sharing', verifyToken, async(req, res) => {
 // query returns friends username, first name, last name, food item, the quantity of the food item
 app.get('/friendsSharing', verifyToken, async(req,res) => {
     const {UserID} = req.user;
-    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.AvailableQuantity, food_item.DefaultUnit from shelf_friend
+    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.Status, shared_item.AvailableQuantity, food_item.DefaultUnit from shelf_friend
                 join shared_item on shelf_friend.UserID_2 = shared_item.OwnerUserID
                 join inventory on shared_item.InventoryItemID = inventory.InventoryID
                 join food_item on inventory.FoodItemID = food_item.FoodItemID
@@ -373,6 +373,29 @@ app.get('/friendsSharing', verifyToken, async(req,res) => {
     res.status(200).json({friendsSharing: result})
     })
 });
+
+
+
+app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    // query returns the requsting users name and username, as well as the food item, quantity, and status of the food item
+    const sql = `select user.userName, user.firstName, user.lastName, inventory.PurchaseDate,  share_request.Status,
+                 food_item.FoodName, inventory.Quantity from share_request
+                 join shared_item on share_request.SharedItemID = shared_item.SharedItemID
+                 join user on share_request.RequestorUserID = user.UserID
+                 join inventory on shared_item.InventoryItemID = inventory.InventoryID
+                 join food_item on inventory.FoodItemID = food_item.FoodItemID
+                 where shared_item.OwnerUserID = ?`
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting friends foods'})
+        }
+    res.status(200).json({friendsFoodRequests: result})
+    })
+});
+
 
 //*********************************************************** */
 // // Handle WebSocket connections
