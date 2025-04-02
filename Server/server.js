@@ -124,6 +124,7 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
     });
 });
 
+
 app.post('/friends/add', verifyToken, (req, res) => {
     if (!req.body || !req.body.friendId) {
         return res.status(400).json({ message: 'Friend ID is required' });
@@ -150,6 +151,19 @@ app.delete('/friends/remove', verifyToken, (req, res) => {
         res.status(200).json({ message: 'Friend removed successfully' });
     });
 });
+app.get('/friends', verifyToken, (req, res) => {
+    const userId = req.user.UserID;
+
+    const sql = `SELECT friend_id FROM friends WHERE user_id = ?`;
+    db.query(sql, [userId], (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: 'Error fetching friends' });
+        }
+
+        res.status(200).json(results);
+    });
+});
+
 
 
 
