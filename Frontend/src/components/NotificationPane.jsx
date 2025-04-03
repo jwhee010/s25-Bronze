@@ -21,7 +21,8 @@ export default function NotificationPane() {
         {/* populate this div with the text elements */}
         <div className='notifBox'>
             <p>
-                <h4>3/21/2025:</h4>
+                <p2>3/21/2025:</p2>
+                <br/>
                  Your apples are expiring soon on 'insert date'
             </p>
             <Divider/>
@@ -44,6 +45,28 @@ export default function NotificationPane() {
 
 
         <h2 className='sectionHeader'>ShelfFriends</h2>
+         {/* populate this div with the text elements */}
+        <div className='notifBox'>
+
+          <p>Test 1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATest</p>
+            <Divider/>
+
+            <p>Test 2</p>
+            <Divider/>
+            <p>Test 3</p>
+            <Divider/>
+            <p>Test 4</p>
+            <Divider/>
+            <p>Test 5</p>
+            <Divider/>
+            <p>Test 6</p>
+            <Divider/>
+            <p>Test 7</p>
+            <Divider/>
+            <p>Test 8</p>
+        </div>
+
+        <h2 className='sectionHeader'>Other</h2>
          {/* populate this div with the text elements */}
         <div className='notifBox'>
 
