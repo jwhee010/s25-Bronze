@@ -406,6 +406,26 @@ app.post('/expireFood', verifyToken, (req, res) => {
     });
 });
 
+//getter for last login for incentives calculation
+app.get('/getLastLogin', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `SELECT lastLogin FROM user WHERE UserID = ?`;
+
+    db.query(query, [UserID], (error, results) => {
+        if (error) {
+            console.error("Error fetching last login:", error);
+            return res.status(500).json({ message: 'Error retrieving last login' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ lastLogin: results[0].lastLogin });
+    });
+});
+
 
 app.get('/sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
