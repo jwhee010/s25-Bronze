@@ -1,58 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './FriendList.css'; // Optional: create your own styling file
 
 export default function FriendList() {
-    const [friends, setFriends] = useState([]);
-    const [newFriend, setNewFriend] = useState('');
+  const [friends, setFriends] = useState([]);
+  const [friendId, setFriendId] = useState('');
+  const [message, setMessage] = useState('');
+  const token = localStorage.getItem('token'); // Make sure you store the JWT here
 
-    // 🔹 Fetch friends from the backend
-    useEffect(() => {
-        axios.get('http://localhost:80/friends', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
-        })
-        .then(response => setFriends(response.data))
-        .catch(error => console.error('Error fetching friends:', error));
-    }, []);
+  // Fetch friends on component mount
+  const fetchFriends = () => {
+    axios.get('/friends', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => setFriends(res.data))
+    .catch(err => console.error('Error fetching friends:', err));
+  };
 
-    // 🔹 Add a new friend
-    const addFriend = () => {
-        axios.post('http://localhost:80/friends/add', { friendId: newFriend }, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
-        })
-        .then(() => {
-            setNewFriend('');
-            window.location.reload();  // Refresh the list
-        })
-        .catch(error => console.error('Error adding friend:', error));
-    };
+  useEffect(() => {
+    fetchFriends();
+  }, []);
 
-    // 🔹 Remove a friend
-    const removeFriend = (friendId) => {
-        axios.delete(`http://localhost:80/friends/remove?friendId=${friendId}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
-        })
-        .then(() => window.location.reload())
-        .catch(error => console.error('Error removing friend:', error));
-    };
+  // Add a friend
+  const handleAddFriend = (e) => {
+    e.preventDefault();
 
-    return (
-        <div>
-            <h2>Your Friends</h2>
-            <ul>
-                {friends.map(friend => (
-                    <li key={friend.id}>
-                        {friend.name} 
-                        <button onClick={() => removeFriend(friend.id)}>Remove</button>
-                    </li>
-                ))}
-            </ul>
-            <input 
-                type="text" 
-                placeholder="Enter friend ID" 
-                value={newFriend} 
-                onChange={(e) => setNewFriend(e.target.value)} 
-            />
-            <button onClick={addFriend}>Add Friend</button>
-        </div>
-    );
+    axios.post('/friends/add', { friendId }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => {
+      setMessage(res.data.message);
+      setFriendId('');
+      fetchFriends(); // Refresh list
+    })
+    .catch(err => {
+      setMessage(err.response?.data?.error || 'Error adding friend');
+    });
+  };
+
+  // Remove a friend
+  const handleRemoveFriend = (id) => {
+    axios.delete('/friends/remove', {
+      headers: { Authorization: `Bearer ${token}` },
+      data: { friendId: id }
+    })
+    .then(res => {
+      setMessage(res.data.message);
+      fetchFriends(); // Refresh list
+    })
+    .catch(err => {
+      setMessage(err.response?.data?.error || 'Error removing friend');
+    });
+  };
+
+  return (
+    <div className="friend-list-container">
+      <h2>My Friends</h2>
+
+      {message && <p>{message}</p>}
+
+      <ul>
+        {friends.map(friend => (
+          <li key={friend.user_id}>
+            {friend.name} ({friend.email})
+            <button onClick={() => handleRemoveFriend(friend.user_id)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+
+      <form onSubmit={handleAddFriend}>
+        <input
+          type="number"
+          placeholder="Enter Friend ID"
+          value={friendId}
+          onChange={(e) => setFriendId(e.target.value)}
+          required
+        />
+        <button type="submit">Add Friend</button>
+      </form>
+    </div>
+  );
 }
