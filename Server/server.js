@@ -90,7 +90,7 @@ app.post('/login', (req, res) => {
 app.get('/calendar', verifyToken, async (req, res) => {
     const { UserID } = req.user;
 
-    const sql = `SELECT inventory.Quantity, inventory.Expiration, food_item.FoodName
+    const sql = `SELECT inventory.Quantity, inventory.Expiration, food_item.FoodName, datediff( cast(inventory.Expiration As Date), CURRENT_DATE  ) As distance
                  FROM inventory 
                  JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                  WHERE inventory.UserID = ?`;

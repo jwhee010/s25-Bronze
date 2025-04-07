@@ -31,8 +31,9 @@ export default function Calendar() {
       setFoodItems(response.data.foodItems);
 
       const events = response.data.foodItems.map(item => ({
-        title: `${item.FoodName} Quantity: ${item.Quantity}`,
-        date: item.Expiration
+        title: `${item.FoodName} Quantity: ${item.Quantity} Distance:${item.distance}`,
+        date: item.Expiration,
+        id: item.distance
       }));
 
       setFoodAsEvents(events);
@@ -113,14 +114,50 @@ export default function Calendar() {
         }}
         events={events}
         // event styling:
-        eventBackgroundColor='#629c59'
-        eventColor='#629c59'
+        // eventBackgroundColor='#629c59'
+        // eventColor='#629c59'
 
         editable={true}
 
         eventMouseEnter= {function(info) {info.el.title = info.event.title + " "}}
 
         eventClick={handleEventClick}
+ 
+        eventDidMount={function(info)
+          {
+            const currDate = new Date();
+
+            if(info.event.id < 0)
+            {
+              //Grey Past Days
+              info.el.style.backgroundColor = '#848484';
+              info.el.style.borderColor = '#848484';
+
+            }
+            else if(info.event.id >= 1 && info.event.id <= 3)
+            {
+              //Red 1-3 days
+              info.el.style.backgroundColor = '#ee6461';
+              info.el.style.borderColor = '#ee6461';
+            }
+            else if(info.event.id >= 4 && info.event.id <= 7)
+            {
+            //Yellow 4-7 days
+              info.el.style.backgroundColor = '#eed661';
+              info.el.style.borderColor = '#eed661';
+
+            }
+            else
+            {
+              //Green 8+ days
+              info.el.style.backgroundColor = '#629c59';
+              info.el.style.borderColor = '#629c59';
+            }
+
+          }
+        } 
+
+       
       />
       {/* <div style={{ color: 'black' }}>
         <h2>Food Items</h2>
