@@ -164,10 +164,6 @@ app.get('/friends', verifyToken, (req, res) => {
     });
 });
 
-
-
-
-
 // Add or update quantity of Food Item in Inventory
 app.post('/addOrUpdateFood', verifyToken, (req, res) => {
     const { UserID } = req.user;
@@ -195,31 +191,31 @@ app.post('/addOrUpdateFood', verifyToken, (req, res) => {
         expirationDate.setDate(expirationDate.getDate() + DefaultShelfLife);
         const formattedExpiration = expirationDate.toISOString().split('T')[0];
 
-        // Check if the food item already exists in the inventory
+        // Check if the food item with the same purchase date exists in the inventory
         const checkInventoryQuery = `
             SELECT Quantity FROM inventory
-            WHERE UserID = ? AND FoodItemID = ? AND Storage = ?`;
+            WHERE UserID = ? AND FoodItemID = ? AND Storage = ? AND PurchaseDate = ?`;
 
-        db.query(checkInventoryQuery, [UserID, FoodItemID, Storage], (err, inventoryResults) => {
+        db.query(checkInventoryQuery, [UserID, FoodItemID, Storage, PurchaseDate], (err, inventoryResults) => {
             if (err) {
                 return res.status(500).json({ message: 'Error checking inventory.' });
             }
 
             if (inventoryResults.length > 0) {
-                // Food item exists, update the record
+                // Food item exists with the same purchase date, update the record
                 const updateQuery = `
                     UPDATE inventory
                     SET Quantity = Quantity + ?, Expiration = ?, ExpirationStatus = ?
-                    WHERE UserID = ? AND FoodItemID = ? AND Storage = ?`;
+                    WHERE UserID = ? AND FoodItemID = ? AND Storage = ? AND PurchaseDate = ?`;
 
-                db.query(updateQuery, [Quantity, formattedExpiration, ExpirationStatus, UserID, FoodItemID, Storage], (err, updateResult) => {
+                db.query(updateQuery, [Quantity, formattedExpiration, ExpirationStatus, UserID, FoodItemID, Storage, PurchaseDate], (err, updateResult) => {
                     if (err) {
                         return res.status(500).json({ message: 'Error updating inventory.' });
                     }
                     res.status(200).json({ message: 'Food item quantity updated successfully.' });
                 });
             } else {
-                // Food item does not exist, insert a new record
+                // Food item does not exist with the same purchase date, insert a new record
                 const insertQuery = `
                     INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, ExpirationStatus, Quantity, Storage, Expiration) 
                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
