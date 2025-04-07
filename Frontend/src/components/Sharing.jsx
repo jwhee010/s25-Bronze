@@ -13,7 +13,7 @@ export default function Sharing() {
     // Fetch user's food items and stores in an array to be displayed
     const showFoodItems = async (token) => {
         try {
-            const response = await axios.get("http://localhost:80/sharing", 
+            const response = await axios.get("http://localhost:80/sharing",
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -77,15 +77,48 @@ export default function Sharing() {
             getFoodRequset(token);
         }
     }, []);
+    
+    
 
-    // Function to toggle share/cancel food items that you have
-    const toggleShare = (index) => {
-        setSharedStatus((prevStatus) => ({
-            ...prevStatus,
-            [index]: !prevStatus[index] // Toggle between true and false
-        }));
+    // this is to see if the functions are being ran when the button is pressed
+    const runWhenTrue = (index) => {
+        console.log(`Item ${index} is now shared.`);
+    };
+    
+    const runWhenFalse = (index) => {
+        console.log(`Item ${index} is no longer shared.`);
     };
 
+    //these function will send the food information to the server
+    const shareItemToServer = (item) => {
+        console.log(`This is the item to inserted:`, item.FoodName);
+    };
+
+    const unshareItemFromServer = (item) => {
+        console.log(`This item is deleted to be deleted:`, item);
+    };
+
+
+    const toggleShare = (index, item) => {
+        setSharedStatus((prevStatus) => {
+            const newStatus = !prevStatus[index];
+    
+            if (newStatus) {
+                runWhenTrue(index);
+                shareItemToServer(item);
+            } else {
+                runWhenFalse(index);
+                unshareItemFromServer(item);
+            }
+    
+            return {
+                ...prevStatus,
+                [index]: newStatus,
+            };
+        });
+    };
+    
+    
     // Function is used to toogle the reqeust and cancel requset
     const toggleRequest = (index) => {
         setRequested((prevRequested) => ({
@@ -98,7 +131,7 @@ export default function Sharing() {
     const toggleAccept = (index) =>{
         setAcceptRequest((prevStatus) => ({
             ...prevStatus,
-            [index]: !prevStatus[index],
+            [index]: !prevStatus[index], 
         }));
     }
 
@@ -117,32 +150,33 @@ export default function Sharing() {
                         </tr>
                     </thead>
                     <tbody>
-                        {foodItems.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.FoodName}</td>
-                                <td>{item.Quantity}</td>
-                                <td>{item.ExpirationStatus}</td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        onClick={() => toggleShare(index)}
-                                        style={{
-                                            backgroundColor: sharedStatus[index] ? "red" : "green",
-                                            color: "white",
-                                            padding: "5px 10px",
-                                            border: "none",
-                                            cursor: "pointer",
-                                            borderRadius: "5px",
-                                            width: "80px",
-                                            textAlign: "center"
-                                        }}
-                                    >
-                                        {sharedStatus[index] ? "Cancel" : "Share"}
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
+    {foodItems.map((item, index) => (
+        <tr key={index}>
+            <td>{item.FoodName}</td>
+            <td>{item.Quantity}</td>
+            <td>{item.ExpirationStatus}</td>
+            <td>
+                <button
+                    type="button"
+                    onClick={() => toggleShare(index, item)}
+                    style={{
+                        backgroundColor: sharedStatus[index] ? "red" : "green",
+                        color: "white",
+                        padding: "5px 10px",
+                        border: "none",
+                        cursor: "pointer",
+                        borderRadius: "5px",
+                        width: "80px",
+                        textAlign: "center"
+                    }}
+                >
+                    {sharedStatus[index] ? "Cancel" : "Share"}
+                </button>
+            </td>
+        </tr>
+    ))}
+</tbody>
+
                 </table>
             ) : (
                 <p>No food items available</p>

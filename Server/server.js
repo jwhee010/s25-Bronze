@@ -375,17 +375,30 @@ app.get('/friendsSharing', verifyToken, async(req,res) => {
 });
 
 
-
+// this is to get request for food
 app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
     const {UserID} = req.user;
     // query returns the requsting users name and username, as well as the food item, quantity, and status of the food item
-    const sql = `select user.userName, user.firstName, user.lastName, inventory.PurchaseDate,  share_request.Status,
-                 food_item.FoodName, inventory.Quantity from share_request
-                 join shared_item on share_request.SharedItemID = shared_item.SharedItemID
-                 join user on share_request.RequestorUserID = user.UserID
-                 join inventory on shared_item.InventoryItemID = inventory.InventoryID
-                 join food_item on inventory.FoodItemID = food_item.FoodItemID
-                 where shared_item.OwnerUserID = ?`
+    const sql = `SELECT 
+    user.userName,
+    user.firstName,
+    user.lastName,
+    inventory.PurchaseDate,
+    share_request.Status,
+    food_item.FoodName,
+    inventory.Quantity
+FROM
+    share_request
+        JOIN
+    shared_item ON share_request.SharedItemID = shared_item.SharedItemID
+        JOIN
+    user ON share_request.RequestorUserID = user.UserID
+        JOIN
+    inventory ON shared_item.InventoryItemID = inventory.InventoryID
+        JOIN
+    food_item ON inventory.FoodItemID = food_item.FoodItemID
+WHERE
+    shared_item.OwnerUserID = ?`;
 
     db.query(sql, [UserID], (error, result) => {
         if(error) {
@@ -396,6 +409,11 @@ app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
     })
 });
 
+// this is to insert the food to share in the database
+app.post('/Sharing/ShareFood', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    const sql = `INSERT INTO shared_item(InventoryItemID, OwnerUserID, AvailableQuantity, Status) VALUES(?, ?, ?, ?)`;
+});
 
 //*********************************************************** */
 // // Handle WebSocket connections
