@@ -7,6 +7,7 @@ import List from './components/List';
 import ShelfFriends from './components/ShelfFriends';
 import Settings from './components/Settings';
 import FriendList from './components/FriendList';
+import Recommendations from './components/Recommendations';
 
 
 
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/recommendations" element={<Recommendations/>}/>
         <Route path="/friends" element={<FriendList />} />
       </Routes>
     </Router>
