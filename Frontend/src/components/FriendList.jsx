@@ -6,21 +6,33 @@ export default function FriendList() {
   const [friends, setFriends] = useState([]);
   const [friendId, setFriendId] = useState('');
   const [message, setMessage] = useState('');
-  const token = localStorage.getItem('token'); // Make sure you store the JWT here
-
+ 
   // Fetch friends on component mount
-  const fetchFriends = () => {
-    axios.get('/friends', {
+  const fetchFriends = async (token) => {
+    try {
+    const response = await axios.get('http://localhost:80/friends', {
       headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => setFriends(res.data))
-    .catch(err => console.error('Error fetching friends:', err));
+    });
+    console.log("Your friends list returns", response.data);
+    setFriends(response.data.friends || []);
+  } catch (error) {
+    console.error("Error retrieving friends", error);
+  }
   };
 
   useEffect(() => {
-    fetchFriends();
+
+    const token = localStorage.getItem('authToken'); // Make sure you store the JWT here
+
+    if(token){
+      fetchFriends(token);
+      console.log("Updated friends stated:", friends);
+    } else {
+      console.log("no token found");
+    }
   }, []);
 
+  
   // Add a frienddd
   const handleAddFriend = (e) => {
     e.preventDefault();
@@ -53,6 +65,7 @@ export default function FriendList() {
     });
   };
 
+
   return (
     <div className="friend-list-container">
       <h2>My Friends</h2>
@@ -60,14 +73,14 @@ export default function FriendList() {
       {message && <p>{message}</p>}
 
       <ul>
-        {friends.map(friend => (
-          <li key={friend.user_id}>
-            {friend.name} ({friend.email})
-            <button onClick={() => handleRemoveFriend(friend.user_id)}>Remove</button>
+        {friends.map((item, index)=> (
+          <li key={index}>
+            {item.firstName} {item.lastName} ({item.userName})
+            <button onClick={() => handleRemoveFriend(friends.user_id)}>Remove</button>
           </li>
         ))}
       </ul>
-
+      
       <form onSubmit={handleAddFriend}>
         <input
           type="number"
@@ -78,6 +91,7 @@ export default function FriendList() {
         />
         <button type="submit">Add Friend</button>
       </form>
+    
     </div>
   );
 }

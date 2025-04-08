@@ -132,18 +132,28 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
 // ------------------- FRIEND ROUTES - ---------------------
 
 app.get('/friends', verifyToken, (req, res) => {
-    const userId = req.user.id;
+    const {UserID} = req.user;
   
     const sql = `
-      SELECT u.user_id, u.name, u.email
-      FROM user u
-      JOIN shelf_friend sf ON u.user_id = sf.friend_id
-      WHERE sf.user_id = ?
+    SELECT 
+		u.UserID,
+		u.userName,
+		u.firstName,
+		u.lastName
+	FROM
+		shelf_friend s
+		join user u on s.UserID_2 = u.UserID
+	WHERE
+		UserID_1 = ? AND FriendStatus = 'yes'
     `;
   
-    db.query(sql, [userId], (err, results) => {
+    db.query(sql, [UserID], (err, results) => {
+        // if there is an error say so
       if (err) return res.status(500).json({ error: 'Database error' });
-      res.json(results);
+
+      // show returned results if any
+      console.log("Friends fetched for user", UserID, ": ", results)
+      res.status(200).json({friends: results});
     });
   });
   
