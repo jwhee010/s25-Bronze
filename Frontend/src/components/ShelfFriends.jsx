@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 
 //import { io } from 'socket.io-client';
 
-//const socket = io('http://localhost:3000');
+//cconst socket = io('http://localhost:3000');
 
 
 import FriendList from "./FriendList";
