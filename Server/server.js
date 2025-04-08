@@ -129,7 +129,7 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
         res.status(200).json({ foodQuantities: results });
     });
 });
-// ------------------- FRIEND ROUTES -------------------
+// ------------------- FRIEND ROUTES - --------------------
 
 app.get('/friends', verifyToken, (req, res) => {
     const userId = req.user.id;

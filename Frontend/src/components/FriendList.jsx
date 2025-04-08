@@ -21,7 +21,7 @@ export default function FriendList() {
     fetchFriends();
   }, []);
 
-  // Add a friend
+  // Add a friendd
   const handleAddFriend = (e) => {
     e.preventDefault();
 
