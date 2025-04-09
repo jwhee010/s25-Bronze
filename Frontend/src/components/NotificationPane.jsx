@@ -3,14 +3,43 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import './NotificationPane.css'
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 
 export default function NotificationPane() {
   const [open, setOpen] = React.useState(false);
 
+  const [expiringItems, setExpiringItems] = React.useState([]);
+
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
+
+  const getExpiringItems = async(token) => {
+    try {
+      const response = await axios.get('http://localhost:80/expiring', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log(response.data);
+      setExpiringItems(response.data.expiringItems);
+    } catch (error) {
+      console.error('Error retriving expiring food items: ', error);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+
+    try {
+      getExpiringItems(token);
+    } catch (error) {
+      console.error('Token decoding error: ', error);
+    }
+  }, []);
 
   
   const DrawerList = (
@@ -20,27 +49,16 @@ export default function NotificationPane() {
         <h2 className='sectionHeader'>Inventory</h2>
         {/* populate this div with the text elements */}
         <div className='notifBox'>
-            <p>
-                <p2>3/21/2025:</p2>
-                <br/>
-                 Your apples are expiring soon on 'insert date'
-            </p>
-            <Divider/>
-
-            <p> 3/21/2025: Your pears are expiring soon on 'insert date'</p>
-            <Divider/>
-
-            <p>Test 3</p>
-            <Divider/>
-            <p>Test 4</p>
-            <Divider/>
-            <p>Test 5</p>
-            <Divider/>
-            <p>Test 6</p>
-            <Divider/>
-            <p>Test 7</p>
-            <Divider/>
-            <p>Test 8</p>
+          {expiringItems.map((item, index) => (
+            <div key={ index } >
+              <p>
+                <p2>{item.Expiration}:</p2>
+                <br />
+                Your {item.FoodName} is expriring soon on {item.Expiration}
+              </p>
+              <Divider />
+            </div>
+          ))}
         </div>
 
 

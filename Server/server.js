@@ -348,6 +348,25 @@ app.get('/sharing', verifyToken, async(req, res) => {
     });
 });
 
+app.get('/expiring', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT inventory.FoodItemID, inventory.Expiration, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`
+
+    db.query(sql, [ UserID ], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ expiringItems: results });
+    });
+});
+
 //*********************************************************** */
 // Handle WebSocket connections
 io.on('connection', (socket) => {
