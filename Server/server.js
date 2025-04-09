@@ -129,35 +129,68 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
         res.status(200).json({ foodQuantities: results });
     });
 });
+// ------------------- FRIEND ROUTES - ---------------------
 
-app.post('/friends/add', verifyToken, (req, res) => {
-    if (!req.body || !req.body.friendId) {
-        return res.status(400).json({ message: 'Friend ID is required' });
+app.get('/friends', verifyToken, (req, res) => {
+    const {UserID} = req.user;
+  
+    const sql = `
+    SELECT 
+		u.UserID,
+		u.userName,
+		u.firstName,
+		u.lastName
+	FROM
+		shelf_friend s
+		join user u on s.UserID_2 = u.UserID
+	WHERE
+		UserID_1 = ? AND FriendStatus = 'yes'
+    `;
+  
+    db.query(sql, [UserID], (err, results) => {
+        // if there is an error say so
+      if (err) return res.status(500).json({ error: 'Database error' });
+
+      // show returned results if any
+      console.log("Friends fetched for user", UserID, ": ", results)
+      res.status(200).json({friends: results});
+    });
+  });
+  
+  app.post('/friends/add', verifyToken, (req, res) => {
+    const userId = req.user.id;
+    const { friendId } = req.body;
+  
+    if (userId === friendId) {
+      return res.status(400).json({ error: "You can't add yourself as a friend" });
     }
-
-    const { friendId } = req.body;
-    const userId = req.user.UserID;
-
-    const sql = `INSERT INTO friends (user_id, friend_id) VALUES (?, ?)`;
-    db.query(sql, [userId, friendId], (error, result) => {
-        if (error) return res.status(500).json({ message: 'Error adding friend' });
-        res.status(200).json({ message: 'Friend added successfully' });
+  
+    const sql = `
+      INSERT IGNORE INTO shelf_friend (user_id, friend_id)
+      VALUES (?, ?)
+    `;
+  
+    db.query(sql, [userId, friendId], (err) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json({ message: 'Friend added successfully' });
     });
-});
-
-
-app.delete('/friends/remove', verifyToken, (req, res) => {
+  });
+  
+  app.delete('/friends/remove', verifyToken, (req, res) => {
+    const userId = req.user.id;
     const { friendId } = req.body;
-    const userId = req.user.UserID;
-
-    const sql = `DELETE FROM friends WHERE user_id = ? AND friend_id = ?`;
-    db.query(sql, [userId, friendId], (error, result) => {
-        if (error) return res.status(500).json({ message: 'Error removing friend' });
-        res.status(200).json({ message: 'Friend removed successfully' });
+  
+    const sql = `
+      DELETE FROM shelf_friend
+      WHERE user_id = ? AND friend_id = ?
+    `;
+  
+    db.query(sql, [userId, friendId], (err) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json({ message: 'Friend removed successfully' });
     });
-});
-
-
+  });
+  
 
 
 // Add or update quantity of Food Item in Inventory and display updated Inventory
@@ -358,7 +391,7 @@ app.get('/sharing', verifyToken, async(req, res) => {
 // query returns friends username, first name, last name, food item, the quantity of the food item
 app.get('/friendsSharing', verifyToken, async(req,res) => {
     const {UserID} = req.user;
-    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.AvailableQuantity, food_item.DefaultUnit from shelf_friend
+    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.Status, shared_item.AvailableQuantity, food_item.DefaultUnit from shelf_friend
                 join shared_item on shelf_friend.UserID_2 = shared_item.OwnerUserID
                 join inventory on shared_item.InventoryItemID = inventory.InventoryID
                 join food_item on inventory.FoodItemID = food_item.FoodItemID
@@ -370,8 +403,49 @@ app.get('/friendsSharing', verifyToken, async(req,res) => {
             console.log("error executing query")
             return res.status(500).json({message: 'Error getting friends foods'})
         }
-        res.status(200).json({freindsSharing: result})
+    res.status(200).json({friendsSharing: result})
     })
+});
+
+
+// this is to get request for food
+app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    // query returns the requsting users name and username, as well as the food item, quantity, and status of the food item
+    const sql = `SELECT 
+    user.userName,
+    user.firstName,
+    user.lastName,
+    inventory.PurchaseDate,
+    share_request.Status,
+    food_item.FoodName,
+    inventory.Quantity
+FROM
+    share_request
+        JOIN
+    shared_item ON share_request.SharedItemID = shared_item.SharedItemID
+        JOIN
+    user ON share_request.RequestorUserID = user.UserID
+        JOIN
+    inventory ON shared_item.InventoryItemID = inventory.InventoryID
+        JOIN
+    food_item ON inventory.FoodItemID = food_item.FoodItemID
+WHERE
+    shared_item.OwnerUserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting friends foods'})
+        }
+    res.status(200).json({friendsFoodRequests: result})
+    })
+});
+
+// this is to insert the food to share in the database
+app.post('/Sharing/ShareFood', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    const sql = `INSERT INTO shared_item(InventoryItemID, OwnerUserID, AvailableQuantity, Status) VALUES(?, ?, ?, ?)`;
 });
 
 //*********************************************************** */
