@@ -477,37 +477,38 @@ WHERE
 });
 
 //*********************************************************** */
-// // Handle WebSocket connections
-// io.on('connection', (socket) => {
-//     console.log('A user connected!');
-  
-//     // Listen for incoming messages
-//     socket.on('sendMessage', (message) => {
-
-//         console.log('Message received:', message);
-
-//       // Broadcast the message to all connected clients
-//         io.emit('receiveMessage', message);
-//     });
-  
-//     // Handle disconnection
-//     socket.on('disconnect', () => {
-//       console.log('A user disconnected!');
-//     });
-//   });
   // Handle WebSocket connections here
 io.on("connection", (socket) => {
-    console.log("A new user has connected", socket.id);
+    console.log(`User ${socket.id} connected`);
   
     // Listen for incoming messages from clients
     socket.on("message", (message) => {
+        console.log(message)
+
       // Broadcast the message to all connected clients
-      io.emit("message", message);
+       io.emit("message", message);
+    //    io.emit('message', `${socket.id.substring(0,5)}: ${message}`);
     });
-  
+////////////////////////////////////////////////////////////////////////////////////////
+    // socket.on("message", async (message) => {
+    //     // Extract data from message (e.g., senderId, recipientId, content)
+    //     const { senderId, recipientId, content } = message;
+      
+    //     // Save message to SQL database
+    //     const query = `INSERT INTO messages (sender_id, recipient_id, content, created_at) VALUES (?, ?, ?, NOW())`;
+    //     await db.query(query, [senderId, recipientId, content]);
+      
+    //     // Broadcast to recipient if they're connected
+    //     const recipientSocketId = userSockets[recipientId];
+    //     if (recipientSocketId) {
+    //       io.to(recipientSocketId).emit("message", message);
+    //     }
+    //   });
+  ///////////////////////////////////////////////////////////////////////////////////////
     // Handle disconnections
     socket.on("disconnect", () => {
       console.log(socket.id, " disconnected");
+      io.emit('message', 'A user has left the chat');
     });
   });
   
