@@ -387,6 +387,40 @@ app.get('/sharing', verifyToken, async(req, res) => {
     });
 });
 
+// this is to insert the food to share in the database
+app.post('/Sharing/ShareFood', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    const {InventoryItemID, AvailableQuantity, Status} = req.body;
+    const sql = `INSERT INTO shared_item(InventoryItemID, OwnerUserID, AvailableQuantity, Status) VALUES(?, ?, ?, ?)`;
+    db.query(sql, [InventoryItemID, UserID, AvailableQuantity, Status], (error, result) => {
+        if (error) {
+            res.status(500).json({message: 'An error occured sending sharedFood information'});
+        } else {
+            res.status(200).json({message: 'your food has been shared'});
+        }
+    });
+});
+
+/* this function deletes a shared food Item from the shared_food table.
+ So that no one can request that food item anymore*/
+app.delete('/Sharing/UnShareFood', verifyToken, async(req,res) =>{
+    const {InventoryItemID} = req.body;
+    // check to make sure the item ID number is being passed
+    console.log("Deleting InventoryItemID:", InventoryItemID);
+
+    const sql = `DELETE FROM shared_item 
+                WHERE
+                InventoryItemID = ?`
+
+    db.query(sql, [InventoryItemID], (error, result) => {
+        if(error) {
+            res.status(500).json({message: 'There was an issue deleting the food item'});
+        } else {
+            res.status(200).json({message: 'The food item has been unshared'})
+        }
+    })
+});
+
 // returns the food that your friends set to share.
 // query returns friends username, first name, last name, food item, the quantity of the food item
 app.get('/friendsSharing', verifyToken, async(req,res) => {
@@ -440,12 +474,6 @@ WHERE
         }
     res.status(200).json({friendsFoodRequests: result})
     })
-});
-
-// this is to insert the food to share in the database
-app.post('/Sharing/ShareFood', verifyToken, async(req,res) => {
-    const {UserID} = req.user;
-    const sql = `INSERT INTO shared_item(InventoryItemID, OwnerUserID, AvailableQuantity, Status) VALUES(?, ?, ?, ?)`;
 });
 
 //*********************************************************** */

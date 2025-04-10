@@ -19,8 +19,8 @@ export default function Sharing() {
                     Authorization: `Bearer ${token}`
                 }
             });
-
             setFoodItems(response.data.foodItems || []);
+            console.log("This is your food", foodItems);
         } catch (error) {
             console.error("Error retrieving food items:", error);
         }
@@ -70,11 +70,14 @@ export default function Sharing() {
 
     useEffect(() => {
         const token = localStorage.getItem("authToken");
+        
 
         if (token) {
             showFoodItems(token);
             getFriendsFood(token);
             getFoodRequset(token);
+        } else {
+            console.log("token not retrieved");
         }
     }, []);
     
@@ -89,26 +92,67 @@ export default function Sharing() {
         console.log(`Item ${index} is no longer shared.`);
     };
 
-    //these function will send the food information to the server
-    const shareItemToServer = (item) => {
-        console.log(`This is the item to inserted:`, item.FoodName);
-    };
+    //these function will send the food information to the server to be inserted to the shared_food table
+    const shareItemToServer = async (token, item) => {
+    console.log(`item to share`, item);
 
-    const unshareItemFromServer = (item) => {
-        console.log(`This item is deleted to be deleted:`, item);
+    if (!item) {
+        console.log('Item is undefined or null!');
+        return;
+    }
+    
+    try {
+        const response = await axios.post('http://localhost:80/Sharing/ShareFood',
+            {
+                InventoryItemID: item.inventoryID,
+                AvailableQuantity: item.Quantity,
+                Status: item.Status
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+        console.log("Item shared successfully:", response.data.message);
+    } catch (error) {
+        console.error('Error sharing food', error);
+    }
+};
+
+
+    const unshareItemFromServer = async (token, item) => {
+        try{
+            const response = await axios.delete('http://localhost:80/Sharing/UnShareFood',
+            {
+                data: {
+                    InventoryItemID: item.inventoryID // ensure this matches your object
+                },
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }  
+            });
+            console.log(`This item is deleted to be deleted:`, item);
+        } catch (error){
+            console.error('error deleting food', error);
+        }
     };
 
 
     const toggleShare = (index, item) => {
+        const token = localStorage.getItem("authToken");
+
         setSharedStatus((prevStatus) => {
             const newStatus = !prevStatus[index];
     
             if (newStatus) {
                 runWhenTrue(index);
-                shareItemToServer(item);
+                shareItemToServer(token, item);
             } else {
                 runWhenFalse(index);
-                unshareItemFromServer(item);
+                unshareItemFromServer(token, item);
             }
     
             return {
