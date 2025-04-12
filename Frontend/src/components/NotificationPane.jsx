@@ -5,6 +5,7 @@ import Divider from '@mui/material/Divider';
 import './NotificationPane.css'
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import IncentiveNotifications from './IncentiveNotifications';
 
 
 export default function NotificationPane() {
@@ -60,7 +61,11 @@ export default function NotificationPane() {
             </div>
           ))}
         </div>
-
+        
+        <h2 className='sectionHeader'>Incentives</h2>
+        <div className='notifBox'>
+          <IncentiveNotifications />
+        </div>
 
         <h2 className='sectionHeader'>ShelfFriends</h2>
          {/* populate this div with the text elements */}
