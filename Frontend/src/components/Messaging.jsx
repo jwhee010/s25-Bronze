@@ -177,37 +177,37 @@ function Messaging() {
 //////////////////////////////////////////////////////////
 
     return (
-     <div> 
-        <div className="card">
-            <div className="flex flex-col h-full">
-                <div className="message-list">
-                    {messages.map((message, index) => (
-                        <div key={index} className="message-item">
-                            <div className="message-text">{message.text}</div>
-                            <span className="message-timestamp">
-                            {new Date(message.timestamp).toLocaleTimeString()} - {message.id.substring(0, 5)}
-                                
-                            </span>
-                        </div>
-                    ))}
+        <div>
+            <div className="card">
+                <div className="flex flex-col h-full">
+                    <div className="message-list">
+                        {messages.map((message, index) => (
+                            <div key={index} className="message-item">
+                                <div className="message-text">{message.text}</div>
+                                <span className="message-timestamp">
+                                    {new Date(message.timestamp).toLocaleTimeString()} - {message.id.substring(0, 5)}
+
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
-                
             </div>
-        </div>
-        <div className="input-section">
-            <div className="message-input">
-                <input
-                    type="text"
-                    className="input-field"
-                    placeholder="Type your message..."
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            sendMessage(e); // Call the sendMessage function when Enter is pressed
-                        }
-                    }}
-                />
+            <div className="input-section">
+                <div className="message-input">
+                    <input
+                        type="text"
+                        className="input-field"
+                        placeholder="Type your message..."
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                sendMessage(e); // Call the sendMessage function when Enter is pressed
+                            }
+                        }}
+                    />
                     <button
                         className="send-button"
                         onClick={sendMessage}
@@ -216,7 +216,7 @@ function Messaging() {
                     </button>
                 </div>
             </div>
-        </div>  
+        </div>
     );
 }
 
