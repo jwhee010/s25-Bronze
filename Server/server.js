@@ -4,22 +4,29 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+
+//app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173", // Allow requests from your frontend URL
+    methods: ["GET", "POST"], // Allowed HTTP methods
+    credentials: true, // Include credentials like cookies or auth headers
+}));
+
 app.use(express.json())
 
 //********************************************************* */
 
-//Real Time Messaging Websocket
-const http = require('http');
-const { Server } = require('socket.io');
+// //Real Time Messaging Websocket
+// const http = require('http');
+// const { Server } = require('socket.io');
 
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-      origin: "*",
-      credentials: true,
-    },
-  });
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//     cors: {
+//         origin: "http://localhost:5173", // Frontend URL
+//         methods: ["GET", "POST"], // Allowed HTTP methods
+//     },
+// });
 
 //********************************************************** */
 
@@ -477,45 +484,79 @@ WHERE
 });
 
 //*********************************************************** */
-  // Handle WebSocket connections here
-io.on("connection", (socket) => {
-    console.log(`User ${socket.id} connected`);
-  
-    // Listen for incoming messages from clients
-    socket.on("message", (message) => {
-        console.log(message)
 
-      // Broadcast the message to all connected clients
-       io.emit("message", message);
-    //    io.emit('message', `${socket.id.substring(0,5)}: ${message}`);
+app.get('/messages', verifyToken, async (req, res) => {
+    const { senderID, receiverID } = req.query; // Get query parameters from request
+    const sql = `
+        SELECT * FROM messages 
+        WHERE (senderID = ? AND receiverID = ?) 
+           OR (senderID = ? AND receiverID = ?)
+        ORDER BY timestamp ASC
+    `;
+
+    db.query(sql, [senderID, receiverID, receiverID, senderID], (error, results) => {
+        if (error) {
+            console.error("Error fetching messages:", error);
+            res.status(500).json({ message: "Error retrieving messages." });
+        } else {
+            res.status(200).json(results); // Send the retrieved messages to the client
+        }
     });
-////////////////////////////////////////////////////////////////////////////////////////
-    // socket.on("message", async (message) => {
-    //     // Extract data from message (e.g., senderId, recipientId, content)
-    //     const { senderId, recipientId, content } = message;
-      
-    //     // Save message to SQL database
-    //     const query = `INSERT INTO messages (sender_id, recipient_id, content, created_at) VALUES (?, ?, ?, NOW())`;
-    //     await db.query(query, [senderId, recipientId, content]);
-      
-    //     // Broadcast to recipient if they're connected
-    //     const recipientSocketId = userSockets[recipientId];
-    //     if (recipientSocketId) {
-    //       io.to(recipientSocketId).emit("message", message);
-    //     }
-    //   });
-  ///////////////////////////////////////////////////////////////////////////////////////
-    // Handle disconnections
-    socket.on("disconnect", () => {
-      console.log(socket.id, " disconnected");
-      io.emit('message', 'A user has left the chat');
+});
+
+app.post('/messages', verifyToken, async (req, res) => {
+    const { senderID, receiverID, text, timestamp } = req.body; // Extract message details from request body
+    const sql = `
+        INSERT INTO messages (senderID, receiverID, text, timestamp)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(sql, [senderID, receiverID, text, timestamp], (error, result) => {
+        if (error) {
+            console.error("Error saving message:", error);
+            res.status(500).json({ message: "Error saving message." });
+        } else {
+            res.status(200).json({ message: "Message saved successfully." });
+        }
     });
-  });
+});
+
   
-  server.listen(3000, () => {
-    console.log("Server is running on port 3000");
-  });
   
+
+
+
+
+// //*********************************************************** */
+// // Handle WebSocket connections here
+// io.on("connection", (socket) => {
+//     console.log(`User ${socket.id} connected`);
+
+//     // Listen for incoming messages from clients
+//     socket.on("joinRoom", ({ senderID, receiverID }) => {
+//         const roomName = [senderID, receiverID].sort().join("-"); // Unique room name (sorted for consistency)
+//         socket.join(roomName);
+//         console.log(`${socket.id} joined room: ${roomName}`);
+//     });
+
+//     // Handle sending messages
+//     socket.on("sendMessage", ({ roomName, senderID, message, timestamp }) => {
+//         // Broadcast the message to the other participants in the room
+//         io.to(roomName).emit("receiveMessage", { senderID, message, timestamp });
+//         console.log(`Message sent in room ${roomName}: ${message}`);
+//     });
+
+//     // Handle disconnections
+//     socket.on("disconnect", () => {
+//         console.log(socket.id, " disconnected");
+//         io.emit('message', 'A user has left the chat');
+//     });
+// });
+
+// server.listen(3000, () => {
+//     console.log("Server is running on port 3000");
+// });
+
 
 //*********************************************************** */
 
