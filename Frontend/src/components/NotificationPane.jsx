@@ -61,11 +61,6 @@ export default function NotificationPane() {
             </div>
           ))}
         </div>
-        
-        <h2 className='sectionHeader'>Incentives</h2>
-        <div className='notifBox'>
-          <IncentiveNotifications />
-        </div>
 
         <h2 className='sectionHeader'>ShelfFriends</h2>
          {/* populate this div with the text elements */}
@@ -92,8 +87,7 @@ export default function NotificationPane() {
         <h2 className='sectionHeader'>Other</h2>
          {/* populate this div with the text elements */}
         <div className='notifBox'>
-
-          <p>Test 1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATest</p>
+          <IncentiveNotifications />
             <Divider/>
 
             <p>Test 2</p>
