@@ -9,6 +9,7 @@ export default function Sharing() {
     const [sharedStatus, setSharedStatus] = useState({});
     const [requested, setRequested] = useState({});
     const [acceptRequest, setAcceptRequest] = useState({});
+    const [yourSharedItems, setYourSharedItems] = useState([]);
 
     // Fetch user's food items and stores in an array to be displayed
     const showFoodItems = async (token) => {
@@ -20,11 +21,24 @@ export default function Sharing() {
                 }
             });
             setFoodItems(response.data.foodItems || []);
-            console.log("This is your food", foodItems);
         } catch (error) {
             console.error("Error retrieving food items:", error);
         }
     };
+
+    const getSharedFoodItems = async(token) => {
+        try{
+            const response = await axios.get("http://localhost:80/sharing/yourShared",{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setYourSharedItems(response.data.yourSharedItems || []);
+            console.log("this is your shared items", yourSharedItems);
+        } catch (error) {
+            console.log("Error retrieving your shared items", error);
+        }
+    }
 
     // Function gets the food items that shelf friends have set as shareable
     const getFriendsFood = async(token) => {
@@ -73,13 +87,31 @@ export default function Sharing() {
         
 
         if (token) {
+            
             showFoodItems(token);
+            getSharedFoodItems(token);
             getFriendsFood(token);
             getFoodRequset(token);
         } else {
             console.log("token not retrieved");
         }
     }, []);
+
+    useEffect(() => {
+        if (foodItems.length > 0 && yourSharedItems.length > 0) {
+            const status = {};
+    
+            foodItems.forEach((item, index) => {
+                const isShared = yourSharedItems.some(shared =>
+                    shared.InventoryItemID === item.inventoryID
+                );
+                status[index] = isShared;
+            });
+    
+            setSharedStatus(status);
+        }
+    }, [foodItems, yourSharedItems]);
+    
     
     
 
@@ -106,7 +138,7 @@ export default function Sharing() {
             {
                 InventoryItemID: item.inventoryID,
                 AvailableQuantity: item.Quantity,
-                Status: item.Status
+                Status: item.ExpirationStatus
             },
             {
                 headers: {
