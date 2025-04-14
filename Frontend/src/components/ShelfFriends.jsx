@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
-
-
-
-//import { io } from 'socket.io-client';
-
-//cconst socket = io('http://localhost:3000');
-
-
 import FriendList from "./FriendList";
 import Sharing from "./Sharing";
 
-import Messaging from "./Messaging";
+// import Messaging from "./Messaging";
 
 const ShelfFriends = () => {
     return  (
@@ -20,8 +12,8 @@ const ShelfFriends = () => {
             <h1>ShelfFriends</h1>
             <FriendList/>
             <Sharing/>
-            <h2>Messaging</h2>
-            <Messaging/>
+            {/* <h2>Messaging</h2>
+            <Messaging/> */}
         </div>
     );
 };
