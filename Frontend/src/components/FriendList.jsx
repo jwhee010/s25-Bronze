@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './FriendList.css'; // Optional: create your own styling file
+import { useNavigate } from 'react-router-dom'; // Navigate hook
+
 
 export default function FriendList() {
   const [friends, setFriends] = useState([]);
   const [friendId, setFriendId] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate(); // Add navigate hook
  
+
+
+
+  // Navigate to the MessagePage with the selected friend's ID
+  const goToMessagePage = (userName) => {
+    navigate(`/messagepage/${userName}`);
+    console.log("Friend ID", userName);
+  };
+
   // Fetch friends on component mount
   const fetchFriends = async (token) => {
     try {
@@ -76,6 +88,10 @@ export default function FriendList() {
         {friends.map((item, index)=> (
           <li key={index}>
             {item.firstName} {item.lastName} ({item.userName})
+
+            <button onClick={() => goToMessagePage(item.userName)}>
+              Message
+            </button>
             <button onClick={() => handleRemoveFriend(friends.user_id)}>Remove</button>
           </li>
         ))}
