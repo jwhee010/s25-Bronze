@@ -7,7 +7,7 @@ import List from './components/List';
 import ShelfFriends from './components/ShelfFriends';
 import Settings from './components/Settings';
 import FriendList from './components/FriendList';
-
+import MessagePage from './components/MessagePage';
 
 
 export default function App() {
@@ -22,6 +22,7 @@ export default function App() {
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/friends" element={<FriendList />} />
+        <Route path="/messagepage/:userName" element={<MessagePage />} />
       </Routes>
     </Router>
    
