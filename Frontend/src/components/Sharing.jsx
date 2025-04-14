@@ -3,18 +3,29 @@ import axios from "axios";
 import "./Sharing.css";
 
 export default function Sharing() {
+    // save your food items data
     const [foodItems, setFoodItems] = useState([]);
+
+    // data to see what food you've marked as shared
+    const [yourSharedItems, setYourSharedItems] = useState([]);
+
+    // save your friends shared food items data
     const [friendsSharing, setfriendsSharing] = useState([]);
+
+    // saves the data of food items you've requested form your friends
+    const [userFoodRequests, setUserFoodRequests] = useState([]);
+
+    // saves your the data of food items your friends are requesting from you
     const [friendsFoodRequests, setfriendsFoodRequests] = useState([]);
     const [sharedStatus, setSharedStatus] = useState({});
     const [requested, setRequested] = useState({});
     const [acceptRequest, setAcceptRequest] = useState({});
-    const [yourSharedItems, setYourSharedItems] = useState([]);
+    
 
     // Fetch user's food items and stores in an array to be displayed
     const showFoodItems = async (token) => {
         try {
-            const response = await axios.get("http://localhost:80/sharing",
+            const response = await axios.get("http://localhost:80/Sharing",
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -26,9 +37,10 @@ export default function Sharing() {
         }
     };
 
+    
     const getSharedFoodItems = async(token) => {
         try{
-            const response = await axios.get("http://localhost:80/sharing/yourShared",{
+            const response = await axios.get("http://localhost:80/Sharing/yourShared",{
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -43,15 +55,15 @@ export default function Sharing() {
     // Function gets the food items that shelf friends have set as shareable
     const getFriendsFood = async(token) => {
         try{
-            const response = await axios.get("http://localhost:80/friendsSharing",{
+            const response = await axios.get("http://localhost:80/Sharing/Friends",{
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
 
             if (response.data) {
+                console.log("FOOD FRIENDS ARE SHARING", response.data);
                 setfriendsSharing(response.data.friendsSharing);
-                console.log("Friends data", response.data.friendsSharing);
             } else {
                 console.warn("friendsSharing is missing in the response");
                 setfriendsSharing([]);
@@ -61,8 +73,25 @@ export default function Sharing() {
         }
     };
 
+    // gets the food items the user has requested from thier friends
+    const getRequestedFoodItem = async(token) => {
+        try{
+            const response  = await axios.get('http://localhost:80/Sharing/getRequests', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("FOOD ITEMS YOU'VE REQUESTED", response.data);
+            setUserFoodRequests(response.data.userFoodRequests || []);
+        } catch (error) {
+            console.error("error requesting food item", error);
+        }
+    };
+
+
+
     // functions gets the requests friends have made of the food that has been made shareable
-    const getFoodRequset = async(token) =>{
+    const getFoodRequest = async(token) =>{
         try{
             const response = await axios.get("http://localhost:80/friendsFoodRequests",{
                 headers: {
@@ -77,9 +106,11 @@ export default function Sharing() {
                 setfriendsFoodRequests([]);
             }
         } catch(error){
-            console.error("Error retriving food requests", error)
+            console.error("Error retriving food requests", error);
         }
     };
+
+
 
 
     useEffect(() => {
@@ -87,16 +118,26 @@ export default function Sharing() {
         
 
         if (token) {
-            
+            // get user food items
             showFoodItems(token);
+
+            // get the food items set to share
             getSharedFoodItems(token);
+
+            // get food items friends set to share
             getFriendsFood(token);
-            getFoodRequset(token);
+
+            // get the food you reqeusted from your friends
+            getRequestedFoodItem(token);
+
+            // get the requests of the item your friends want 
+            getFoodRequest(token);
         } else {
             console.log("token not retrieved");
         }
     }, []);
 
+    // sets buttons for the user to properly share and unshare food its
     useEffect(() => {
         if (foodItems.length > 0 && yourSharedItems.length > 0) {
             const status = {};
@@ -111,18 +152,46 @@ export default function Sharing() {
             setSharedStatus(status);
         }
     }, [foodItems, yourSharedItems]);
+
+    // sets buttons properly so that the user can properly request and unrequest food items
+    useEffect(() => {
+        if (friendsSharing.length > 0 && userFoodRequests.length > 0) {
+            const status = {};
+    
+            friendsSharing.forEach((item, index) => {
+                const isRequested = userFoodRequests.some(requested =>
+                    requested.SharedItemID === item.SharedItemID
+                );
+                status[index] = isRequested;
+            });
+    
+            setRequested(status);
+        }
+    }, [friendsSharing, userFoodRequests]);
     
     
     
+
 
     // this is to see if the functions are being ran when the button is pressed
     const runWhenTrue = (index) => {
         console.log(`Item ${index} is now shared.`);
     };
+   
+    const runWhenTrueR = (index) => {
+        console.log(`Item ${index} is now requested.`);
+    };
+    
     
     const runWhenFalse = (index) => {
         console.log(`Item ${index} is no longer shared.`);
     };
+
+    const runWhenFalseR = (index) => {
+        console.log(`Item ${index} is no longer requested.`);
+    };
+
+
 
     //these function will send the food information to the server to be inserted to the shared_food table
     const shareItemToServer = async (token, item) => {
@@ -153,7 +222,7 @@ export default function Sharing() {
     }
 };
 
-
+    /// unshares your food item
     const unshareItemFromServer = async (token, item) => {
         try{
             const response = await axios.delete('http://localhost:80/Sharing/UnShareFood',
@@ -167,12 +236,48 @@ export default function Sharing() {
                 }  
             });
             console.log(`This item is deleted to be deleted:`, item);
+            getFoodRequest(token);
         } catch (error){
             console.error('error deleting food', error);
         }
     };
 
+    // sends a request to your friend for their food item
+    const requestAFoodItem = async (token, item) => {
+        try{
+            const response = await axios.post('http://localhost:80/Sharing/sendRequest',   {
+                SharedItemID: item.SharedItemID,
+                Status: item.ExpirationStatus
+            },{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+        } catch (error) {
+            console.error('Error requesting food', error);
+        };
+    };
 
+    const deleteARequest = async (token, item) => {
+        try{
+            const response = await axios.delete('http://localhost:80/Sharing/unRequest',
+            {
+                data: {
+                    SharedItemID: item.SharedItemID
+                },
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            })
+            console.log("sent request for", item);
+        } catch (error) {
+            console.error("error deleting request", error);
+        }  
+    };
+
+    // handles the sharing button states and functions
     const toggleShare = (index, item) => {
         const token = localStorage.getItem("authToken");
 
@@ -196,12 +301,29 @@ export default function Sharing() {
     
     
     // Function is used to toogle the reqeust and cancel requset
-    const toggleRequest = (index) => {
+    const toggleRequest = async (index, item) => {
+        const token = localStorage.getItem("authToken");
+    
+        const newStatus = !requested[index];
+    
+        if (newStatus) {
+            runWhenTrueR(index); // Optional
+            await requestAFoodItem(token, item);
+        } else {
+            runWhenFalseR(index); // Optional
+            await deleteARequest(token, item);
+        }
+    
+        // Update UI status
         setRequested((prevRequested) => ({
-          ...prevRequested,
-          [index]: !prevRequested[index], // Toggle the request status for this friend
+            ...prevRequested,
+            [index]: newStatus,
         }));
-      };
+    
+        // Optionally refresh userFoodRequests so UI reflects changes from DB
+        getRequestedFoodItem(token);
+    };
+    
 
     // function is used to toggle the accpet request for food items that shelffriends have requested
     const toggleAccept = (index) =>{
@@ -281,7 +403,7 @@ export default function Sharing() {
                         <td>
                         <button 
                         type = "button" 
-                        onClick={() => toggleRequest(index)}
+                        onClick={() => toggleRequest(index, item)}
                         style={{
                             backgroundColor: requested[index] ? "red" : "green",
                             color: "white",

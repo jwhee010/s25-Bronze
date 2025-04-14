@@ -8,7 +8,7 @@ const app = express();
 //app.use(cors());
 app.use(cors({
     origin: "http://localhost:5173", // Allow requests from your frontend URL
-    methods: ["GET", "POST"], // Allowed HTTP methods
+    methods: ["GET", "POST", "DELETE"], // Allowed HTTP methods
     credentials: true, // Include credentials like cookies or auth headers
 }));
 
@@ -377,7 +377,7 @@ app.post('/expireFood', verifyToken, (req, res) => {
 
 
 // selects the foods that a user can share
-app.get('/sharing', verifyToken, async(req, res) => {
+app.get('/Sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
     const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
                     FROM inventory
@@ -395,7 +395,7 @@ app.get('/sharing', verifyToken, async(req, res) => {
 });
 
 // gets the food items that the user has set to share
-app.get('/sharing/yourShared', verifyToken, async(req, res) => {
+app.get('/Sharing/yourShared', verifyToken, async(req, res) => {
     const {UserID} = req.user;
     const sql = `SELECT 
                     InventoryItemID
@@ -449,9 +449,9 @@ app.delete('/Sharing/UnShareFood', verifyToken, async(req,res) =>{
 
 // returns the food that your friends set to share.
 // query returns friends username, first name, last name, food item, the quantity of the food item
-app.get('/friendsSharing', verifyToken, async(req,res) => {
+app.get('/Sharing/Friends', verifyToken, async(req,res) => {
     const {UserID} = req.user;
-    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.Status, shared_item.AvailableQuantity, food_item.DefaultUnit from shelf_friend
+    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.Status, shared_item.AvailableQuantity, food_item.DefaultUnit, shared_item.SharedItemID from shelf_friend
                 join shared_item on shelf_friend.UserID_2 = shared_item.OwnerUserID
                 join inventory on shared_item.InventoryItemID = inventory.InventoryID
                 join food_item on inventory.FoodItemID = food_item.FoodItemID
@@ -466,6 +466,61 @@ app.get('/friendsSharing', verifyToken, async(req,res) => {
     res.status(200).json({friendsSharing: result})
     })
 });
+
+/* query returns the food items that you have requested so it can be
+   compared to the food items that other users have set to shareable 
+   so that the buttons can be set in the correct states */
+   app.get('/Sharing/getRequests', verifyToken, async(req, res) => {
+    const {UserID} = req.user;
+    const sql = `SELECT 
+                    SharedItemID 
+                FROM
+                    share_request
+                WHERE
+                    RequestorUserID = ?`
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error){
+            return res.status(500).json({message: 'Error getting your requested food'})
+        }
+        res.status(200).json({userFoodRequests: result})
+    })
+   });
+
+   // sends the data to the request_food table
+   app.post('/Sharing/sendRequest', verifyToken, async(req,res) =>{
+    const {UserID} = req.user;
+    const {SharedItemID, Status} = req.body;
+
+    const sql = `insert into share_request(RequestorUserID, SharedItemID, RequestDate, Status)
+                 values(?, ?, current_date(), ?)`;
+
+    db.query(sql, [UserID, SharedItemID, Status], (error, result) => {
+        if (error) {
+            res.status(500).json({message: 'An error occured sending sharedFood information'});
+        } else {
+            res.status(200).json({message: 'your food has been shared'});
+        }
+    });
+   });
+
+   // delete the food item request you wanted to request
+   app.delete('/Sharing/unRequest', verifyToken, async(req, res) => {
+    const {SharedItemID} = req.body;
+    const {UserID} = req.user;
+
+    const sql = `delete from share_request
+                 where SharedItemID = ? and RequestorUserID = ?`;
+
+    console.log("deleting request number", SharedItemID);
+    db.query(sql, [SharedItemID, UserID], (error, result) => {
+        if(error) {
+            res.status(500).json({message: 'There was an issue deleting the food item request'});
+        } else {
+            res.status(200).json({message: 'The food item has been unrequestd'})
+        }
+    });
+   });
 
 
 // this is to get request for food
