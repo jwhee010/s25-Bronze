@@ -33,8 +33,10 @@ export default function Calendar() {
       //console.log('Food items retrieved:', response.data.foodItems);
       setFoodItems(response.data.foodItems);
       
+      // all of the extra `\xa0` were so I could get the purchase date to show up on a new line in the list view :)
       const events = response.data.foodItems.map(item => ({
-        title: `${item.FoodName}` +'\xa0\xa0\xa0\xa0'+`Quantity: ${item.Quantity}` +'\xa0\xa0\xa0\xa0' + `Purchase Date: ${item.PurchaseDate.slice(0, 10)}`,
+        title: `${item.FoodName}` +'\xa0\xa0\xa0\xa0'+`Quantity: ${item.Quantity}` 
+        +'\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + `\nPurchase Date: ${item.PurchaseDate.slice(0, 10)}`,
         date: item.Expiration,
         id: item.distance
       }));
