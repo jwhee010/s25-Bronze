@@ -375,7 +375,7 @@ app.get('/sharing', verifyToken, async(req, res) => {
     const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
                     FROM inventory
                     JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
-                    WHERE inventory.UserID = ?`;
+                    WHERE inventory.UserID = ? AND ExpirationStatus = "fresh"`;
     
 
     db.query(sql, [UserID], (error, result) => {
@@ -383,9 +383,28 @@ app.get('/sharing', verifyToken, async(req, res) => {
             console.log("error executing query")
              return res.status(500).json({message: 'Error getting inventory'});
             }
-        res.status(200).json({foodItems: result})
+        res.status(200).json({foodItems: result});
     });
 });
+
+// gets the food items that the user has set to share
+app.get('/sharing/yourShared', verifyToken, async(req, res) => {
+    const {UserID} = req.user;
+    const sql = `SELECT 
+                    InventoryItemID
+                 FROM
+                    shared_item
+                 WHERE
+                    OwnerUserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting your shared items'});
+        }
+        res.status(200).json({yourSharedItems: result});
+    })
+})
 
 // this is to insert the food to share in the database
 app.post('/Sharing/ShareFood', verifyToken, async(req,res) => {
