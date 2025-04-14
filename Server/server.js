@@ -105,6 +105,40 @@ app.get('/calendar', verifyToken, async (req, res) => {
     });
 });
 
+// Calendar filtered by predictive waste (top 5 wasted) items
+app.get('/predictiveCalendar', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    // Double select query on the inside since Limit can't be used within a subquery for our SQL version
+    // without it, it gives this error:
+    // "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'"
+    const sql = `
+        SELECT inventory.Quantity, inventory.Expiration, inventory.PurchaseDate, food_item.FoodName,
+               datediff(cast(inventory.Expiration As Date), CURRENT_DATE) As distance
+        FROM inventory
+        JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+        WHERE inventory.UserID = ? AND food_item.FoodItemID IN (
+            SELECT FoodItemID FROM (
+                SELECT analytics.FoodItemID
+                FROM analytics
+                WHERE analytics.UserID = ? AND analytics.ExpirationStatus = 'expired'
+                GROUP BY analytics.FoodItemID
+                ORDER BY SUM(analytics.Quantity) DESC
+                LIMIT 5
+              ) As TopWastedItems
+          )`;
+
+    // second UserID for the second query
+    db.query(sql, [UserID, UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ foodItems: results });
+    });
+});
+
 // New API route to get food item quantities
 app.get('/food-quantity', verifyToken, async (req, res) => {
     const { UserID } = req.user;

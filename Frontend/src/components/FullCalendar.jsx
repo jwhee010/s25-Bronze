@@ -16,12 +16,15 @@ import FoodCheckform from './FoodCheckform.jsx';
 export default function Calendar() {
   const [foodItems, setFoodItems] = useState([]);
   const [foodQuantities, setFoodQuantities] = useState([]); // New state for food quantities
+  const [usePredictiveItems, setUsePredictiveItems] = useState(false) // for filtering the calendar by predictive waste items
 
   const [events, setFoodAsEvents] = useState([]); // for converting food items from database into events on the calendar
 
-  const getFoodItems = async (token) => {
+  const getFoodItems = async (token, usePredictiveItems = false) => {
     try {
-      const response = await axios.get('http://localhost:80/calendar', {
+      const chosenMethod = usePredictiveItems ? 'http://localhost:80/predictiveCalendar' : 'http://localhost:80/calendar';
+
+      const response = await axios.get(chosenMethod, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -63,12 +66,12 @@ export default function Calendar() {
     const token = localStorage.getItem('authToken');
 
     try {
-      getFoodItems(token);
+      getFoodItems(token, usePredictiveItems);
       getFoodQuantities(token); // ✅ Fetch food quantities on load
     } catch (error) {
       console.error('Token decoding error:', error);
     }
-  }, []);
+  }, [usePredictiveItems]);
 
 
    //Event Interaction, to mark items as used or spoiled
@@ -104,6 +107,10 @@ export default function Calendar() {
 
   return (
     <>
+      <button  className = "predictiveButton" onClick={() => setUsePredictiveItems(prev => !prev)}>
+          {usePredictiveItems ? 'Show Full Calendar' : 'Filter by Predictive Waste'}
+      </button>
+      
       <FullCalendar
         plugins={[dayGridPlugin, listPlugin]}
         initialView="dayGridMonth"
