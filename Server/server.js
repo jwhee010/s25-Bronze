@@ -379,7 +379,7 @@ app.post('/expireFood', verifyToken, (req, res) => {
 // selects the foods that a user can share
 app.get('/Sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
-    const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
+    const sql = `SELECT inventory.InventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
                     FROM inventory
                     JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                     WHERE inventory.UserID = ? AND ExpirationStatus = "fresh"`;
@@ -528,13 +528,14 @@ app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
     const {UserID} = req.user;
     // query returns the requsting users name and username, as well as the food item, quantity, and status of the food item
     const sql = `SELECT 
+	share_request.SharedItemID,
+    share_request.RequestorUserID,
     user.userName,
     user.firstName,
     user.lastName,
-    inventory.PurchaseDate,
-    share_request.Status,
     food_item.FoodName,
-    inventory.Quantity
+    inventory.Quantity,
+    inventory.InventoryID
 FROM
     share_request
         JOIN
@@ -556,6 +557,41 @@ WHERE
     res.status(200).json({friendsFoodRequests: result})
     })
 });
+
+//accept food request
+app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
+    const { RequestorUserID, SharedItemID, InventoryID } = req.body;
+
+    // 1. Update inventory ownership
+    const updateUser = `UPDATE inventory SET UserID = ? WHERE InventoryID = ?`;
+    db.query(updateUser, [RequestorUserID, InventoryID], (err, result1) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error transferring ownership' });
+        }
+
+        // 2. Delete the specific food request
+        const deleteRequests = `DELETE FROM food_requests WHERE SharedItemID = ?`;
+        db.query(deleteRequests, [SharedItemID], (err, result2) => {
+            if (err) {
+                return res.status(500).json({ message: 'Error deleting food request' });
+            }
+
+            // 3. Unshare the food item
+            const unshareItem = `DELETE FROM shared_item WHERE InventoryItemID = ?`;
+            db.query(unshareItem, [InventoryID], (err, result3) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error unsharing item' });
+                }
+
+                // ✅ All steps succeeded — send one response
+                res.status(200).json({ message: 'Request accepted and item updated, request deleted, and unshared.' });
+            });
+        });
+    });
+});
+
+
+
 
 //*********************************************************** */
 
