@@ -85,6 +85,29 @@ app.post('/login', (req, res) => {
     });
 });
 
+//-SignUp page-
+//Takes the information added to the SignUp page form and inserts it into the database's user table
+//newUsername must be unique, cannot match with a username in the database
+app.post('/signup',(req, res) =>{
+
+    const {newUsername, newFirstname, newLastname, newPassword, newEmail} = req.body;
+
+    const signUpQuery =`
+    Insert into livelyshelfsdb.user(userName, firstName, lastName, passwordHash, email)
+    values(?, ?, ?, ?, ?);
+    `;
+
+    db.query(signUpQuery, [newUsername, newFirstname, newLastname, newPassword, newEmail],(err, checkRes) =>{
+        if(err)
+        {
+            console.log(err);
+            return res.status(500).json({message:'Error executing query'});
+        }
+        res.status(200).json({message:'Account Created Successfully!'});
+    });
+});
+
+
 // retrive food name and expiration date for display on the calendar
 // Retrieve food name and expiration date for display on the calendar
 app.get('/calendar', verifyToken, async (req, res) => {

@@ -50,6 +50,10 @@ function LogIn(props) {
         }
     };
 
+    const signUpHandle = () =>{
+        navigate('/signup');
+    };
+
     // JSX structure for login form
     return (
         <div>
@@ -81,6 +85,7 @@ function LogIn(props) {
                     <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Login</button>
                     {errorMessage && <p className="text-red-500 text-sm whitespace-pre-line text-center mt-4 ">{errorMessage}</p>} {/* Display error message if exists */}
                 </form>
+                <button onClick={signUpHandle}>Register Now</button>
             </div>
         </div>
         <Footer></Footer>
