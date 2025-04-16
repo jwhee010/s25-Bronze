@@ -17,17 +17,20 @@ function SignUp(){
         const [errorConfirmPass, setErrorConfirmPass] = useState('');
         const [successReg, setSuccessreg] = useState('');
 
+         const navigate = useNavigate();
+
     const handleSubmit = async(e) =>{
         e.preventDefault();
          
-        //Checks if newPassword and confirmPass match
+        //Reset Error and Success Messages
         setErrorConfirmPass('');
         setSuccessreg('');
         setRegErrorMessage('');
 
+        //Checks if newPassword and confirmPass match
         if(newPassword != confirmPass)
         {
-            setErrorConfirmPass('Passwords Do not Match. Please re-enter to confirm');
+            setErrorConfirmPass('Passwords Do not Match. Please re-enter');
             return 0;
         }
         
@@ -35,12 +38,11 @@ function SignUp(){
         try
         {
           const response = await axios.post('http://localhost:80/signup', {newUsername, newFirstname, newLastname, newPassword, newEmail});
-          setRegErrorMessage('');
 
+          setRegErrorMessage('');
           if(response.status == 200){
             console.log('Success')
           }
-
           setSuccessreg('Account Registered Successfully!');
         }
         catch(error)
@@ -49,48 +51,60 @@ function SignUp(){
             setRegErrorMessage('Username: ' + newUsername + " is Already Taken");
         }
     };
+     
+    //Return to Login Page
+    const returnHandle = () =>{
+        navigate('/login');
+    };
 
     return(
        <div>
-        <h1>Register A New Account</h1>
+        <h1 className="regHeader">Register A New Account <br/>🌱</h1>
+        <div className="formWrapper">
         <form onSubmit={handleSubmit}>
-            <div>
+            <div className="formMatting">
             <label htmlFor="newUsername">First Name:</label>
             <input type="text" id="newFirstname" value={newFirstname} onChange={(e) => setnewFirstname(e.target.value)} required></input>
             </div>
 
-            <div>
+
+            <div className="formMatting">
             <label htmlFor="newUsername">Last Name:</label>
             <input type="text" id="newLastname" value={newLastname}  onChange={(e) => setnewLastname(e.target.value)} required></input>
             </div>
 
-            <div>
+            <div className="formMatting">
             <label htmlFor="newUsername">Email:</label>
             <input type="text" id="newEmail" value={newEmail}  onChange={(e) => setnewEmail(e.target.value)} required></input>
             </div>
 
-            <div>
+            <div className="formMatting3">
             <label htmlFor="newUsername">Username:</label>
             <input type="text" id="newUsername" value={newUsername}  onChange={(e) => setnewUsername(e.target.value)} required></input>
             </div>
 
-            <div>
+            <div className="formMatting3">
             <label htmlFor="newUsername">Password:</label>
             <input type="text" id="newPassword" value={newPassword}  onChange={(e) => setnewPassword(e.target.value)} required></input>
             </div>
 
-            <div>
+            <div className="formMatting2">
             <label htmlFor="newUsername">Confirm Password:</label>
             <input type="text" id="confirmPass" value={confirmPass} onChange={(e) => setconfirmPass(e.target.value)} required></input>
             </div>
 
-            <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Register</button>
-            {errorConfirmPass && <p className="text-red-500 text-sm whitespace-pre-line text-center mt-4 ">{errorConfirmPass}</p>}
-            {errorRegMessage && <p className="text-red-500 text-sm whitespace-pre-line text-center mt-4 ">{errorRegMessage}</p>}
-            {successReg && <p className="text-red-500 text-sm whitespace-pre-line text-center mt-4 ">{successReg}</p>}
+            {errorConfirmPass && <p className="errSuccess">{errorConfirmPass}</p>}
+            {errorRegMessage && <p className="errSuccess">{errorRegMessage}</p>}
+            {successReg && <p className="errSuccess">{successReg}</p>}
 
+            <button type="submit" className="regButton">Register</button>
 
+          
         </form>
+        </div>
+
+        <button onClick={returnHandle}>Back to Login</button>
+
        </div>
 
     );
