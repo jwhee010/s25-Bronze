@@ -1,113 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import './FriendList.css'; // Optional: create your own styling file
-import { useNavigate } from 'react-router-dom'; // Navigate hook
-
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+// import "./FriendList.css"; // Only include this if the file exists
 
 export default function FriendList() {
   const [friends, setFriends] = useState([]);
-  const [friendId, setFriendId] = useState('');
-  const [message, setMessage] = useState('');
-  const navigate = useNavigate(); // Add navigate hook
- 
+  const [newFriend, setNewFriend] = useState("");
 
-
-
-  // Navigate to the MessagePage with the selected friend's ID
-  const goToMessagePage = (userName) => {
-    navigate(`/messagepage/${userName}`);
-    console.log("Friend ID", userName);
-  };
-
-  // Fetch friends on component mount
-  const fetchFriends = async (token) => {
-    try {
-    const response = await axios.get('http://localhost:80/friends', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    console.log("Your friends list returns", response.data);
-    setFriends(response.data.friends || []);
-  } catch (error) {
-    console.error("Error retrieving friends", error);
-  }
-  };
-
+  // 🔹 Fetch friends from the backend
   useEffect(() => {
-
-    const token = localStorage.getItem('authToken'); // Make sure you store the JWT here
-
-    if(token){
-      fetchFriends(token);
-      console.log("Updated friends stated:", friends);
-    } else {
-      console.log("no token found");
-    }
+    axios
+      .get("http://localhost:80/friends", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+      })
+      .then((response) => {
+        console.log("Friends fetched:", response.data);
+        setFriends(response.data);
+      })
+      .catch((error) => console.error("Error fetching friends:", error));
   }, []);
 
+  // 🔹 Add a new friend
+  const addFriend = () => {
+    axios
+      .post(
+        "http://localhost:80/friends/add",
+        { friendId: newFriend },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+        }
+      )
+      .then(() => {
+        setNewFriend("");
+        window.location.reload(); // Refresh the list
+      })
+      .catch((error) => console.error("Error adding friend:", error));
+  };
+
+// 🔹 Remove a friend
+// 🔸 Remove a friend
+const removeFriend = (friendId) => {
+    console.log('Sending remove request for friendId:', friendId);
+    axios.post('http://localhost:80/friends/remove', 
+      { friendId },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+      })
+      .then(() => {
+        console.log(`Friend ${friendId} removed`);
+        window.location.reload();
+      })
+      .catch(error => console.error('Error removing friend:', error));
+  };
   
-  // Add a frienddd
-  const handleAddFriend = (e) => {
-    e.preventDefault();
 
-    axios.post('/friends/add', { friendId }, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => {
-      setMessage(res.data.message);
-      setFriendId('');
-      fetchFriends(); // Refresh list
-    })
-    .catch(err => {
-      setMessage(err.response?.data?.error || 'Error adding friend');
-    });
-  };
-
-  // Remove a friend
-  const handleRemoveFriend = (id) => {
-    axios.delete('/friends/remove', {
-      headers: { Authorization: `Bearer ${token}` },
-      data: { friendId: id }
-    })
-    .then(res => {
-      setMessage(res.data.message);
-      fetchFriends(); // Refresh list
-    })
-    .catch(err => {
-      setMessage(err.response?.data?.error || 'Error removing friend');
-    });
-  };
 
 
   return (
-    <div className="friend-list-container">
-      <h2>My Friends</h2>
-
-      {message && <p>{message}</p>}
-
+    <div>
+      <h2>Your Friends</h2>
       <ul>
-        {friends.map((item, index)=> (
-          <li key={index}>
-            {item.firstName} {item.lastName} ({item.userName})
+      {friends.map(friend => (
+  <li key={friend.UserID}>
+    {friend.Username}
+    <button onClick={() => removeFriend(friend.UserID)}>Remove</button>
+  </li>
+))}
 
-            <button onClick={() => goToMessagePage(item.userName)}>
-              Message
-            </button>
-            <button onClick={() => handleRemoveFriend(friends.user_id)}>Remove</button>
-          </li>
-        ))}
+
+
+
       </ul>
-      
-      <form onSubmit={handleAddFriend}>
-        <input
-          type="number"
-          placeholder="Enter Friend ID"
-          value={friendId}
-          onChange={(e) => setFriendId(e.target.value)}
-          required
-        />
-        <button type="submit">Add Friend</button>
-      </form>
-    
+      <input
+        type="text"
+        placeholder="Enter friend ID"
+        value={newFriend}
+        onChange={(e) => setNewFriend(e.target.value)}
+      />
+      <button onClick={addFriend}>Add Friend</button>
     </div>
+    
   );
 }

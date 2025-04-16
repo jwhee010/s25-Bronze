@@ -137,67 +137,71 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
     });
 });
 // ------------------- FRIEND ROUTES - ---------------------
+app.post('/friends/add', verifyToken, (req, res) => {
+    if (!req.body || !req.body.friendId) {
+        return res.status(400).json({ message: 'Friend ID is required' });
+    }
 
-app.get('/friends', verifyToken, (req, res) => {
-    const {UserID} = req.user;
-  
-    const sql = `
-    SELECT 
-		u.UserID,
-		u.userName,
-		u.firstName,
-		u.lastName
-	FROM
-		shelf_friend s
-		join user u on s.UserID_2 = u.UserID
-	WHERE
-		UserID_1 = ? AND FriendStatus = 'yes'
-    `;
-  
-    db.query(sql, [UserID], (err, results) => {
-        // if there is an error say so
-      if (err) return res.status(500).json({ error: 'Database error' });
-
-      // show returned results if any
-      console.log("Friends fetched for user", UserID, ": ", results)
-      res.status(200).json({friends: results});
-    });
-  });
-  
-  app.post('/friends/add', verifyToken, (req, res) => {
-    const userId = req.user.id;
     const { friendId } = req.body;
+    const userId = req.user.UserID;
+    console.log(`Add Friend Request: userId=${userId}, friendId=${friendId}`);
+
+    const sql = 'INSERT INTO shelf_friend (user_id, friend_id) VALUES (?, ?)';
+    db.query(sql, [userId, friendId], (error, result) => {
+        if (error) {
+            console.error(' Error adding friend:', error);
+            return res.status(500).json({ message: 'Error adding friend' });
+        }
+        console.log(' Friend added successfully');
+        res.status(200).json({ message: 'Friend added successfully' });
+    });
+});
+
+
+// 🔹 Remove a friend
+app.post('/friends/remove', verifyToken, (req, res) => {
+    const { friendId } = req.body;
+    const userId = req.user.UserID;
   
-    if (userId === friendId) {
-      return res.status(400).json({ error: "You can't add yourself as a friend" });
+    console.log(`Remove Friend Request: userId=${userId}, friendId=${friendId}`);
+  
+    if (!friendId) {
+      return res.status(400).json({ message: 'Friend ID is required' });
     }
   
-    const sql = `
-      INSERT IGNORE INTO shelf_friend (user_id, friend_id)
-      VALUES (?, ?)
-    `;
+    const sql = 'DELETE FROM friends WHERE user_id = ? AND friend_id = ?';
+    db.query(sql, [userId, friendId], (error, result) => {
+      if (error) {
+        console.error('Error removing friend:', error);
+        return res.status(500).json({ message: 'Error removing friend' });
+      }
   
-    db.query(sql, [userId, friendId], (err) => {
-      if (err) return res.status(500).json({ error: 'Database error' });
-      res.json({ message: 'Friend added successfully' });
+      res.status(200).json({ message: 'Friend removed successfully' });
     });
   });
   
-  app.delete('/friends/remove', verifyToken, (req, res) => {
-    const userId = req.user.id;
-    const { friendId } = req.body;
-  
+
+app.get('/friends', verifyToken, (req, res) => {
+    const userId = req.user.UserID;
+    console.log(` Fetch Friends Request for userId=${userId}`);
+
     const sql = `
-      DELETE FROM shelf_friend
-      WHERE user_id = ? AND friend_id = ?
+        SELECT u.UserID, u.Username 
+        FROM user u
+        JOIN shelf_friend sf ON u.UserID = sf.friend_id
+        WHERE sf.user_id = ?
     `;
-  
-    db.query(sql, [userId, friendId], (err) => {
-      if (err) return res.status(500).json({ error: 'Database error' });
-      res.json({ message: 'Friend removed successfully' });
+
+    db.query(sql, [userId], (error, results) => {
+        if (error) {
+            console.error(' Error fetching friends:', error);
+            return res.status(500).json({ message: 'Error fetching friends' });
+        }
+        console.log('Friends fetched:', results);
+        res.status(200).json(results);
     });
-  });
-  
+});
+
 
 
 // Add or update quantity of Food Item in Inventory and display updated Inventory
