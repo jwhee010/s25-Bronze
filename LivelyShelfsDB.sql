@@ -129,34 +129,6 @@ LOCK TABLES `household` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `household_memeber`
---
-
-DROP TABLE IF EXISTS `household_memeber`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `household_memeber` (
-  `AccountID` int NOT NULL,
-  `HouseHoldID` int NOT NULL,
-  `AccountName` varchar(45) DEFAULT NULL,
-  `Accesslevel` int DEFAULT NULL,
-  `ExpieryDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`AccountID`),
-  KEY `fk_householdID_mem_idx` (`HouseHoldID`),
-  CONSTRAINT `fk_householdID_mem` FOREIGN KEY (`HouseHoldID`) REFERENCES `household` (`HouseHoldID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `household_memeber`
---
-
-LOCK TABLES `household_memeber` WRITE;
-/*!40000 ALTER TABLE `household_memeber` DISABLE KEYS */;
-/*!40000 ALTER TABLE `household_memeber` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `inventory`
 --
 
@@ -175,7 +147,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`InventoryID`),
   KEY `fk_userID_inv_idx` (`UserID`),
   CONSTRAINT `fk_userID_inv` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,35 +156,8 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (33,1,3,'2025-02-26','fresh','6','refrigerator','2025-03-07'),(34,2,6,'2025-02-27','fresh','6','refrigerator','2025-03-03'),(35,1,7,'2025-02-27','fresh','10','shelf','2025-03-03'),(36,1,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(37,2,4,'2025-02-26','fresh','4','shelf','2025-03-01'),(38,4,6,'2025-02-26','fresh','6400','refrigerator','2025-03-01'),(39,4,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(41,1,1,'2025-03-23','fresh','5','refrigerator','2025-01-01'),(43,1,2,'2025-03-23','fresh','8','refrigerator','2025-03-30'),(53,3,5,'2025-06-08','fresh','5','refrigerator','2025-06-13'),(54,3,6,'2025-06-08','fresh','4','refrigerator','2025-06-15'),(55,3,11,'2025-06-08','fresh','2','refrigerator','2025-06-22'),(56,3,2,'2025-06-03','fresh','0','shelf','2025-06-10'),(60,3,3,'2025-06-09','fresh','4','refrigerator','2025-06-23'),(61,3,2,'2025-06-08','fresh','3','shelf','2025-06-15'),(62,3,7,'2025-04-09','fresh','7','refigerator','2025-04-09'),(63,3,7,'2025-04-09','fresh','7','refigerator','2025-04-12'),(65,3,10,'2025-04-07','fresh','4','refrigerator','2025-04-21'),(66,3,10,'2025-04-14','fresh','0','refrigerator','2025-04-28'),(67,3,10,'2025-04-13','fresh','1','refrigerator','2025-04-27');
+INSERT INTO `inventory` VALUES (33,1,3,'2025-02-26','fresh','6','refrigerator','2025-03-07'),(34,2,6,'2025-02-27','fresh','6','refrigerator','2025-03-03'),(35,1,7,'2025-02-27','fresh','10','shelf','2025-03-03'),(36,1,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(37,2,4,'2025-02-26','fresh','4','shelf','2025-03-01'),(38,4,6,'2025-02-26','fresh','6400','refrigerator','2025-03-01'),(39,4,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(41,1,1,'2025-03-23','fresh','5','refrigerator','2025-01-01'),(43,1,2,'2025-03-23','fresh','8','refrigerator','2025-03-30'),(53,3,5,'2025-06-08','fresh','5','refrigerator','2025-06-13'),(54,3,6,'2025-06-08','fresh','4','refrigerator','2025-06-15'),(55,3,11,'2025-06-08','fresh','2','refrigerator','2025-06-22'),(56,3,2,'2025-06-03','fresh','0','shelf','2025-06-10'),(60,3,3,'2025-06-09','fresh','4','refrigerator','2025-06-23'),(61,3,2,'2025-06-08','fresh','3','shelf','2025-06-15'),(62,3,7,'2025-04-09','fresh','7','refigerator','2025-04-09'),(63,3,7,'2025-04-09','fresh','7','refigerator','2025-04-12'),(64,3,7,'2025-04-09','fresh','7','refigerator','2025-04-16');
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `messages`
---
-
-DROP TABLE IF EXISTS `messages`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `messages` (
-  `messageID` int NOT NULL AUTO_INCREMENT,
-  `senderID` varchar(45) DEFAULT NULL,
-  `receiverID` varchar(45) DEFAULT NULL,
-  `text` varchar(281) DEFAULT NULL,
-  `timestamp` datetime DEFAULT NULL,
-  PRIMARY KEY (`messageID`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `messages`
---
-
-LOCK TABLES `messages` WRITE;
-/*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES (1,'Xx_Andrew_xX','XX_UrDone','Hey I\'m Andrew','2025-04-14 04:07:51'),(2,'Xx_Andrew_xX','XX_UrDone','what\'s your name?','2025-04-14 04:08:23'),(3,'XX_UrDone','Xx_Andrew_xX','Hey Im jaylen','2025-04-14 04:09:50'),(4,'Xx_Andrew_xX','XX_UrDone','Do you have any food for me? uwu','2025-04-14 04:13:06'),(5,'Xx_Andrew_xX','demo2_user','You kinda cute','2025-04-14 04:13:14'),(6,'Xx_Andrew_xX','demo2_user','Demo 2 user','2025-04-14 04:13:19'),(7,'XX_UrDone','Xx_Andrew_xX','I got 2 bananas','2025-04-14 04:32:44'),(8,'Xx_Andrew_xX','XX_UrDone',';ets goooo','2025-04-14 04:33:14'),(9,'Xx_Andrew_xX','XX_UrDone','Give me','2025-04-14 06:52:49'),(10,'Xx_Andrew_xX','XX_UrDone','ok?','2025-04-14 06:52:54'),(11,'XX_UrDone','Xx_Andrew_xX','Probs','2025-04-14 06:55:25'),(12,'Xx_Andrew_xX','XX_UrDone','Hey Andrew, monster hunter and foods?','2025-04-14 22:08:48'),(13,'XX_UrDone','Xx_Andrew_xX','Lets go, when?','2025-04-14 22:10:34'),(14,'demo2_user','Xx_Andrew_xX','ay chill','2025-04-14 22:40:18'),(15,'demo2_user','Xx_Andrew_xX','say something else','2025-04-14 22:47:35'),(16,'demo2_user','Xx_Andrew_xX','testing','2025-04-14 22:47:39'),(17,'Xx_Andrew_xX','demo2_user','accept the request fn','2025-04-14 22:49:20'),(18,'demo2_user','Xx_Andrew_xX','ion see a request','2025-04-14 22:52:39'),(19,'Xx_Andrew_xX','demo2_user','on everyone soul i sent it','2025-04-14 22:55:50'),(20,'demo2_user','Xx_Andrew_xX','nah ion wanna do it no mo','2025-04-14 22:56:45');
-/*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -422,8 +367,9 @@ CREATE TABLE `user` (
   `email` varchar(45) NOT NULL,
   `lastLogin` datetime DEFAULT NULL,
   `creationDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`UserID`),
+  UNIQUE KEY `userName` (`userName`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -432,7 +378,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 19:53:10','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-11 19:34:04','2024-12-14 00:00:00'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-04-14 19:52:25','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00');
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 19:53:10','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-11 19:34:04','2024-12-14 00:00:00'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-04-11 19:47:30','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(5,'newUser','thisName','newLastName','12','email.@email.com',NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -453,4 +399,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-14 23:33:38
+-- Dump completed on 2025-04-15 21:54:01
