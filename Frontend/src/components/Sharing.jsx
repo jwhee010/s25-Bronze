@@ -110,6 +110,16 @@ export default function Sharing() {
         }
     };
 
+    const refreshAllData = async () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+    
+        // Ensure foodItems and sharedItems are fetched before updating UI-dependent states
+        await showFoodItems(token);          // get foodItems first
+        await getSharedFoodItems(token);     // then get your shared items
+        await getFoodRequest(token);         // update any pending requests
+    };    
+
 
 
 
@@ -139,7 +149,7 @@ export default function Sharing() {
 
     // sets buttons for the user to properly share and unshare food its
     useEffect(() => {
-        if (foodItems.length > 0 && yourSharedItems.length > 0) {
+        if (foodItems.length && yourSharedItems.length >= 0) {
             const status = {};
     
             foodItems.forEach((item, index) => {
@@ -217,6 +227,7 @@ export default function Sharing() {
             }
         );
         console.log("Item shared successfully:", response.data.message);
+        await getSharedFoodItems(token);
     } catch (error) {
         console.error('Error sharing food', error);
     }
@@ -236,7 +247,8 @@ export default function Sharing() {
                 }
             });
             console.log(`This item is deleted to be deleted:`, item);
-            getFoodRequest(token);
+            await getSharedFoodItems(token);
+            await getFoodRequest(token);
         } catch (error){
             console.error('error deleting food', error);
         }
@@ -297,25 +309,24 @@ export default function Sharing() {
     };
 
     // handles the sharing button states and functions
-    const toggleShare = (index, item) => {
+    const toggleShare = async (index, item) => {
         const token = localStorage.getItem("authToken");
 
-        setSharedStatus((prevStatus) => {
-            const newStatus = !prevStatus[index];
-    
-            if (newStatus) {
-                runWhenTrue(index);
-                shareItemToServer(token, item);
-            } else {
-                runWhenFalse(index);
-                unshareItemFromServer(token, item);
-            }
-    
-            return {
-                ...prevStatus,
-                [index]: newStatus,
-            };
-        });
+
+        const newStatusS = !sharedStatus[index];
+
+        if (newStatusS) {
+            runWhenTrue(index);
+            await shareItemToServer(token, item);
+        } else {
+            runWhenFalse(index);
+            await unshareItemFromServer(token, item);
+        }
+        
+        setSharedStatus((prevStatus) => ({
+            ...prevStatus,
+            [index]: newStatusS,
+        }));
     };
     
     
@@ -358,9 +369,7 @@ export default function Sharing() {
             await unshareItemFromServer(token, item);
     
             // Optionally refresh data here, if needed
-            await getSharedFoodItems(token);
-            await getFoodRequest(token);
-            await showFoodItems(token);
+            await refreshAllData();
         } else {
             console.log("no token provided");
         }
