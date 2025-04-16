@@ -360,6 +360,7 @@ export default function Sharing() {
             // Optionally refresh data here, if needed
             await getSharedFoodItems(token);
             await getFoodRequest(token);
+            await showFoodItems(token);
         } else {
             console.log("no token provided");
         }
