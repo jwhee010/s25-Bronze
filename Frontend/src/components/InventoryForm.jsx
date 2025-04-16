@@ -3,7 +3,7 @@ import "./InventoryForm.css";
 import axios from 'axios';
 import { common } from "@mui/material/colors";
 
-export default function InventoryForm() {
+export default function InventoryForm({addNotification}) {
     const [active, setActive] = useState(false);
 
     const [commonlyWasted, setWastedFood] = useState([]);
@@ -89,7 +89,7 @@ export default function InventoryForm() {
 
             // Alerts user if a food item is commonly wasted on form submission
             if(isWasted) {
-                alert(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`)
+                addNotification(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`)
             }
 
             const token = localStorage.getItem("authToken");

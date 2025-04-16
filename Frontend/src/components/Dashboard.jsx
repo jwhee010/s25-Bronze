@@ -61,7 +61,7 @@ function Dashboard() {
        
         <div className={`relative min-h-screen flex`}>
             <Navbar />
-            <NotificationPane/>
+            {/*<NotificationPane/>*/}
             <h1 className="mainheader" >
                 Dashboard<br/>
                 {/* fetch the firstname and lastname of the user who logged in */}

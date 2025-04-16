@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import IncentiveNotifications from './IncentiveNotifications';
 
 
-export default function NotificationPane() {
+export default function NotificationPane({notifications}) {
   const [open, setOpen] = React.useState(false);
 
   const [expiringItems, setExpiringItems] = React.useState([]);
@@ -53,10 +53,19 @@ export default function NotificationPane() {
           {expiringItems.map((item, index) => (
             <div key={ index } >
               <p>
-                <p2>{item.Expiration}:</p2>
+                <span>{item.Expiration}:</span>
                 <br />
-                Your {item.FoodName} is expriring soon on {item.Expiration}
+                <span>Your {item.FoodName} is expriring soon on {item.Expiration}</span>
               </p>
+              <Divider />
+            </div>
+          ))}
+        </div>
+
+        <div className='notifBox'>
+          {notifications.map((notification, index) => (
+            <div key={index}>
+              <p>{notification.message}</p>
               <Divider />
             </div>
           ))}
