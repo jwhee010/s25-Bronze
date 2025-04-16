@@ -158,7 +158,7 @@ app.post('/friends/add', verifyToken, (req, res) => {
 });
 
 
-// 🔹 Remove a friend
+//  Remove a friend
 app.post('/friends/remove', verifyToken, (req, res) => {
     const { friendId } = req.body;
     const userId = req.user.UserID;

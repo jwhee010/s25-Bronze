@@ -36,8 +36,8 @@ export default function FriendList() {
       .catch((error) => console.error("Error adding friend:", error));
   };
 
-// 🔹 Remove a friend
-// 🔸 Remove a friend
+//  Remove a friend
+//  Remove a friend
 const removeFriend = (friendId) => {
     console.log('Sending remove request for friendId:', friendId);
     axios.post('http://localhost:80/friends/remove', 
@@ -83,3 +83,4 @@ const removeFriend = (friendId) => {
     
   );
 }
+///
