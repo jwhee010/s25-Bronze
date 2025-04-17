@@ -574,7 +574,7 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
         }
 
         // 2. Delete the specific food request
-        const deleteRequests = `DELETE FROM food_requests WHERE SharedItemID = ?`;
+        const deleteRequests = `DELETE FROM  WHERE SharedItemID = ?`;
         db.query(deleteRequests, [SharedItemID], (err, result2) => {
             if (err) {
                 return res.status(500).json({ message: 'Error deleting food request' });
