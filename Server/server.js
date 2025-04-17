@@ -172,7 +172,7 @@ app.post('/friends/remove', verifyToken, (req, res) => {
     const sql = 'DELETE FROM friends WHERE user_id = ? AND friend_id = ?';
     db.query(sql, [userId, friendId], (error, result) => {
       if (error) {
-        console.error('Error removing friend:', error);
+        console.error('Error executing query:', error);
         return res.status(500).json({ message: 'Error removing friend' });
       }
   
