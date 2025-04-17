@@ -137,29 +137,45 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
     });
 });
 // ------------------- FRIEND ROUTES - ---------------------
-app.post('/friends/add', verifyToken, (req, res) => {
-    if (!req.body || !req.body.friendId) {
-        return res.status(400).json({ message: 'Friend ID is required' });
-    }
-
+app.get('/friends', verifyToken, (req, res) => {
+    const userId = req.user.UserID;
+    console.log(`Fetch Friends Request for userId=${userId}`);
+  
+    const sql = `
+      SELECT u.UserID, u.Username
+      FROM user u
+      JOIN friends f ON u.UserID = f.friend_id
+      WHERE f.user_id = ?
+    `;
+  
+    db.query(sql, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing query', error);
+        return res.status(500).json({ message: 'Error fetching friends' });
+      }
+      res.status(200).json(results);
+    });
+  });
+  
+  app.post('/friends/add', verifyToken, (req, res) => {
     const { friendId } = req.body;
     const userId = req.user.UserID;
-    console.log(`Add Friend Request: userId=${userId}, friendId=${friendId}`);
-
-    const sql = 'INSERT INTO shelf_friend (user_id, friend_id) VALUES (?, ?)';
+  
+    if (!friendId) {
+      return res.status(400).json({ message: 'Friend ID is required' });
+    }
+  
+    const sql = 'INSERT INTO friends (user_id, friend_id) VALUES (?, ?)';
     db.query(sql, [userId, friendId], (error, result) => {
-        if (error) {
-            console.error(' Error adding friend:', error);
-            return res.status(500).json({ message: 'Error adding friend' });
-        }
-        console.log(' Friend added successfully');
-        res.status(200).json({ message: 'Friend added successfully' });
+      if (error) {
+        console.error('Error adding friend', error);
+        return res.status(500).json({ message: 'Error adding friend' });
+      }
+      res.status(200).json({ message: 'Friend added successfully' });
     });
-});
-
-
-//  Remove a friend
-app.post('/friends/remove', verifyToken, (req, res) => {
+  });
+  
+  app.post('/friends/remove', verifyToken, (req, res) => {
     const { friendId } = req.body;
     const userId = req.user.UserID;
   
@@ -176,33 +192,15 @@ app.post('/friends/remove', verifyToken, (req, res) => {
         return res.status(500).json({ message: 'Error removing friend' });
       }
   
+      if (result.affectedRows === 0) {
+        console.warn('No rows deleted — check data match.');
+        return res.status(404).json({ message: 'Friend not found or already removed' });
+      }
+  
       res.status(200).json({ message: 'Friend removed successfully' });
     });
   });
   
-
-app.get('/friends', verifyToken, (req, res) => {
-    const userId = req.user.UserID;
-    console.log(` Fetch Friends Request for userId=${userId}`);
-
-    const sql = `
-        SELECT u.UserID, u.Username 
-        FROM user u
-        JOIN shelf_friend sf ON u.UserID = sf.friend_id
-        WHERE sf.user_id = ?
-    `;
-
-    db.query(sql, [userId], (error, results) => {
-        if (error) {
-            console.error(' Error fetching friends:', error);
-            return res.status(500).json({ message: 'Error fetching friends' });
-        }
-        console.log('Friends fetched:', results);
-        res.status(200).json(results);
-    });
-});
-
-
 
 // Add or update quantity of Food Item in Inventory and display updated Inventory
 app.post('/addOrUpdateFood', verifyToken, (req, res) => {
