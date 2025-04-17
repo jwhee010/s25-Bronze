@@ -202,7 +202,7 @@ app.get('/friends', verifyToken, (req, res) => {
   });
   
 
-// Add or update quantity of Food Item in Inventory and display updated Inventory
+/// Add or update quantity of Food Item in Inventory and display updated Inventory
 app.post('/addOrUpdateFood', verifyToken, (req, res) => {
     const { UserID } = req.user;
     const {FoodName, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus} = req.body;
