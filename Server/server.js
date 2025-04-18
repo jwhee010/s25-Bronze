@@ -255,6 +255,26 @@ app.post('/removeFoodQuantity', (req, res) => {
     });
 });
 
+// yet another disgusting getter function to clutter up this file (outputs users inventory as an array of item names)
+app.get('/itemName', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `SELECT DISTINCT food_item.FoodName
+                 FROM inventory
+                 JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                 WHERE inventory.UserID = ?`;
+
+    db.query(query, [UserID], (error, results) => {
+        if (error) {
+            console.error("Error fetching item names:", error);
+            return res.status(500).json({ message: 'Error retrieving item names' });
+        }
+
+        const itemNames = results.map(row => row.FoodName);
+        res.status(200).json({ itemNames });
+    });
+});
+
 // update quantity of items consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
     const { FoodName, Quantity, Action } = req.body;

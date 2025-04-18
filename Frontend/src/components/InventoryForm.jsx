@@ -89,10 +89,22 @@ export default function InventoryForm({addNotification}) {
 
             // Alerts user if a food item is commonly wasted on form submission
             if(isWasted) {
-                addNotification(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`)
+                addNotification(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`);
             }
 
             const token = localStorage.getItem("authToken");
+
+            const ownedItemsRes = await axios.get('http://localhost:80/itemName', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
+            const ownedItems = ownedItemsRes.data.itemNames.map(name => name.toLowerCase());
+    
+            if (ownedItems.includes(foodName.toLowerCase())) {
+                addNotification(`You already have "${foodName}" in your inventory.`);
+            }
 
             const response = await axios.post(
                 "http://localhost:80/addOrUpdateFood",
