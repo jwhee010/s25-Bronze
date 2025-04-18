@@ -1,28 +1,40 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom'; // Navigate hook
 
 export default function FriendList() {
   const [friends, setFriends] = useState([]);
   const [newFriend, setNewFriend] = useState("");
+  const navigate = useNavigate(); 
 
-  const fetchFriends = () => {
-    axios
-      .get("http://localhost:80/friends", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      })
-      .then((response) => {
-        console.log("Friends fetched:", response.data);
-        setFriends(response.data);
-      })
-      .catch((error) =>
-        console.error("Error fetching friends:", error.message)
-      );
+  const fetchFriends = async (token) => {
+    try {
+    const response = await axios.get('http://localhost:80/friends', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    console.log("Your friends list returns", response.data);
+    setFriends(response.data.friends || []);
+  } catch (error) {
+    console.error("Error retrieving friends", error);
+  }
+};
+
+
+   // Navigate to the MessagePage with the selected friend's ID
+   const goToMessagePage = (userName) => {
+    navigate(`/messagepage/${userName}`);
+    console.log("Friend ID", userName);
   };
 
   useEffect(() => {
-    fetchFriends(); // Load friends on mount
+    const token = localStorage.getItem('authToken'); // Make sure you store the JWT here
+ 
+     if(token){
+       fetchFriends(token);
+       console.log("Updated friends stated:", friends);
+     } else {
+       console.log("no token found");
+     }
   }, []);
 
   const addFriend = () => {
@@ -68,10 +80,13 @@ export default function FriendList() {
     <div>
       <h2>Your Friends</h2>
       <ul>
-        {friends.map((friend) => (
-          <li key={friend.UserID}>
-            {friend.Username}{" "}
-            <button onClick={() => removeFriend(friend.UserID)}>Remove</button>
+      {friends.map((item, index)=> (
+           <li key={index}>
+             {item.firstName} {item.lastName} ({item.userName})
+             <button onClick={() => goToMessagePage(item.userName)}>
+               Message
+             </button>
+             <button onClick={() => handleRemoveFriend(friends.user_id)}>Remove</button>
           </li>
         ))}
       </ul>
