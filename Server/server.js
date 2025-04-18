@@ -598,6 +598,72 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
     });
 });
 
+// Update user email
+app.put('/api/user/email', verifyToken, (req, res) => {
+    const { email } = req.body;
+    const { UserID } = req.user;
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const query = `UPDATE user SET email = ? WHERE UserID = ?`;
+    db.query(query, [email, UserID], (error, result) => {
+        if (error) {
+            console.error('Error updating email:', error);
+            return res.status(500).json({ message: 'Error updating email' });
+        }
+        res.status(200).json({ message: 'Email updated successfully' });
+    });
+});
+
+// Update user name
+app.patch('/api/user/profile', verifyToken, (req, res) => {
+    const { firstName, lastName } = req.body;
+    const { UserID } = req.user;
+
+    if (!firstName || !lastName) {
+        return res.status(400).json({ message: 'First name and last name are required' });
+    }
+
+    const query = `UPDATE user SET firstName = ?, lastName = ? WHERE UserID = ?`;
+    db.query(query, [firstName, lastName, UserID], (error, result) => {
+        if (error) {
+            console.error('Error updating name:', error);
+            return res.status(500).json({ message: 'Error updating name' });
+        }
+        res.status(200).json({ message: 'Name updated successfully' });
+    });
+});
+
+// Empty inventory
+app.delete('/api/inventory/empty', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `DELETE FROM inventory WHERE UserID = ?`;
+    db.query(query, [UserID], (error, result) => {
+        if (error) {
+            console.error('Error emptying inventory:', error);
+            return res.status(500).json({ message: 'Error emptying inventory' });
+        }
+        res.status(200).json({ message: 'Inventory emptied successfully' });
+    });
+});
+
+// Reset analytics
+app.post('/api/analytics/reset', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `DELETE FROM analytics WHERE UserID = ?`;
+    db.query(query, [UserID], (error, result) => {
+        if (error) {
+            console.error('Error resetting analytics:', error);
+            return res.status(500).json({ message: 'Error resetting analytics' });
+        }
+        res.status(200).json({ message: 'Analytics reset successfully' });
+    });
+});
+
 
 
 
