@@ -171,13 +171,36 @@ app.get('/friends', verifyToken, (req, res) => {
       return res.status(400).json({ message: 'Friend ID is required' });
     }
   
-    const sql = 'INSERT INTO friends (user_id, friend_id) VALUES (?, ?)';
-    db.query(sql, [userId, friendId], (error, result) => {
+    // Ensure duplicate friend entries aren't added
+    const checkDuplicateSql = `SELECT * FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?)`;
+    
+    db.query(checkDuplicateSql, [userId, friendId], (checkError, checkResult) => {
+        if(checkError){
+            return res.status(500).json({ message: 'Error checking existing friendship' });
+        }
+
+        if (checkResult.length > 0) {
+            return res.status(400).json({ message: 'You are already friends!' });
+          }
+    
+
+    // create variables to be inserted into the shelf_friend table
+    const date = new Date();
+    const friendStatus = 'yes';
+
+    const sql = `INSERT INTO shelf_friend (UserID_1, UserID_2, DateConnected, FriendStatus) VALUES (?, ?, ?, ?), (?, ?, ?, ?)`;
+    
+    // This values container could have been done for remove friend as well,
+    // it's just that the remove friend did not need as many values
+    const values = [userId, friendId, date, friendStatus, friendId, userId, date, friendStatus];
+
+    db.query(sql, values, (error, result) => {
       if (error) {
         console.error('Error adding friend', error);
         return res.status(500).json({ message: 'Error adding friend' });
       }
       res.status(200).json({ message: 'Friend added successfully' });
+    });
     });
   });
   
