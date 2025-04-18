@@ -182,17 +182,18 @@ app.get('/friends', verifyToken, (req, res) => {
   });
   
   app.post('/friends/remove', verifyToken, (req, res) => {
-    const { friendId } = req.body;
+    const { UserID_2 } = req.body;
     const userId = req.user.UserID;
   
-    console.log(`Remove Friend Request: userId=${userId}, friendId=${friendId}`);
+    console.log(`Remove Friend Request: user_id = ${userId}, friendId = ${UserID_2}`);
   
-    if (!friendId) {
+    if (!UserID_2) {
       return res.status(400).json({ message: 'Friend ID is required' });
     }
   
-    const sql = 'DELETE FROM friends WHERE user_id = ? AND friend_id = ?';
-    db.query(sql, [userId, friendId], (error, result) => {
+    const sql = `DELETE FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?) OR (UserID_1 = ? AND UserID_2 = ?)`;
+    
+    db.query(sql, [userId, UserID_2, UserID_2, userId], (error, result) => {
       if (error) {
         console.error('Error executing query:', error);
         return res.status(500).json({ message: 'Error removing friend' });

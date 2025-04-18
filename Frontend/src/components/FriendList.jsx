@@ -31,17 +31,16 @@ export default function FriendList() {
  
      if(token){
        fetchFriends(token);
-       console.log("Updated friends stated:", friends);
      } else {
        console.log("no token found");
      }
   }, []);
 
-  const addFriend = () => {
-    axios
-      .post(
+  const addFriend = (friendId) => {
+    const token = localStorage.getItem('authToken');
+    axios.post(
         "http://localhost:80/friends/add",
-        { friendId: newFriend },
+        { UserID_2: friendId },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -50,17 +49,18 @@ export default function FriendList() {
       )
       .then(() => {
         setNewFriend("");
-        fetchFriends(); // Refresh the list without full page reload
+        fetchFriends(token); // Refresh the list without full page reload
       })
       .catch((error) => console.error("Error adding friend:", error));
   };
 
   const removeFriend = (friendId) => {
+    const token = localStorage.getItem('authToken');
+    
     console.log("Sending remove request for friendId:", friendId);
-    axios
-      .post(
+    axios.post(
         "http://localhost:80/friends/remove",
-        { friendId },
+        { UserID_2: Number(friendId) },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -69,7 +69,7 @@ export default function FriendList() {
       )
       .then(() => {
         console.log(`Friend ${friendId} removed`);
-        fetchFriends(); // Refresh the list without full page reload
+        fetchFriends(token); // Refresh the list without full page reload
       })
       .catch((error) =>
         console.error("Error removing friend:", error.message)
@@ -80,7 +80,9 @@ export default function FriendList() {
     <div className="friend-list-container">
       <h2>Your Friends</h2>
       <ul>
-      {friends.map((item, index)=> (
+      {friends.map((item, index)=> {
+            console.log("Friend item:", item);
+            return(
            <li key={index}>
             <span className="friend-name">
              {item.firstName} {item.lastName} ({item.userName})
@@ -89,10 +91,11 @@ export default function FriendList() {
              <button onClick={() => goToMessagePage(item.userName)}>
                Message
              </button>
-             <button onClick={() => handleRemoveFriend(friends.user_id)}>Remove</button>
+             <button onClick={() => removeFriend(item.UserID)}>Remove</button>
              </div>
-          </li>
-        ))}
+          </li>);
+
+      })}
       </ul>
       <input
         type="text"
