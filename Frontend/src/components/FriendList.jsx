@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom'; // Navigate hook
-
+import "./FriendList.css";
 export default function FriendList() {
   const [friends, setFriends] = useState([]);
   const [newFriend, setNewFriend] = useState("");
@@ -77,16 +77,20 @@ export default function FriendList() {
   };
 
   return (
-    <div>
+    <div className="friend-list-container">
       <h2>Your Friends</h2>
       <ul>
       {friends.map((item, index)=> (
            <li key={index}>
+            <span className="friend-name">
              {item.firstName} {item.lastName} ({item.userName})
+             </span>
+             <div className="friend-buttons">
              <button onClick={() => goToMessagePage(item.userName)}>
                Message
              </button>
              <button onClick={() => handleRemoveFriend(friends.user_id)}>Remove</button>
+             </div>
           </li>
         ))}
       </ul>
