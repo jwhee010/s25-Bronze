@@ -303,7 +303,7 @@ app.post('/consumeFood', verifyToken, (req, res) => {
 });
 
 // Function to select the five highest wasted food items from the
-// analytics table and sorts them from most to least wasted  
+// analytics table and sorts them from most to least wasted
 app.get('/topWaste', verifyToken, async (req, res) => {
     const { UserID } = req.user;
     
