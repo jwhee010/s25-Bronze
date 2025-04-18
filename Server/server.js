@@ -171,6 +171,11 @@ app.get('/friends', verifyToken, (req, res) => {
       return res.status(400).json({ message: 'Friend ID is required' });
     }
   
+    // Ensure that they do not add themselves
+    if(userId == friendId){
+        return res.status(400).json({ message: 'You cannot add yourself as a friend!' });
+    }
+
     // Ensure duplicate friend entries aren't added
     const checkDuplicateSql = `SELECT * FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?)`;
     
@@ -180,8 +185,8 @@ app.get('/friends', verifyToken, (req, res) => {
         }
 
         if (checkResult.length > 0) {
-            return res.status(400).json({ message: 'You are already friends!' });
-          }
+            return res.status(400).json({ message: 'This user is already your friend!' });
+        }
     
 
     // create variables to be inserted into the shelf_friend table

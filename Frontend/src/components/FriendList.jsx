@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom'; // Navigate hook
 import "./FriendList.css";
+import { jwtDecode } from 'jwt-decode';
 
 export default function FriendList() {
   const [friends, setFriends] = useState([]);
   const [newFriend, setNewFriend] = useState("");
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [userId, setUserId] = useState(null);
 
   const fetchFriends = async (token) => {
     try {
@@ -33,6 +35,13 @@ export default function FriendList() {
 
     if (token) {
       fetchFriends(token);
+      try{
+        const decodedToken = jwtDecode(token);
+        setUserId(decodedToken.UserID)
+      } catch (error) {
+        console.error("Error in decoding token:", error);
+      }
+      
     } else {
       console.log("no token found");
     }
@@ -84,6 +93,7 @@ export default function FriendList() {
       );
   };
 
+ 
   return (
     <div className="friend-list-container">
       <h2>Your Friends</h2>
@@ -105,6 +115,8 @@ export default function FriendList() {
 
         })}
       </ul>
+      
+      <h3>Your friend ID is: {userId ?? "Loading..."}</h3>
       <input
         type="text"
         placeholder="Enter friend ID"
