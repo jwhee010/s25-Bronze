@@ -12,8 +12,6 @@ const ShelfFriends = () => {
             <h1>ShelfFriends</h1>
             <FriendList/>
             <Sharing/>
-            {/* <h2>Messaging</h2>
-            <Messaging/> */}
         </div>
     );
 };
