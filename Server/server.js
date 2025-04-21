@@ -695,7 +695,7 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
                     AND analytics.Status = 'shared'
                     ORDER BY analytics.Quantity DESC
                     LIMIT 5;`
-        db.query(sql, [UserId], (error, results) => {
+        db.query(sql, [UserID], (error, results) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ message: 'Error executing query' });
