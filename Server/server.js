@@ -85,6 +85,29 @@ app.post('/login', (req, res) => {
     });
 });
 
+//-SignUp page-
+//Takes the information added to the SignUp page form and inserts it into the database's user table
+//newUsername must be unique, cannot match with a username in the database
+app.post('/signup',(req, res) =>{
+
+    const {newUsername, newFirstname, newLastname, newPassword, newEmail} = req.body;
+
+    const signUpQuery =`
+    Insert into livelyshelfsdb.user(userName, firstName, lastName, passwordHash, email)
+    values(?, ?, ?, ?, ?);
+    `;
+
+    db.query(signUpQuery, [newUsername, newFirstname, newLastname, newPassword, newEmail],(err, checkRes) =>{
+        if(err)
+        {
+            console.log(err);
+            return res.status(500).json({message:'Error executing query'});
+        }
+        res.status(200).json({message:'Account Created Successfully!'});
+    });
+});
+
+
 // retrive food name and expiration date for display on the calendar
 // Retrieve food name and expiration date for display on the calendar
 app.get('/calendar', verifyToken, async (req, res) => {
@@ -467,6 +490,26 @@ app.get('/sharing', verifyToken, async(req, res) => {
              return res.status(500).json({message: 'Error getting inventory'});
             }
         res.status(200).json({foodItems: result})
+    });
+});
+
+app.get('/recipe', verifyToken, async(req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT  recipe.RecipeID, recipe.RecipeName, recipe.Instructions, recipe.RecipeLink,
+                    recipe_rec.FoodItemID, food_item.FoodName, recipe_rec.QuantityRequired
+                    FROM recipe
+                    JOIN recipe_rec  ON recipe.RecipeID = recipe_rec.RecipeID
+                    JOIN food_item ON recipe_rec.FoodItemID = food_item.FoodItemID
+                    WHERE recipe.UserID = ?`;
+    
+    db.query(sql, [ UserID ], (error, result) => {
+        if (error) {
+            console.log("error executing query")
+            return res.status(500).json({message: "Error getting recipe reccomendations"});
+        }
+
+        res.status(200).json({ recipes: result });
     });
 });
 

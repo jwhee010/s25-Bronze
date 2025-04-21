@@ -1,0 +1,99 @@
+.regHeader{
+    color:rgb(144, 222, 122);
+    font-weight: bold;
+    font-size: 40px;
+
+    margin: 0 auto;
+    text-align: center;
+
+    width:490px;
+    height:80px;
+
+    padding: 8px;
+    padding-top: 20px;
+    padding-bottom: 30px;
+    
+    margin-bottom: 30px;
+    background-color: rgba(56, 74, 69, 0.881);
+    border-radius: 10px;
+
+    font-family: monospace;
+
+}
+
+.formWrapper{
+    margin:auto;
+    margin-bottom: 30px;
+    padding-top: 30px;
+    
+    border-radius: 30px;
+
+    padding: 10px;
+    width:620px;
+    height: 420px;
+    background-color: rgba(76, 63, 55, 0.953);
+    border: 2px solid rgb(93, 145, 111);
+    
+}
+
+.formMatting{
+    margin-top: 8px;
+    margin-bottom: 10px;
+    float:right;
+    margin-right: 190px;
+
+    color:goldenrod;
+    font-family: monospace;
+    font-size: large;
+}
+
+.formMatting2{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    float:right;
+    margin-right: 190px;
+
+    color:rgb(220, 186, 98);
+    font-family: monospace;
+    font-size: large;
+    font-weight: bold;
+}
+
+.formMatting3{
+    margin-top: 5px;
+    margin-bottom: 10px;
+    float:right;
+    margin-right: 190px;
+
+    color:goldenrod;
+    font-family: monospace;
+    font-size: large;
+    font-weight: bold;
+}
+
+.regButton{
+    width: 150px;
+    right: 680px;
+    bottom: 110px;
+    position:absolute;
+
+    background-color: rgb(27, 27, 27);
+    color:goldenrod;
+
+    font-family: monospace;
+    font-size: large;
+    text-align: center;
+}
+
+.regButton:hover{
+    background-color: rgb(120, 201, 143);
+    color:rgb(31, 31, 31);
+    border-color: rgb(120, 201, 143);
+}
+
+.errSuccess{
+  text-align: center;
+    margin-top: 8px;
+    margin-right: 140px;
+    float:right;
+}
