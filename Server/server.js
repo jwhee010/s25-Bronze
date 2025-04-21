@@ -656,7 +656,7 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
         });
     });
 
-    app.get('/Sharing/Ananlytics', verifyToken, (req, res) => {
+    app.get('/Sharing/Analytics', verifyToken, (req, res) => {
         const { UserID } = req.user;
 
         const sql = `select food_item.FoodName, analytics.Quantity from analytics
