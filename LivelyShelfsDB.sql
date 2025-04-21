@@ -367,6 +367,7 @@ CREATE TABLE `user` (
   `email` varchar(45) NOT NULL,
   `lastLogin` datetime DEFAULT NULL,
   `creationDate` datetime DEFAULT NULL,
+  `creationDate` datetime DEFAULT NULL,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `userName` (`userName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -381,14 +382,6 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 19:53:10','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-11 19:34:04','2024-12-14 00:00:00'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-04-11 19:47:30','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(5,'newUser','thisName','newLastName','12','email.@email.com',NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'livelyshelfsdb'
---
-
---
--- Dumping routines for database 'livelyshelfsdb'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

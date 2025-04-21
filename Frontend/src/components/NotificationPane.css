@@ -1,0 +1,89 @@
+.drawerButton{
+    border-radius: 0px 0px 10px 10px;
+    border-color: transparent;
+
+    position: fixed;
+    top:0;
+    right: 320px;
+
+    background-color:#4d4d4c;
+    color: rgb(255, 224, 146);
+
+    font-family: monospace;
+    font-size: large;
+}
+
+.drawerButton:hover{
+    border-radius: 0px 0px 10px 10px;
+    border-left-width: 10px;
+    border-left-color: #86817c;
+    border-color: transparent;
+
+    position: fixed;
+     top:0;
+    right: 320px;
+
+    background-color:#86817c;
+    color: rgb(255, 224, 146);
+
+    font-family: monospace;
+    font-size: large;
+}
+
+
+
+.notifHeader{
+    width:190px;
+     padding: 15px;
+     padding-left: 60px;
+     margin-left: 95px;
+
+    color:rgb(255, 224, 146);
+    background-color: rgb(93, 93, 93);
+
+    border-radius: 12px;
+    font-size: x-large;
+    font-family: monospace;
+    font-weight: bold;   
+}
+
+.sectionHeader{
+    width:431px;
+    padding: 40;
+    margin-left:10px;
+
+    color:antiquewhite;
+    background-color: rgb(93, 93, 93);
+    border-radius: 3px;
+
+    font-family:monospace;
+    font-size: x-large;
+}
+
+
+.notifBox{
+    width:410px;
+    height:250px;
+    overflow-y: scroll;
+    overflow-x: scroll;
+
+    background-color: #5e5e5d;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+p{
+    margin-left: 5px;
+    font-family: monospace;
+    font-size: large;
+    color:rgb(204, 204, 204)
+}
+
+p2{
+    color:goldenrod
+}
+
+
+
+

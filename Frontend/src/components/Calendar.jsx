@@ -4,15 +4,18 @@ import FullCalendar from './FullCalendar.jsx'
 import InventoryForm from './InventoryForm.jsx';
 import FoodCheckform from './FoodCheckform.jsx'
 import './Calendar.css'
+import TemporaryDrawer from './NotificationPane.jsx';
+import NotificationPane from './NotificationPane.jsx';
 
-const Calendar = () => {
+const Calendar = ({addNotification}) => {
     return (
         <div>
             <Navbar />
+            {/*<NotificationPane/>*/}
             <h1 className='calendarHeader'>Calendar</h1>
         
             <FullCalendar/>
-            <InventoryForm/>
+            <InventoryForm addNotification={addNotification}/>
             <FoodCheckform/>
 
             

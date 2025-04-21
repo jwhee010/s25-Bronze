@@ -3,7 +3,7 @@ import "./InventoryForm.css";
 import axios from "axios";
 import { common } from "@mui/material/colors";
 
-export default function InventoryForm() {
+export default function InventoryForm({addNotification}) {
     const [active, setActive] = useState(false); // For Add Form
     const [activeRemove, setActiveRemove] = useState(false); // For Remove Form
     const [commonlyWasted, setWastedFood] = useState([]);
@@ -103,34 +103,49 @@ export default function InventoryForm() {
     const submitForm = async (e) => {
     e.preventDefault();
 
-    try {
-        // Retrieve token from localStorage
-        const token = localStorage.getItem("authToken");
-        
-        // Check if token exists
-        if (!token) {
-            throw new Error("No token found in localStorage. Please log in first.");
-        }
+        try {
 
-        // Debug log for token
-        console.log("Token retrieved from localStorage:", token);
+            const foodName = inventoryFormData.itemName;
+            
+            const isWasted = checkIfWasted(commonlyWasted, foodName); 
 
-        // Make the API request
-        const response = await axios.post(
-            "http://localhost:80/addOrUpdateFood",
-            {
-                FoodName: inventoryFormData.itemName,
-                Quantity: parseInt(inventoryFormData.itemQuantity),
-                PurchaseDate: inventoryFormData.purchaseDate,
-                Storage: inventoryFormData.stored,
-                ExpirationStatus: "fresh",
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            // Alerts user if a food item is commonly wasted on form submission
+            if(isWasted) {
+                addNotification(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`);
             }
-        );
+
+            const token = localStorage.getItem("authToken");
+
+            const ownedItemsRes = await axios.get('http://localhost:80/itemName', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
+            const ownedItems = ownedItemsRes.data.itemNames.map(name => name.toLowerCase());
+    
+            if (ownedItems.includes(foodName.toLowerCase())) {
+                addNotification(`You already have "${foodName}" in your inventory.`);
+            }
+
+            const response = await axios.post(
+                "http://localhost:80/addOrUpdateFood",
+                {
+                    InventoryID: null,
+                    UserID: token.UserID,
+                    FoodName: inventoryFormData.itemName, // the addOrUpdateFood function maps the itemName to its ID.
+                    PurchaseDate: inventoryFormData.purchaseDate,
+                    Quantity: parseInt(inventoryFormData.itemQuantity),
+                    
+                    Storage: inventoryFormData.stored,
+                    ExpirationStatus: "fresh",
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
         // Debug log for response
         console.log("Response Data:", response.data);

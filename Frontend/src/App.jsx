@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css'
 import LogIn from './components/LogIn'
 import Dashboard from './components/Dashboard'
@@ -9,26 +9,43 @@ import Settings from './components/Settings';
 import FriendList from './components/FriendList';
 import Recommendations from './components/Recommendations';
 import SignUp from './components/SignUp';
+import NotificationPane from './components/NotificationPane';
+import { useState } from 'react';
 
+function AppRoutes() {
+  const [notifications, setNotifications] = useState([]);
 
-
-export default function App() {
+  const addNotification = (message) => {
+    setNotifications((prev) => [ ...prev, { message }]);
+  };
+  const location = useLocation();
 
   return (
-    <Router>
+    <>
+      {(location.pathname == '/main' || location.pathname == '/calendar') &&(
+        <NotificationPane notifications = {notifications} />
+      )}
+
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp/>}/>
-        <Route path="/main" element={<Dashboard />} />
-        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/main" element={<Dashboard notifications={notifications} />} />
+        <Route path="/calendar" element={<Calendar addNotification={addNotification}/>} />
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/recommendations" element={<Recommendations/>}/>
         <Route path="/friends" element={<FriendList />} />
       </Routes>
+    </>
+  );
+}
+
+export default function App() {
+
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
-   
-   
   );
 }

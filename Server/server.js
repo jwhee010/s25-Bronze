@@ -113,12 +113,46 @@ app.post('/signup',(req, res) =>{
 app.get('/calendar', verifyToken, async (req, res) => {
     const { UserID } = req.user;
 
-    const sql = `SELECT inventory.Quantity, inventory.Expiration, food_item.FoodName
+    const sql = `SELECT inventory.Quantity, inventory.Expiration, inventory.PurchaseDate, food_item.FoodName, datediff( cast(inventory.Expiration As Date), CURRENT_DATE  ) As distance
                  FROM inventory 
                  JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                  WHERE inventory.UserID = ?`;
 
     db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ foodItems: results });
+    });
+});
+
+// Calendar filtered by predictive waste (top 5 wasted) items
+app.get('/predictiveCalendar', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    // Double select query on the inside since Limit can't be used within a subquery for our SQL version
+    // without it, it gives this error:
+    // "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'"
+    const sql = `
+        SELECT inventory.Quantity, inventory.Expiration, inventory.PurchaseDate, food_item.FoodName,
+               datediff(cast(inventory.Expiration As Date), CURRENT_DATE) As distance
+        FROM inventory
+        JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+        WHERE inventory.UserID = ? AND food_item.FoodItemID IN (
+            SELECT FoodItemID FROM (
+                SELECT analytics.FoodItemID
+                FROM analytics
+                WHERE analytics.UserID = ? AND analytics.ExpirationStatus = 'expired'
+                GROUP BY analytics.FoodItemID
+                ORDER BY SUM(analytics.Quantity) DESC
+                LIMIT 5
+              ) As TopWastedItems
+          )`;
+
+    // second UserID for the second query
+    db.query(sql, [UserID, UserID], (error, results) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
@@ -345,6 +379,26 @@ app.post('/removeFoodQuantity', verifyToken, (req, res) => {
     });
 });
 
+// yet another disgusting getter function to clutter up this file (outputs users inventory as an array of item names)
+app.get('/itemName', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `SELECT DISTINCT food_item.FoodName
+                 FROM inventory
+                 JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                 WHERE inventory.UserID = ?`;
+
+    db.query(query, [UserID], (error, results) => {
+        if (error) {
+            console.error("Error fetching item names:", error);
+            return res.status(500).json({ message: 'Error retrieving item names' });
+        }
+
+        const itemNames = results.map(row => row.FoodName);
+        res.status(200).json({ itemNames });
+    });
+});
+
 
 // update quantity of items consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
@@ -454,23 +508,23 @@ app.post('/expireFood', verifyToken, (req, res) => {
     });
 });
 
-//getter for last login for incentives calculation
-app.get('/getLastLogin', verifyToken, (req, res) => {
+//getter for account creation date for incentives calculation
+app.get('/getCreationDate', verifyToken, (req, res) => {
     const { UserID } = req.user;
 
-    const query = `SELECT lastLogin FROM user WHERE UserID = ?`;
+    const query = `SELECT creationDate FROM user WHERE UserID = ?`;
 
     db.query(query, [UserID], (error, results) => {
         if (error) {
-            console.error("Error fetching last login:", error);
-            return res.status(500).json({ message: 'Error retrieving last login' });
+            console.error("Error fetching Account Creation Date:", error);
+            return res.status(500).json({ message: 'Error retrieving Account Creation Date' });
         }
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).json({ lastLogin: results[0].lastLogin });
+        res.status(200).json({ creationDate: results[0].creationDate })
     });
 });
 
@@ -490,6 +544,25 @@ app.get('/sharing', verifyToken, async(req, res) => {
              return res.status(500).json({message: 'Error getting inventory'});
             }
         res.status(200).json({foodItems: result})
+    });
+});
+
+app.get('/expiring', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT inventory.FoodItemID, inventory.Expiration, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`
+
+    db.query(sql, [ UserID ], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ expiringItems: results });
     });
 });
 

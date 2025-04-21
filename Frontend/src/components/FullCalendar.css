@@ -123,5 +123,8 @@ width:600px;
     background-color: rgba(133, 122, 116, 0.645)
   }
 
-
+.predictiveButton {
+    background-color: rgb(105, 183, 126);
+    margin-bottom: 30px;
+}
 
