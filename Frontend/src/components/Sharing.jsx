@@ -295,7 +295,10 @@ export default function Sharing() {
                 {
                     RequestorUserID: item.RequestorUserID,
                     InventoryID: item.InventoryID,
-                    SharedItemID: item.SharedItemID
+                    SharedItemID: item.SharedItemID,
+                    Quantity: item.Quantity,
+                    FoodItemID: item.Food,
+                    ExpirationStatus: item.ExpirationStatus
                 },{
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -476,7 +479,6 @@ export default function Sharing() {
                 <th>Name</th>
                 <th>Food Name</th>
                 <th>Quantity Requested</th>
-                <th>Shared Item Id</th>
                 <th>Accept Request</th>
             </tr>
         </thead>
@@ -486,7 +488,6 @@ export default function Sharing() {
                     <td>{`${item.firstName} ${item.lastName} (${item.userName})`}</td>
                     <td>{item.FoodName}</td>
                     <td>{item.Quantity}</td>
-                    <td>{item.SharedItemID}</td>
                     <td><button type="button" onClick={() => toggleAccept(item)}>Accept</button></td>
                 </tr>
             ))}

@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const app = express();
 
+
 //app.use(cors());
 app.use(cors({
     origin: "http://localhost:5173", // Allow requests from your frontend URL
@@ -488,12 +489,27 @@ app.delete('/Sharing/UnShareFood', verifyToken, async(req,res) =>{
 // query returns friends username, first name, last name, food item, the quantity of the food item
 app.get('/Sharing/Friends', verifyToken, async(req,res) => {
     const {UserID} = req.user;
-    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.Status, shared_item.AvailableQuantity, food_item.DefaultUnit, shared_item.SharedItemID from shelf_friend
-                join shared_item on shelf_friend.UserID_2 = shared_item.OwnerUserID
-                join inventory on shared_item.InventoryItemID = inventory.InventoryID
-                join food_item on inventory.FoodItemID = food_item.FoodItemID
-                join user on shared_item.OwnerUserID = user.UserID
-                where UserID_1 = ? and FriendStatus = "yes"`
+    const sql = `SELECT 
+    user.userName,
+    user.firstName,
+    user.lastName,
+    food_item.FoodName,
+    shared_item.Status,
+    shared_item.AvailableQuantity,
+    food_item.DefaultUnit,
+    shared_item.SharedItemID
+FROM
+    shelf_friend
+        JOIN
+    shared_item ON shelf_friend.UserID_2 = shared_item.OwnerUserID
+        JOIN
+    inventory ON shared_item.InventoryItemID = inventory.InventoryID
+        JOIN
+    food_item ON inventory.FoodItemID = food_item.FoodItemID
+        JOIN
+    user ON shared_item.OwnerUserID = user.UserID
+WHERE
+    UserID_1 = ? AND FriendStatus = 'yes'`
 
     db.query(sql, [UserID], (error, result) => {
         if(error) {
@@ -571,8 +587,10 @@ app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
     user.firstName,
     user.lastName,
     food_item.FoodName,
+    food_item.FoodItemID,
     inventory.Quantity,
-    inventory.InventoryID
+    inventory.InventoryID,
+    inventory.ExpirationStatus
 FROM
     share_request
         JOIN
@@ -595,9 +613,8 @@ WHERE
     })
 });
 
-//accept food request
 app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
-    const { RequestorUserID, SharedItemID, InventoryID } = req.body;
+    const { RequestorUserID, SharedItemID, InventoryID, Quantity, FoodItemID, ExpirationStatus } = req.body;
 
     // 1. Update inventory ownership
     const updateUser = `UPDATE inventory SET UserID = ? WHERE InventoryID = ?`;
@@ -607,7 +624,7 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
         }
 
         // 2. Delete the specific food request
-        const deleteRequests = `DELETE FROM  WHERE SharedItemID = ?`;
+        const deleteRequests = `DELETE FROM food_request WHERE SharedItemID = ?`; // 🛠️ Added missing table name
         db.query(deleteRequests, [SharedItemID], (err, result2) => {
             if (err) {
                 return res.status(500).json({ message: 'Error deleting food request' });
@@ -620,13 +637,43 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
                     return res.status(500).json({ message: 'Error unsharing item' });
                 }
 
-                // ✅ All steps succeeded — send one response
-                res.status(200).json({ message: 'Request accepted and item updated, request deleted, and unshared.' });
+                /*
+                const updateAnalytics = `
+                    INSERT INTO analytics(UserID, FoodItemID, Quantity, ExpirationStatus, Status)
+                    VALUES (?, ?, ?, ?, "shared")
+                    ON DUPLICATE KEY UPDATE Quantity = Quantity + VALUES(Quantity)
+                `;
+                db.query(updateAnalytics, [RequestorUserID, FoodItemID, Quantity, ExpirationStatus], (err, result4) => {
+                    if (err) {
+                        return res.status(500).json({ message: 'Error updating analytics' });
+                    }
+                    */
+
+                    // ✅ All steps succeeded — send one response
+                    res.status(200).json({ message: 'Request accepted, item updated, request deleted, unshared, and analytics updated.' });
+                });
             });
         });
     });
-});
 
+    app.get('/Sharing/Ananlytics', verifyToken, (req, res) => {
+        const { UserID } = req.user;
+
+        const sql = `select food_item.FoodName, analytics.Quantity from analytics
+                        join food_item
+                            on analytics.FoodItemID = food_item.FoodItemID
+                        where analytics.UserID = ? and analytics.Status = "shared"
+                        ORDER BY analytics.Quantity DESC
+                        LIMIT 5;`
+        db.query(sql, [UserId], (error, results) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: 'Error executing query' });
+            }
+            
+            res.status(200).json({ Analytics: results });
+        });
+    });
 
 
 
