@@ -21,12 +21,12 @@ const Navbar = () => {
                         <FaUserGroup className="icon" />ShelfFriends</Link>
                     </li>
                     <br/>
-                    <li className = "linkwrapper"><Link to="/settings">
-                        <FaGear className="icon" />Settings</Link>
-                    </li>
-                    <br/>
                     <li className = "linkwrapper"><Link to="/recommendations">
                         <FaLightbulb className="icon" />Recommendations</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/settings">
+                        <FaGear className="icon" />Settings</Link>
                     </li>
                 </ul>
             </nav>

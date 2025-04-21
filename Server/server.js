@@ -464,6 +464,26 @@ app.get('/sharing', verifyToken, async(req, res) => {
     });
 });
 
+app.get('/recipe', verifyToken, async(req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT  recipe.RecipeID, recipe.RecipeName, recipe.Instructions, recipe.RecipeLink,
+                    recipe_rec.FoodItemID, food_item.FoodName, recipe_rec.QuantityRequired
+                    FROM recipe
+                    JOIN recipe_rec  ON recipe.RecipeID = recipe_rec.RecipeID
+                    JOIN food_item ON recipe_rec.FoodItemID = food_item.FoodItemID
+                    WHERE recipe.UserID = ?`;
+    
+    db.query(sql, [ UserID ], (error, result) => {
+        if (error) {
+            console.log("error executing query")
+            return res.status(500).json({message: "Error getting recipe reccomendations"});
+        }
+
+        res.status(200).json({ recipes: result });
+    });
+});
+
 //*********************************************************** */
 // Handle WebSocket connections
 io.on('connection', (socket) => {

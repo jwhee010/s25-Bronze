@@ -122,4 +122,5 @@ p{
     font-size: large;
     color:rgb(227, 181, 121);
     word-wrap: break-word;
+    white-space: pre-line;
 }
