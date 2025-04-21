@@ -1,0 +1,38 @@
+/* General container for analytics */
+.analytics-container {
+    display: flex;
+    justify-content: space-around; /* Space between the charts */
+    align-items: center; /* Align charts vertically */
+    padding: 1rem;
+    background-color: #2c2c2c; /* Background color */
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Container for each chart section */
+.chart-container {
+    width: 45%; /* Both charts occupy equal space */
+    margin: 1rem;
+    padding: 1rem;
+    background-color: #3a3a3a; /* Chart background */
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+}
+
+/* Chart title styling */
+.chart-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+/* Pie chart section specific styles */
+.pie-section {
+    /* Add any pie chart-specific styles if needed */
+}
+
+/* Bar chart section specific styles */
+.bar-section {
+    /* Add any bar chart-specific styles if needed */
+}
