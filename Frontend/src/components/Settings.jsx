@@ -1,151 +1,128 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
-import "./Settings.css"; // Import the CSS file for styling
+import axios from 'axios'; // Use axios for API requests
+import "./Settings.css";
 
 const Settings = () => {
-  // State variables to manage user input
-  const [email, setEmail] = useState(""); // State for the new email
-  const [firstName, setFirstName] = useState(""); // State for the first name
-  const [lastName, setLastName] = useState(""); // State for the last name
-  const [friendIdToAdd, setFriendIdToAdd] = useState(""); // State for the friend ID to add
-  const [friendIdToRemove, setFriendIdToRemove] = useState(""); // State for the friend ID to remove
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const token = localStorage.getItem("authToken"); // Retrieve token once
 
   // Function to handle email change
   const handleChangeEmail = async () => {
     try {
-      const response = await fetch("/api/user/email", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Include the token for authentication
-        },
-        body: JSON.stringify({ email }), // Send the new email in the request body
-      });
-      if (response.ok) {
-        alert("Email updated successfully!"); // Notify the user on success
-      } else {
-        alert("Failed to update email."); // Notify the user on failure
-      }
+      const response = await axios.put(
+        "http://localhost:80/api/user/email",
+        { email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Response:", response.data); // Log response for debugging
+      alert("Email updated successfully!");
     } catch (error) {
-      console.error("Error updating email:", error); // Log any errors
+      console.error("Error updating email:", error.response?.data || error.message);
+      alert("Failed to update email.");
     }
   };
 
   // Function to handle name change
   const handleChangeName = async () => {
     try {
-      const response = await fetch("/api/user/profile", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Include the token for authentication
-        },
-        body: JSON.stringify({ firstName, lastName }), // Send the new names in the request body
-      });
-      if (response.ok) {
-        alert("Name updated successfully!"); // Notify the user on success
-      } else {
-        alert("Failed to update name."); // Notify the user on failure
-      }
+      const response = await axios.patch(
+        "http://localhost:80/api/user/profile",
+        { firstName, lastName },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Response:", response.data); // Log response for debugging
+      alert("Name updated successfully!");
     } catch (error) {
-      console.error("Error updating name:", error); // Log any errors
+      console.error("Error updating name:", error.response?.data || error.message);
+      alert("Failed to update name.");
     }
   };
 
-  // Function to handle adding a friend
-  const handleAddFriend = async () => {
+  // Function to handle emptying inventory
+  const handleEmptyInventory = async () => {
     try {
-      const response = await fetch("/friends/add", {
-        method: "POST",
+      const response = await axios.delete("http://localhost:80/api/inventory/empty", {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Include the token for authentication
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ friendId: friendIdToAdd }), // Send the friend ID in the request body
       });
-      if (response.ok) {
-        alert("Friend added successfully!"); // Notify the user on success
-      } else {
-        alert("Failed to add friend."); // Notify the user on failure
-      }
+      console.log("Response:", response.data); // Log response for debugging
+      alert("Inventory emptied successfully!");
     } catch (error) {
-      console.error("Error adding friend:", error); // Log any errors
+      console.error("Error emptying inventory:", error.response?.data || error.message);
+      alert("Failed to empty inventory.");
     }
   };
 
-  // Function to handle removing a friend
-  const handleRemoveFriend = async () => {
+  // Function to handle resetting analytics
+  const handleResetAnalytics = async () => {
     try {
-      const response = await fetch("/friends/remove", {
-        method: "DELETE",
+      const response = await axios.post("http://localhost:80/api/analytics/reset", null, {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Include the token for authentication
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ friendId: friendIdToRemove }), // Send the friend ID in the request body
       });
-      if (response.ok) {
-        alert("Friend removed successfully!"); // Notify the user on success
-      } else {
-        alert("Failed to remove friend."); // Notify the user on failure
-      }
+      console.log("Response:", response.data); // Log response for debugging
+      alert("Analytics reset successfully!");
     } catch (error) {
-      console.error("Error removing friend:", error); // Log any errors
+      console.error("Error resetting analytics:", error.response?.data || error.message);
+      alert("Failed to reset analytics.");
     }
   };
 
   return (
     <div className="settings-container">
-      <h1>Settings</h1> {/* Page title */}
+      <Navbar />
+      <h1>Settings</h1>
 
       <div className="table-container">
-        {/* Section for updating email */}
         <div>
           <h3>Update Email</h3>
           <input
             type="email"
             placeholder="New Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Update state on input change
+            onChange={(e) => setEmail(e.target.value)}
           />
           <button onClick={handleChangeEmail}>Change Email</button>
         </div>
 
-        {/* Section for updating name */}
         <div>
           <h3>Update Name</h3>
           <input
             type="text"
             placeholder="First Name"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)} // Update state on input change
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <input
             type="text"
             placeholder="Last Name"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)} // Update state on input change
+            onChange={(e) => setLastName(e.target.value)}
           />
           <button onClick={handleChangeName}>Change Name</button>
         </div>
 
-        {/* Section for managing friends */}
         <div>
-          <h3>Manage Friends</h3>
-          <input
-            type="text"
-            placeholder="Friend ID to Add"
-            value={friendIdToAdd}
-            onChange={(e) => setFriendIdToAdd(e.target.value)} // Update state on input change
-          />
-          <button onClick={handleAddFriend}>Add Friend</button>
-          <input
-            type="text"
-            placeholder="Friend ID to Remove"
-            value={friendIdToRemove}
-            onChange={(e) => setFriendIdToRemove(e.target.value)} // Update state on input change
-          />
-          <button onClick={handleRemoveFriend}>Remove Friend</button>
+          <h3>Empty Inventory</h3>
+          <button onClick={handleEmptyInventory}>Empty Inventory</button>
+        </div>
+
+        <div>
+          <h3>Reset Analytics</h3>
+          <button onClick={handleResetAnalytics}>Reset Analytics</button>
         </div>
       </div>
     </div>

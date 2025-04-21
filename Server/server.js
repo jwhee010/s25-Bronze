@@ -8,7 +8,7 @@ const app = express();
 //app.use(cors());
 app.use(cors({
     origin: "http://localhost:5173", // Allow requests from your frontend URL
-    methods: ["GET", "POST", "DELETE"], // Allowed HTTP methods
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"], // Allowed HTTP methods
     credentials: true, // Include credentials like cookies or auth headers
 }));
 
@@ -611,9 +611,14 @@ app.put('/api/user/email', verifyToken, (req, res) => {
     db.query(query, [email, UserID], (error, result) => {
         if (error) {
             console.error('Error updating email:', error);
-            return res.status(500).json({ message: 'Error updating email' });
+            return res.status(500).json({ message: 'Failed to update email in the database' });
         }
-        res.status(200).json({ message: 'Email updated successfully' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found or email not updated' });
+        }
+
+        return res.status(200).json({ message: 'Email updated successfully' });
     });
 });
 
@@ -630,9 +635,14 @@ app.patch('/api/user/profile', verifyToken, (req, res) => {
     db.query(query, [firstName, lastName, UserID], (error, result) => {
         if (error) {
             console.error('Error updating name:', error);
-            return res.status(500).json({ message: 'Error updating name' });
+            return res.status(500).json({ message: 'Failed to update name in the database' });
         }
-        res.status(200).json({ message: 'Name updated successfully' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found or name not updated' });
+        }
+
+        return res.status(200).json({ message: 'Name updated successfully' });
     });
 });
 
@@ -644,9 +654,14 @@ app.delete('/api/inventory/empty', verifyToken, (req, res) => {
     db.query(query, [UserID], (error, result) => {
         if (error) {
             console.error('Error emptying inventory:', error);
-            return res.status(500).json({ message: 'Error emptying inventory' });
+            return res.status(500).json({ message: 'Failed to empty inventory in the database' });
         }
-        res.status(200).json({ message: 'Inventory emptied successfully' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'No inventory items found for this user' });
+        }
+
+        return res.status(200).json({ message: 'Inventory emptied successfully' });
     });
 });
 
@@ -658,13 +673,16 @@ app.post('/api/analytics/reset', verifyToken, (req, res) => {
     db.query(query, [UserID], (error, result) => {
         if (error) {
             console.error('Error resetting analytics:', error);
-            return res.status(500).json({ message: 'Error resetting analytics' });
+            return res.status(500).json({ message: 'Failed to reset analytics data in the database' });
         }
-        res.status(200).json({ message: 'Analytics reset successfully' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'No analytics data found for this user' });
+        }
+
+        return res.status(200).json({ message: 'Analytics reset successfully' });
     });
 });
-
-
 
 
 //*********************************************************** */
@@ -707,9 +725,6 @@ app.post('/messages', verifyToken, async (req, res) => {
 
   
   
-
-
-
 
 // //*********************************************************** */
 // // Handle WebSocket connections here
