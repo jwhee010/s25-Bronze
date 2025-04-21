@@ -31,7 +31,7 @@ export default function Sharing() {
                 }
             });
             setFoodItems(response.data.foodItems || []);
-            console.log('THESE ARE YOUR ITEMS', response.data);
+            //console.log('THESE ARE YOUR ITEMS', response.data);
         } catch (error) {
             console.error("Error retrieving food items:", error);
         }
@@ -46,7 +46,7 @@ export default function Sharing() {
                 }
             });
             setYourSharedItems(response.data.yourSharedItems || []);
-            console.log("this is your shared items", yourSharedItems);
+            //console.log("this is your shared items", yourSharedItems);
         } catch (error) {
             console.log("Error retrieving your shared items", error);
         }
@@ -62,7 +62,7 @@ export default function Sharing() {
             });
 
             if (response.data) {
-                console.log("food friends are sharing", response.data);
+                //console.log("food friends are sharing", response.data);
                 setfriendsSharing(response.data.friendsSharing);
             } else {
                 console.warn("friendsSharing is missing in the response");
@@ -81,7 +81,7 @@ export default function Sharing() {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log("food items you've requested", response.data);
+            //console.log("food items you've requested", response.data);
             setUserFoodRequests(response.data.userFoodRequests || []);
         } catch (error) {
             console.error("error requesting food item", error);
@@ -100,7 +100,7 @@ export default function Sharing() {
             });
             if(response.data){
                 setfriendsFoodRequests(response.data.friendsFoodRequests);
-                console.log("FRIENDS FOOD REQUESTS", response.data.friendsFoodRequests);
+                //console.log("FRIENDS FOOD REQUESTS", response.data.friendsFoodRequests);
             } else {
                 console.warn("Food request not retrieved");
                 setfriendsFoodRequests([]);
@@ -290,26 +290,52 @@ export default function Sharing() {
     };
 
     const acceptRequest = async (token, item) => {
-        try{
+        console.log("SENDING ACCEPT PAYLOAD", {
+            RequestorUserID: item.RequestorUserID,
+            InventoryID: item.InventoryID,
+            SharedItemID: item.SharedItemID,
+            Quantity: item.Quantity,
+            FoodItemID: item.FoodItemID,
+            ExpirationStatus: item.ExpirationStatus,
+            Expiration: item.Expiration
+        });
+    
+        try {
             const response = await axios.post('http://localhost:80/Sharing/AcceptRequest',
                 {
                     RequestorUserID: item.RequestorUserID,
                     InventoryID: item.InventoryID,
                     SharedItemID: item.SharedItemID,
                     Quantity: item.Quantity,
-                    FoodItemID: item.Food,
-                    ExpirationStatus: item.ExpirationStatus
-                },{
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
+                    FoodItemID: item.FoodItemID,
+                    ExpirationStatus: item.ExpirationStatus,
+                    Expiration: item.Expiration
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
                 }
-            });
-                console.log("Food item to accept")
+            );
+    
+            console.log("✅ Request accepted. Response:", response.data);
         } catch (error) {
-            console.error('error accepting request', error);
+            if (error.response) {
+                console.error("❌ Backend responded with an error:");
+                console.error("Status:", error.response.status);
+                console.error("Data:", error.response.data);
+            } else if (error.request) {
+                console.error("❌ No response received from the server:");
+                console.error(error.request);
+            } else {
+                console.error("❌ Error setting up the request:", error.message);
+            }
+    
+            console.error("🛠️ Full error object:", error);
         }
     };
+    
 
     // handles the sharing button states and functions
     const toggleShare = async (index, item) => {
@@ -363,7 +389,7 @@ export default function Sharing() {
         const token = localStorage.getItem("authToken");
     
         if (token) {
-            console.log("this is the item to accept", item.InventoryID, item.RequestorUserID);
+            console.log("this is the item to accept", item);
     
             // Accept the request
             await acceptRequest(token, item);

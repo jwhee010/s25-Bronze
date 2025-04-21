@@ -417,10 +417,18 @@ app.post('/expireFood', verifyToken, (req, res) => {
 // selects the foods that a user can share
 app.get('/Sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
-    const sql = `SELECT inventory.InventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
-                    FROM inventory
-                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
-                    WHERE inventory.UserID = ? AND ExpirationStatus = "fresh"`;
+    const sql = `SELECT 
+                        inventory.InventoryID,
+                        food_item.FoodName,
+                        inventory.Quantity,
+                        inventory.ExpirationStatus
+                 FROM
+                        inventory
+                            JOIN
+                        food_item ON inventory.FoodItemID = food_item.FoodItemID
+                 WHERE
+                        inventory.UserID = ?
+                        AND ExpirationStatus = 'fresh'`;
     
 
     db.query(sql, [UserID], (error, result) => {
@@ -590,7 +598,8 @@ app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
     food_item.FoodItemID,
     inventory.Quantity,
     inventory.InventoryID,
-    inventory.ExpirationStatus
+    inventory.ExpirationStatus,
+    inventory.Expiration
 FROM
     share_request
         JOIN
@@ -614,57 +623,78 @@ WHERE
 });
 
 app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
-    const { RequestorUserID, SharedItemID, InventoryID, Quantity, FoodItemID, ExpirationStatus } = req.body;
+    const { UserID } = req.user;
+    const {
+        RequestorUserID, SharedItemID, InventoryID,
+        Quantity, FoodItemID, ExpirationStatus, Expiration
+    } = req.body;
 
-    // 1. Update inventory ownership
+    console.log("👀 Incoming body:", req.body);
+    console.log("🔐 Authenticated UserID:", UserID);
+
     const updateUser = `UPDATE inventory SET UserID = ? WHERE InventoryID = ?`;
     db.query(updateUser, [RequestorUserID, InventoryID], (err, result1) => {
         if (err) {
-            return res.status(500).json({ message: 'Error transferring ownership' });
+            console.error("🔥 Error updating inventory:", err);
+            return res.status(500).json({ message: 'Error transferring ownership', error: err });
         }
 
-        // 2. Delete the specific food request
-        const deleteRequests = `DELETE FROM food_request WHERE SharedItemID = ?`; // 🛠️ Added missing table name
+        const deleteRequests = `DELETE FROM share_request WHERE SharedItemID = ?`;
         db.query(deleteRequests, [SharedItemID], (err, result2) => {
             if (err) {
-                return res.status(500).json({ message: 'Error deleting food request' });
+                console.error("🔥 Error deleting request:", err);
+                return res.status(500).json({ message: 'Error deleting food request', error: err });
             }
 
-            // 3. Unshare the food item
             const unshareItem = `DELETE FROM shared_item WHERE InventoryItemID = ?`;
             db.query(unshareItem, [InventoryID], (err, result3) => {
                 if (err) {
-                    return res.status(500).json({ message: 'Error unsharing item' });
+                    console.error("🔥 Error unsharing item:", err);
+                    return res.status(500).json({ message: 'Error unsharing item', error: err });
                 }
 
-                /*
-                const updateAnalytics = `
-                    INSERT INTO analytics(UserID, FoodItemID, Quantity, ExpirationStatus, Status)
-                    VALUES (?, ?, ?, ?, "shared")
-                    ON DUPLICATE KEY UPDATE Quantity = Quantity + VALUES(Quantity)
-                `;
-                db.query(updateAnalytics, [RequestorUserID, FoodItemID, Quantity, ExpirationStatus], (err, result4) => {
-                    if (err) {
-                        return res.status(500).json({ message: 'Error updating analytics' });
-                    }
-                    */
+                if (!UserID || !FoodItemID || !Quantity || !ExpirationStatus || !Expiration) {
+                    console.error("❌ Missing data for analytics:", {
+                        UserID, FoodItemID, Quantity, ExpirationStatus, Expiration
+                    });
+                    return res.status(400).json({ message: 'Missing required data for analytics' });
+                }
 
-                    // ✅ All steps succeeded — send one response
-                    res.status(200).json({ message: 'Request accepted, item updated, request deleted, unshared, and analytics updated.' });
-                });
+                const updateAnalytics = `INSERT INTO analytics 
+                    (UserID, FoodItemID, Quantity, ExpirationStatus, Status, DateExpired)
+                    VALUES (?, ?, ?, ?, 'shared', ?)
+                    ON DUPLICATE KEY UPDATE Quantity = Quantity + ?`;
+
+                db.query(updateAnalytics,
+                    [UserID, FoodItemID, Quantity, ExpirationStatus, Expiration, Quantity],
+                    (err, result4) => {
+                        if (err) {
+                            console.error("🔥 Error updating analytics:", err);
+                            return res.status(500).json({ message: 'Error updating analytics', error: err });
+                        }
+
+                        res.status(200).json({ message: 'Request accepted and analytics updated.' });
+                    }
+                );
             });
         });
     });
+});
 
     app.get('/Sharing/Analytics', verifyToken, (req, res) => {
         const { UserID } = req.user;
 
-        const sql = `select food_item.FoodName, analytics.Quantity from analytics
-                        join food_item
-                            on analytics.FoodItemID = food_item.FoodItemID
-                        where analytics.UserID = ? and analytics.Status = "shared"
-                        ORDER BY analytics.Quantity DESC
-                        LIMIT 5;`
+        const sql = `SELECT 
+                        food_item.FoodName, analytics.Quantity
+                    FROM
+                        analytics
+                    JOIN
+                        food_item ON analytics.FoodItemID = food_item.FoodItemID
+                    WHERE
+                        analytics.UserID = ?
+                    AND analytics.Status = 'shared'
+                    ORDER BY analytics.Quantity DESC
+                    LIMIT 5;`
         db.query(sql, [UserId], (error, results) => {
             if (error) {
                 console.log(error);
