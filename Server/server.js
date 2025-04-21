@@ -4,17 +4,30 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+
+
+//app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173", // Allow requests from your frontend URL
+    methods: ["GET", "POST", "DELETE"], // Allowed HTTP methods
+    credentials: true, // Include credentials like cookies or auth headers
+}));
+
 app.use(express.json())
 
 //********************************************************* */
 
-//Real Time Messaging Websocket
-const http = require('http');
-const { Server } = require('socket.io');
+// //Real Time Messaging Websocket
+// const http = require('http');
+// const { Server } = require('socket.io');
 
-const server = http.createServer(app);
-const io = new Server(server);
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//     cors: {
+//         origin: "http://localhost:5173", // Frontend URL
+//         methods: ["GET", "POST"], // Allowed HTTP methods
+//     },
+// });
 
 //********************************************************** */
 
@@ -23,6 +36,7 @@ const io = new Server(server);
 const db = require('./config/db');
 
 const jwt = require('jsonwebtoken');  // For creating JWT tokens
+const { error } = require('console');
 const secretKey = 'veryVERYsecret';
 
 // Middleware to verify JWT and get UserID
@@ -183,44 +197,100 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
 
 /// Add/Remove functionalioty 
 
-
-app.post('/friends/add', verifyToken, (req, res) => {
-    if (!req.body || !req.body.friendId) {
-        return res.status(400).json({ message: 'Friend ID is required' });
-    }
-
-    const { friendId } = req.body;
-    const userId = req.user.UserID;
-    console.log(`Add Friend Request: userId=${userId}, friendId=${friendId}`);
-
-    const sql = 'INSERT INTO shelf_friend (user_id, friend_id) VALUES (?, ?)';
-    db.query(sql, [userId, friendId], (error, result) => {
-        if (error) {
-            console.error(' Error adding friend:', error);
-            return res.status(500).json({ message: 'Error adding friend' });
-        }
-        console.log(' Friend added successfully');
-        res.status(200).json({ message: 'Friend added successfully' });
-    });
-});
-
-
-// 🔹 Remove a friend
-app.post('/friends/remove', verifyToken, (req, res) => {
-    const { friendId } = req.body;
-    const userId = req.user.UserID;
+// ------------------- FRIEND ROUTES - ---------------------
+app.get('/friends', verifyToken, (req, res) => {
+    const { UserID } = req.user;
   
-    console.log(`Remove Friend Request: userId=${userId}, friendId=${friendId}`);
+    const sql = `
+       SELECT 
+ 		u.UserID,
+ 		u.userName,
+ 		u.firstName,
+ 		u.lastName
+ 	FROM
+ 		shelf_friend s
+ 		join user u on s.UserID_2 = u.UserID
+ 	WHERE
+ 		UserID_1 = ? AND FriendStatus = 'yes'
+    `;
+  
+    db.query(sql, [UserID], (error, results) => {
+      if (error) {
+        console.error('Error executing query', error);
+        return res.status(500).json({ message: 'Error fetching friends' });
+      }
+      
+      res.status(200).json({friends: results});
+    });
+  });
+  
+  app.post('/friends/add', verifyToken, (req, res) => {
+    const { friendId } = req.body;
+    const userId = req.user.UserID;
   
     if (!friendId) {
       return res.status(400).json({ message: 'Friend ID is required' });
     }
   
-    const sql = 'DELETE FROM friends WHERE user_id = ? AND friend_id = ?';
-    db.query(sql, [userId, friendId], (error, result) => {
+    // Ensure that they do not add themselves
+    if(userId == friendId){
+        return res.status(400).json({ message: 'You cannot add yourself as a friend!' });
+    }
+
+    // Ensure duplicate friend entries aren't added
+    const checkDuplicateSql = `SELECT * FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?)`;
+    
+    db.query(checkDuplicateSql, [userId, friendId], (checkError, checkResult) => {
+        if(checkError){
+            return res.status(500).json({ message: 'Error checking existing friendship' });
+        }
+
+        if (checkResult.length > 0) {
+            return res.status(400).json({ message: 'This user is already your friend!' });
+        }
+    
+
+    // create variables to be inserted into the shelf_friend table
+    const date = new Date();
+    const friendStatus = 'yes';
+
+    const sql = `INSERT INTO shelf_friend (UserID_1, UserID_2, DateConnected, FriendStatus) VALUES (?, ?, ?, ?), (?, ?, ?, ?)`;
+    
+    // This values container could have been done for remove friend as well,
+    // it's just that the remove friend did not need as many values
+    const values = [userId, friendId, date, friendStatus, friendId, userId, date, friendStatus];
+
+    db.query(sql, values, (error, result) => {
       if (error) {
-        console.error('Error removing friend:', error);
+        console.error('Error adding friend', error);
+        return res.status(500).json({ message: 'Error adding friend' });
+      }
+      res.status(200).json({ message: 'Friend added successfully' });
+    });
+    });
+  });
+  
+  app.post('/friends/remove', verifyToken, (req, res) => {
+    const { UserID_2 } = req.body;
+    const userId = req.user.UserID;
+  
+    console.log(`Remove Friend Request: user_id = ${userId}, friendId = ${UserID_2}`);
+  
+    if (!UserID_2) {
+      return res.status(400).json({ message: 'Friend ID is required' });
+    }
+  
+    const sql = `DELETE FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?) OR (UserID_1 = ? AND UserID_2 = ?)`;
+    
+    db.query(sql, [userId, UserID_2, UserID_2, userId], (error, result) => {
+      if (error) {
+        console.error('Error executing query:', error);
         return res.status(500).json({ message: 'Error removing friend' });
+      }
+  
+      if (result.affectedRows === 0) {
+        console.warn('No rows deleted — check data match.');
+        return res.status(404).json({ message: 'Friend not found or already removed' });
       }
   
       res.status(200).json({ message: 'Friend removed successfully' });
@@ -528,14 +598,42 @@ app.get('/getCreationDate', verifyToken, (req, res) => {
     });
 });
 
+//getter for account creation date for incentives calculation
+app.get('/getCreationDate', verifyToken, (req, res) => {
+    const { UserID } = req.user;
 
-app.get('/sharing', verifyToken, async(req, res) => {
+    const query = `SELECT creationDate FROM user WHERE UserID = ?`;
+
+    db.query(query, [UserID], (error, results) => {
+        if (error) {
+            console.error("Error fetching Account Creation Date:", error);
+            return res.status(500).json({ message: 'Error retrieving Account Creation Date' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ creationDate: results[0].creationDate })
+    });
+});
+
+
+// selects the foods that a user can share
+app.get('/Sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
-    console.log(UserID);
-    const sql = `SELECT inventory.inventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
-                    FROM inventory
-                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
-                    WHERE inventory.UserID = ?`;
+    const sql = `SELECT 
+                        inventory.InventoryID,
+                        food_item.FoodName,
+                        inventory.Quantity,
+                        inventory.ExpirationStatus
+                 FROM
+                        inventory
+                            JOIN
+                        food_item ON inventory.FoodItemID = food_item.FoodItemID
+                 WHERE
+                        inventory.UserID = ?
+                        AND ExpirationStatus = 'fresh'`;
     
 
     db.query(sql, [UserID], (error, result) => {
@@ -543,7 +641,248 @@ app.get('/sharing', verifyToken, async(req, res) => {
             console.log("error executing query")
              return res.status(500).json({message: 'Error getting inventory'});
             }
-        res.status(200).json({foodItems: result})
+        res.status(200).json({foodItems: result});
+    });
+});
+
+// gets the food items that the user has set to share
+app.get('/Sharing/yourShared', verifyToken, async(req, res) => {
+    const {UserID} = req.user;
+    const sql = `SELECT 
+                    InventoryItemID
+                 FROM
+                    shared_item
+                 WHERE
+                    OwnerUserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting your shared items'});
+        }
+        res.status(200).json({yourSharedItems: result});
+    })
+})
+
+// this is to insert the food to share in the database
+app.post('/Sharing/ShareFood', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    const {InventoryItemID, AvailableQuantity, Status} = req.body;
+    const sql = `INSERT INTO shared_item(InventoryItemID, OwnerUserID, AvailableQuantity, Status) VALUES(?, ?, ?, ?)`;
+    db.query(sql, [InventoryItemID, UserID, AvailableQuantity, Status], (error, result) => {
+        if (error) {
+            res.status(500).json({message: 'An error occured sending sharedFood information'});
+        } else {
+            res.status(200).json({message: 'your food has been shared'});
+        }
+    });
+});
+
+/* this function deletes a shared food Item from the shared_food table.
+ So that no one can request that food item anymore*/
+app.delete('/Sharing/UnShareFood', verifyToken, async(req,res) =>{
+    const {InventoryItemID} = req.body;
+    // check to make sure the item ID number is being passed
+    console.log("Deleting InventoryItemID:", InventoryItemID);
+
+    const sql = `DELETE FROM shared_item 
+                WHERE
+                InventoryItemID = ?`
+
+    db.query(sql, [InventoryItemID], (error, result) => {
+        if(error) {
+            res.status(500).json({message: 'There was an issue deleting the food item'});
+        } else {
+            res.status(200).json({message: 'The food item has been unshared'})
+        }
+    })
+});
+
+// returns the food that your friends set to share.
+// query returns friends username, first name, last name, food item, the quantity of the food item
+app.get('/Sharing/Friends', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    const sql = `SELECT 
+    user.userName,
+    user.firstName,
+    user.lastName,
+    food_item.FoodName,
+    shared_item.Status,
+    shared_item.AvailableQuantity,
+    food_item.DefaultUnit,
+    shared_item.SharedItemID
+FROM
+    shelf_friend
+        JOIN
+    shared_item ON shelf_friend.UserID_2 = shared_item.OwnerUserID
+        JOIN
+    inventory ON shared_item.InventoryItemID = inventory.InventoryID
+        JOIN
+    food_item ON inventory.FoodItemID = food_item.FoodItemID
+        JOIN
+    user ON shared_item.OwnerUserID = user.UserID
+WHERE
+    UserID_1 = ? AND FriendStatus = 'yes'`
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting friends foods'})
+        }
+    res.status(200).json({friendsSharing: result})
+    })
+});
+
+/* query returns the food items that you have requested so it can be
+   compared to the food items that other users have set to shareable 
+   so that the buttons can be set in the correct states */
+   app.get('/Sharing/getRequests', verifyToken, async(req, res) => {
+    const {UserID} = req.user;
+    const sql = `SELECT 
+                    SharedItemID 
+                FROM
+                    share_request
+                WHERE
+                    RequestorUserID = ?`
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error){
+            return res.status(500).json({message: 'Error getting your requested food'})
+        }
+        res.status(200).json({userFoodRequests: result})
+    })
+   });
+
+   // sends the data to the request_food table
+   app.post('/Sharing/sendRequest', verifyToken, async(req,res) =>{
+    const {UserID} = req.user;
+    const {SharedItemID, Status} = req.body;
+
+    const sql = `insert into share_request(RequestorUserID, SharedItemID, RequestDate, Status)
+                 values(?, ?, current_date(), ?)`;
+
+    db.query(sql, [UserID, SharedItemID, Status], (error, result) => {
+        if (error) {
+            res.status(500).json({message: 'An error occured sending sharedFood information'});
+        } else {
+            res.status(200).json({message: 'your food has been shared'});
+        }
+    });
+   });
+
+   // delete the food item request you wanted to request
+   app.delete('/Sharing/unRequest', verifyToken, async(req, res) => {
+    const {SharedItemID} = req.body;
+    const {UserID} = req.user;
+
+    const sql = `delete from share_request
+                 where SharedItemID = ? and RequestorUserID = ?`;
+
+    console.log("deleting request number", SharedItemID);
+    db.query(sql, [SharedItemID, UserID], (error, result) => {
+        if(error) {
+            res.status(500).json({message: 'There was an issue deleting the food item request'});
+        } else {
+            res.status(200).json({message: 'The food item has been unrequestd'})
+        }
+    });
+   });
+
+
+// this is to get request for food
+app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
+    const {UserID} = req.user;
+    // query returns the requsting users name and username, as well as the food item, quantity, and status of the food item
+    const sql = `SELECT 
+	share_request.SharedItemID,
+    share_request.RequestorUserID,
+    user.userName,
+    user.firstName,
+    user.lastName,
+    food_item.FoodName,
+    food_item.FoodItemID,
+    inventory.Quantity,
+    inventory.InventoryID,
+    inventory.ExpirationStatus,
+    inventory.Expiration
+FROM
+    share_request
+        JOIN
+    shared_item ON share_request.SharedItemID = shared_item.SharedItemID
+        JOIN
+    user ON share_request.RequestorUserID = user.UserID
+        JOIN
+    inventory ON shared_item.InventoryItemID = inventory.InventoryID
+        JOIN
+    food_item ON inventory.FoodItemID = food_item.FoodItemID
+WHERE
+    shared_item.OwnerUserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if(error) {
+            console.log("error executing query")
+            return res.status(500).json({message: 'Error getting friends foods'})
+        }
+    res.status(200).json({friendsFoodRequests: result})
+    })
+});
+
+app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const {
+        RequestorUserID, SharedItemID, InventoryID,
+        Quantity, FoodItemID, ExpirationStatus, Expiration
+    } = req.body;
+
+    console.log("👀 Incoming body:", req.body);
+    console.log("🔐 Authenticated UserID:", UserID);
+
+    const updateUser = `UPDATE inventory SET UserID = ? WHERE InventoryID = ?`;
+    db.query(updateUser, [RequestorUserID, InventoryID], (err, result1) => {
+        if (err) {
+            console.error("🔥 Error updating inventory:", err);
+            return res.status(500).json({ message: 'Error transferring ownership', error: err });
+        }
+
+        const deleteRequests = `DELETE FROM share_request WHERE SharedItemID = ?`;
+        db.query(deleteRequests, [SharedItemID], (err, result2) => {
+            if (err) {
+                console.error("🔥 Error deleting request:", err);
+                return res.status(500).json({ message: 'Error deleting food request', error: err });
+            }
+
+            const unshareItem = `DELETE FROM shared_item WHERE InventoryItemID = ?`;
+            db.query(unshareItem, [InventoryID], (err, result3) => {
+                if (err) {
+                    console.error("🔥 Error unsharing item:", err);
+                    return res.status(500).json({ message: 'Error unsharing item', error: err });
+                }
+
+                if (!UserID || !FoodItemID || !Quantity || !ExpirationStatus || !Expiration) {
+                    console.error("❌ Missing data for analytics:", {
+                        UserID, FoodItemID, Quantity, ExpirationStatus, Expiration
+                    });
+                    return res.status(400).json({ message: 'Missing required data for analytics' });
+                }
+
+                const updateAnalytics = `INSERT INTO analytics 
+                    (UserID, FoodItemID, Quantity, ExpirationStatus, Status, DateExpired)
+                    VALUES (?, ?, ?, ?, 'shared', ?)
+                    ON DUPLICATE KEY UPDATE Quantity = Quantity + ?`;
+
+                db.query(updateAnalytics,
+                    [UserID, FoodItemID, Quantity, ExpirationStatus, Expiration, Quantity],
+                    (err, result4) => {
+                        if (err) {
+                            console.error("🔥 Error updating analytics:", err);
+                            return res.status(500).json({ message: 'Error updating analytics', error: err });
+                        }
+
+                        res.status(200).json({ message: 'Request accepted and analytics updated.' });
+                    }
+                );
+            });
+        });
     });
 });
 
@@ -586,25 +925,106 @@ app.get('/recipe', verifyToken, async(req, res) => {
     });
 });
 
+    app.get('/Sharing/Analytics', verifyToken, (req, res) => {
+        const { UserID } = req.user;
+
+        const sql = `SELECT 
+                        food_item.FoodName, analytics.Quantity
+                    FROM
+                        analytics
+                    JOIN
+                        food_item ON analytics.FoodItemID = food_item.FoodItemID
+                    WHERE
+                        analytics.UserID = ?
+                    AND analytics.Status = 'shared'
+                    ORDER BY analytics.Quantity DESC
+                    LIMIT 5;`
+        db.query(sql, [UserID], (error, results) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: 'Error executing query' });
+            }
+            
+            res.status(200).json({ Analytics: results });
+        });
+    });
+
+
+
 //*********************************************************** */
-// Handle WebSocket connections
-io.on('connection', (socket) => {
-    console.log('A user connected!');
-  
-    // Listen for incoming messages
-    socket.on('sendMessage', (message) => {
-      console.log('Message received:', message);
-      // Broadcast the message to all connected clients
-      io.emit('receiveMessage', message);
+
+app.get('/messages', verifyToken, async (req, res) => {
+    const { senderID, receiverID } = req.query; // Get query parameters from request
+    const sql = `
+        SELECT * FROM messages 
+        WHERE (senderID = ? AND receiverID = ?) 
+           OR (senderID = ? AND receiverID = ?)
+        ORDER BY timestamp ASC
+    `;
+
+    db.query(sql, [senderID, receiverID, receiverID, senderID], (error, results) => {
+        if (error) {
+            console.error("Error fetching messages:", error);
+            res.status(500).json({ message: "Error retrieving messages." });
+        } else {
+            res.status(200).json(results); // Send the retrieved messages to the client
+        }
     });
-  
-    // Handle disconnection
-    socket.on('disconnect', () => {
-      console.log('A user disconnected!');
+});
+
+app.post('/messages', verifyToken, async (req, res) => {
+    const { senderID, receiverID, text, timestamp } = req.body; // Extract message details from request body
+    const sql = `
+        INSERT INTO messages (senderID, receiverID, text, timestamp)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(sql, [senderID, receiverID, text, timestamp], (error, result) => {
+        if (error) {
+            console.error("Error saving message:", error);
+            res.status(500).json({ message: "Error saving message." });
+        } else {
+            res.status(200).json({ message: "Message saved successfully." });
+        }
     });
-  });
+});
+
   
   
+
+
+
+
+// //*********************************************************** */
+// // Handle WebSocket connections here
+// io.on("connection", (socket) => {
+//     console.log(`User ${socket.id} connected`);
+
+//     // Listen for incoming messages from clients
+//     socket.on("joinRoom", ({ senderID, receiverID }) => {
+//         const roomName = [senderID, receiverID].sort().join("-"); // Unique room name (sorted for consistency)
+//         socket.join(roomName);
+//         console.log(`${socket.id} joined room: ${roomName}`);
+//     });
+
+//     // Handle sending messages
+//     socket.on("sendMessage", ({ roomName, senderID, message, timestamp }) => {
+//         // Broadcast the message to the other participants in the room
+//         io.to(roomName).emit("receiveMessage", { senderID, message, timestamp });
+//         console.log(`Message sent in room ${roomName}: ${message}`);
+//     });
+
+//     // Handle disconnections
+//     socket.on("disconnect", () => {
+//         console.log(socket.id, " disconnected");
+//         io.emit('message', 'A user has left the chat');
+//     });
+// });
+
+// server.listen(3000, () => {
+//     console.log("Server is running on port 3000");
+// });
+
 
 //*********************************************************** */
 

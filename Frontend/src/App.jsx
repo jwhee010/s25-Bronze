@@ -7,7 +7,7 @@ import List from './components/List';
 import ShelfFriends from './components/ShelfFriends';
 import Settings from './components/Settings';
 import FriendList from './components/FriendList';
-import Recommendations from './components/Recommendations';
+import MessagePage from './components/MessagePage';import Recommendations from './components/Recommendations';
 import SignUp from './components/SignUp';
 import NotificationPane from './components/NotificationPane';
 import { useState } from 'react';
@@ -36,6 +36,7 @@ function AppRoutes() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/recommendations" element={<Recommendations/>}/>
         <Route path="/friends" element={<FriendList />} />
+        <Route path="/messagepage/:userName" element={<MessagePage />} />
       </Routes>
     </>
   );
