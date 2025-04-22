@@ -681,10 +681,10 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
     });
 });
 
-    app.get('/Sharing/Analytics', verifyToken, (req, res) => {
-        const { UserID } = req.user;
+app.get('/Sharing/Analytics', verifyToken, (req, res) => {
+    const { UserID } = req.user;
 
-        const sql = `SELECT 
+    const sql = `SELECT 
                         food_item.FoodName, analytics.Quantity
                     FROM
                         analytics
@@ -695,17 +695,38 @@ app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
                     AND analytics.Status = 'shared'
                     ORDER BY analytics.Quantity DESC
                     LIMIT 5;`
-        db.query(sql, [UserID], (error, results) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).json({ message: 'Error executing query' });
-            }
-            
-            res.status(200).json({ Analytics: results });
-        });
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ Analytics: results });
     });
+});
 
+app.get('/Sharing/AllAnalytics', verifyToken, (req, res) => {
+    const { UserID } = req.user;
 
+    const sql = `SELECT 
+                        food_item.FoodName, analytics.Quantity
+                    FROM
+                        analytics
+                    JOIN
+                        food_item ON analytics.FoodItemID = food_item.FoodItemID
+                    WHERE
+                        analytics.UserID = ?
+                    AND analytics.Status = 'shared'
+                    ORDER BY analytics.Quantity DESC;`
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ Analytics: results });
+    });
+});
 
 //*********************************************************** */
 
