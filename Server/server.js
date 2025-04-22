@@ -598,26 +598,6 @@ app.get('/getCreationDate', verifyToken, (req, res) => {
     });
 });
 
-//getter for account creation date for incentives calculation
-app.get('/getCreationDate', verifyToken, (req, res) => {
-    const { UserID } = req.user;
-
-    const query = `SELECT creationDate FROM user WHERE UserID = ?`;
-
-    db.query(query, [UserID], (error, results) => {
-        if (error) {
-            console.error("Error fetching Account Creation Date:", error);
-            return res.status(500).json({ message: 'Error retrieving Account Creation Date' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.status(200).json({ creationDate: results[0].creationDate })
-    });
-});
-
 
 // selects the foods that a user can share
 app.get('/Sharing', verifyToken, async(req, res) => {
