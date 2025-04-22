@@ -9,19 +9,25 @@
     left: 0;
     z-index: 100;
     color: gold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .linkwrapper {
     margin: 0 auto;
     width: 200px;
     height: 40px;
-    padding: 10px, 20px;
+    padding: 10px 20px;
     padding-bottom: 15px;
     border-radius: 15px;
     /* border: solid rgb(98, 114, 101);
     background-color: rgb(120, 107, 87); */
     background-color: transparent;
     color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .linkwrapper a {
@@ -37,7 +43,6 @@ ul {
 
 li {
     text-decoration: none;
-    background-color: white;
 }
 
 .icon {
