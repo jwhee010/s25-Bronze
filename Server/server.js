@@ -908,20 +908,75 @@ app.get('/expiring', verifyToken, (req, res) => {
 app.get('/recipe', verifyToken, async(req, res) => {
     const { UserID } = req.user;
 
-    const sql = `SELECT  recipe.RecipeID, recipe.RecipeName, recipe.Instructions, recipe.RecipeLink,
+    const expiringItems = `SELECT inventory.FoodItemID, inventory.Expiration, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`;
+    
+    db.query(expiringItems, [UserID], (error, expiringResult) => {
+        if (error) {
+            console.log("Error fetching food items: ", error);
+            return res.status(500).json({message: 'Error fetching expring items'});
+        }
+
+        if (expiringResult.length === 0) {
+            return res.status(200).json({recipes: []});
+        }
+
+        const expiringFoodItemIDs = expiringResult.map(item => item.FoodItemID);
+
+        const reqcipeQuery =  `SELECT DISTINCT RecipeID
+                                FROM recipe_rec
+                                WHERE FoodItemID IN (?)`;
+
+        db.query(reqcipeQuery, [expiringFoodItemIDs], (error, recipeResult) => {
+            if (error) {
+                console.log("error getting recipe IDs", error);
+                return res.status(500).json({message: "Error getting recipe IDs"});
+            }
+
+            const recipeIDs = recipeResult.map(row => row.RecipeID);
+
+            if (recipeIDs.length === 0) {
+                return res.status(200).json({ recipes: []});
+            }
+
+            const sql = `SELECT  recipe.RecipeID, recipe.RecipeName, recipe.Instructions, recipe.RecipeLink,
                     recipe_rec.FoodItemID, food_item.FoodName, recipe_rec.QuantityRequired
                     FROM recipe
                     JOIN recipe_rec  ON recipe.RecipeID = recipe_rec.RecipeID
                     JOIN food_item ON recipe_rec.FoodItemID = food_item.FoodItemID
-                    WHERE recipe.UserID = ?`;
+                    WHERE recipe.RecipeID IN (?)`;
+
+            db.query(sql, [recipeIDs], (error, result) => {
+                if (error) {
+                    console.log("error getting recipes: ", error);
+                    return res.status(500).json({message: "Error getting recipes"});
+                }
+
+                res.status(200).json({ recipes: result });
+            });
+        });
+    });
+});
+
+app.get('/exp/recipe', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT inventory.FoodItemID, inventory.Expiration, inventory.Quantity, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`
     
-    db.query(sql, [ UserID ], (error, result) => {
+    db.query(sql, [ UserID ], (error, results) => {
         if (error) {
-            console.log("error executing query")
-            return res.status(500).json({message: "Error getting recipe reccomendations"});
+            console.log(error);
+            return res.status(500).json({message: 'Error executing query'});
         }
 
-        res.status(200).json({ recipes: result });
+        res.status(200).json({ expiringSoon: results});
     });
 });
 

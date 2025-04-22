@@ -9,6 +9,8 @@ const Recommendations = () => {
 
     const [recipe, setRecipe] = useState([]);
 
+    const [expiringItems, setExpiringItems] = useState([]);
+
     const getRecipes = async(token) => {
         try {
             const response = await axios.get('http://localhost:80/recipe', {
@@ -43,11 +45,26 @@ const Recommendations = () => {
         }
     };
 
+    const getExpiringItems = async(token) => {
+        try {
+            const response = await axios.get('http://localhost:80/exp/recipe', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            setExpiringItems(response.data.expiringSoon);
+        } catch (error) {
+            console.error('Error retrieving expiring food items: ', error);
+        }
+    }
+
     useEffect(() => {
         const token = localStorage.getItem('authToken');
 
         try {
             getRecipes(token);
+            getExpiringItems(token);
         } catch(error) {
             console.error('Token decoding error: ', error);
         }
@@ -61,16 +78,13 @@ const Recommendations = () => {
             {/* Spoilage box */}
             <h2 className = "nearSpoilWrapper">Food Items Currently Nearing Their Spoilage Date
                 <div className="spoilList">
-                    <p>Tomatos   Quantity: 3</p>
-                    <Divider/>
-                    <p>Test1   Quantity: 1</p>
-                    <Divider/>
-                    <p>Test2   Quantity: 2</p>
-                    <Divider/>
-                    <p>Test3   Quantity: 3</p>
-                    <Divider/>
-                    <p>Test4   Quantity: 4</p>
-                    <Divider/>
+                    {expiringItems.map((item, index) => (
+                        <div key={index}>
+                            <p>{item.FoodName}   Quantity: {item.Quantity}</p>
+                            <Divider/>
+                        </div>
+                    ))}
+
                </div>
             </h2>
             
