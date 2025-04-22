@@ -15,22 +15,6 @@ app.use(cors({
 
 app.use(express.json())
 
-//********************************************************* */
-
-// //Real Time Messaging Websocket
-// const http = require('http');
-// const { Server } = require('socket.io');
-
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//     cors: {
-//         origin: "http://localhost:5173", // Frontend URL
-//         methods: ["GET", "POST"], // Allowed HTTP methods
-//     },
-// });
-
-//********************************************************** */
-
 // This requirement will utilize a MySQL database 
 // from the db.js of each individual team member, locally.
 const db = require('./config/db');
@@ -765,45 +749,6 @@ app.post('/messages', verifyToken, async (req, res) => {
         }
     });
 });
-
-  
-  
-
-
-
-
-// //*********************************************************** */
-// // Handle WebSocket connections here
-// io.on("connection", (socket) => {
-//     console.log(`User ${socket.id} connected`);
-
-//     // Listen for incoming messages from clients
-//     socket.on("joinRoom", ({ senderID, receiverID }) => {
-//         const roomName = [senderID, receiverID].sort().join("-"); // Unique room name (sorted for consistency)
-//         socket.join(roomName);
-//         console.log(`${socket.id} joined room: ${roomName}`);
-//     });
-
-//     // Handle sending messages
-//     socket.on("sendMessage", ({ roomName, senderID, message, timestamp }) => {
-//         // Broadcast the message to the other participants in the room
-//         io.to(roomName).emit("receiveMessage", { senderID, message, timestamp });
-//         console.log(`Message sent in room ${roomName}: ${message}`);
-//     });
-
-//     // Handle disconnections
-//     socket.on("disconnect", () => {
-//         console.log(socket.id, " disconnected");
-//         io.emit('message', 'A user has left the chat');
-//     });
-// });
-
-// server.listen(3000, () => {
-//     console.log("Server is running on port 3000");
-// });
-
-
-//*********************************************************** */
 
 // Server Setup
 const PORT = process.env.PORT || 80;
