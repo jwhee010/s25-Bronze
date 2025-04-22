@@ -37,8 +37,8 @@ export default function Calendar() {
       const events = response.data.foodItems.map(item => ({
         title: `${item.FoodName}` +'\xa0\xa0\xa0\xa0'+`Quantity: ${item.Quantity}` 
         +'\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + `\nPurchase Date: ${item.PurchaseDate.slice(0, 10)}`,
-        date: item.Expiration,
-        id: item.distance
+        date: item.Expiration.slice(0,10),
+        id: `${item.distance}_${item.FoodName}_${item.Expiration}`
       }));
 
       setFoodAsEvents(events);
@@ -134,22 +134,23 @@ export default function Calendar() {
  
         eventDidMount={function(info)
           {
-            const currDate = new Date();
+            const idParts = info.event.id.split('_');
+            const distance = parseInt(idParts[0]);
 
-            if(info.event.id < 0)
+            if(distance < 0)
             {
               //Grey Past Days
               info.el.style.backgroundColor = '#848484';
               info.el.style.borderColor = '#848484';
 
             }
-            else if(info.event.id >= 1 && info.event.id <= 3)
+            else if(distance >= 1 && distance<= 3)
             {
               //Red 1-3 days
               info.el.style.backgroundColor = '#ee6461';
               info.el.style.borderColor = '#ee6461';
             }
-            else if(info.event.id >= 4 && info.event.id <= 7)
+            else if(distance >= 4 && distance <= 7)
             {
             //Yellow 4-7 days
               info.el.style.backgroundColor = '#eed661';

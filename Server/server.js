@@ -598,26 +598,6 @@ app.get('/getCreationDate', verifyToken, (req, res) => {
     });
 });
 
-//getter for account creation date for incentives calculation
-app.get('/getCreationDate', verifyToken, (req, res) => {
-    const { UserID } = req.user;
-
-    const query = `SELECT creationDate FROM user WHERE UserID = ?`;
-
-    db.query(query, [UserID], (error, results) => {
-        if (error) {
-            console.error("Error fetching Account Creation Date:", error);
-            return res.status(500).json({ message: 'Error retrieving Account Creation Date' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.status(200).json({ creationDate: results[0].creationDate })
-    });
-});
-
 
 // selects the foods that a user can share
 app.get('/Sharing', verifyToken, async(req, res) => {
@@ -1004,6 +984,28 @@ app.get('/exp/recipe', verifyToken, (req, res) => {
         });
     });
 
+    app.get('/Sharing/AllAnalytics', verifyToken, (req, res) => {
+        const { UserID } = req.user;
+    
+        const sql = `SELECT 
+                            food_item.FoodName, analytics.Quantity
+                        FROM
+                            analytics
+                        JOIN
+                            food_item ON analytics.FoodItemID = food_item.FoodItemID
+                        WHERE
+                            analytics.UserID = ?
+                        AND analytics.Status = 'shared'
+                        ORDER BY analytics.Quantity DESC;`
+        db.query(sql, [UserID], (error, results) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: 'Error executing query' });
+            }
+    
+            res.status(200).json({ Analytics: results });
+        });
+    });
 
 
 //*********************************************************** */
@@ -1047,7 +1049,79 @@ app.post('/messages', verifyToken, async (req, res) => {
   
   
 
+// Change user email
+app.post('/settings/changeEmail', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const { newEmail } = req.body;
 
+    if (!newEmail) {
+        return res.status(400).json({ message: 'New email is required' });
+    }
+
+    const sql = `UPDATE user SET email = ? WHERE UserID = ?`;
+
+    db.query(sql, [newEmail, UserID], (error, result) => {
+        if (error) {
+            console.error('Error updating email:', error);
+            return res.status(500).json({ message: 'Error updating email' });
+        }
+
+        res.status(200).json({ message: 'Email updated successfully' });
+    });
+});
+
+// Empty inventory
+app.delete('/settings/emptyInventory', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `DELETE FROM inventory WHERE UserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if (error) {
+            console.error('Error emptying inventory:', error);
+            return res.status(500).json({ message: 'Error emptying inventory' });
+        }
+
+        res.status(200).json({ message: 'Inventory emptied successfully' });
+    });
+});
+
+// Reset analytics
+app.delete('/settings/resetAnalytics', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `DELETE FROM analytics WHERE UserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if (error) {
+            console.error('Error resetting analytics:', error);
+            return res.status(500).json({ message: 'Error resetting analytics' });
+        }
+
+        res.status(200).json({ message: 'Analytics reset successfully' });
+    });
+});
+
+// Change first and last name
+app.post('/settings/changeName', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const { newFirstName, newLastName } = req.body;
+
+    if (!newFirstName || !newLastName) {
+        return res.status(400).json({ message: 'Both first and last names are required' });
+    }
+
+    const sql = `UPDATE user SET firstName = ?, lastName = ? WHERE UserID = ?`;
+
+    db.query(sql, [newFirstName, newLastName, UserID], (error, result) => {
+        if (error) {
+            console.error('Error updating name:', error);
+            return res.status(500).json({ message: 'Error updating name' });
+        }
+
+        res.status(200).json({ message: 'Name updated successfully' });
+    });
+});
 
 
 // //*********************************************************** */

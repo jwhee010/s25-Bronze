@@ -59,6 +59,7 @@ CREATE TABLE `analytics` (
   `Quantity` varchar(45) DEFAULT NULL,
   `Status` varchar(45) DEFAULT NULL,
   `DateExpired` date DEFAULT NULL,
+  UNIQUE KEY `shared_item_analytics` (`UserID`,`Status`,`FoodItemID`,`ExpirationStatus`),
   KEY `InventoryID_idx` (`UserID`),
   KEY `fk_foodItem_analytics_idx` (`FoodItemID`),
   CONSTRAINT `fk_foodItem_analytics` FOREIGN KEY (`FoodItemID`) REFERENCES `food_item` (`FoodItemID`),
@@ -72,7 +73,7 @@ CREATE TABLE `analytics` (
 
 LOCK TABLES `analytics` WRITE;
 /*!40000 ALTER TABLE `analytics` DISABLE KEYS */;
-INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','4','unshared','2025-04-26'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-02-11'),(3,4,'expired','5','unshared','2025-01-15'),(3,3,'expired','7','unshared','2025-01-25'),(3,7,'consumed','6','unshared',NULL),(3,9,'consumed','3','unshared',NULL),(3,1,'expired','5','unshared','2025-03-25'),(3,2,'expired','2','unshared','2025-01-16'),(3,5,'expired','2','unshared','2025-05-04'),(3,10,'expired','1','unshared','2025-06-07');
+INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','4','unshared','2025-04-26'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-02-11'),(3,4,'expired','5','unshared','2025-01-15'),(3,3,'expired','7','unshared','2025-01-25'),(3,7,'consumed','6','unshared',NULL),(3,9,'consumed','3','unshared',NULL),(3,1,'expired','5','unshared','2025-03-25'),(3,2,'expired','2','unshared','2025-01-16'),(1,1,'fresh','5','shared','2025-01-01'),(1,10,'fresh','5','shared','2025-05-05'),(3,6,'fresh','8','shared','2025-04-26');
 /*!40000 ALTER TABLE `analytics` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +90,7 @@ CREATE TABLE `food_item` (
   `DefaultShelfLife` int DEFAULT NULL,
   `DefaultUnit` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`FoodItemID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +99,7 @@ CREATE TABLE `food_item` (
 
 LOCK TABLES `food_item` WRITE;
 /*!40000 ALTER TABLE `food_item` DISABLE KEYS */;
-INSERT INTO `food_item` VALUES (1,'apple',7,'number'),(2,'banana',7,'number'),(3,'tomato',14,'number'),(4,'carrot',21,'nuumber'),(5,'broccoli',5,'oz'),(6,'spinach',7,'oz'),(7,'potato',84,'number'),(8,'orange',28,'number'),(9,'strawberries',7,'oz'),(10,'blueberries',14,'oz'),(11,'cucumber',14,'number');
+INSERT INTO `food_item` VALUES (1,'apple',7,'number'),(2,'banana',7,'number'),(3,'tomato',14,'number'),(4,'carrot',21,'nuumber'),(5,'broccoli',5,'oz'),(6,'spinach',7,'oz'),(7,'potato',84,'number'),(8,'orange',28,'number'),(9,'strawberries',7,'oz'),(10,'blueberries',14,'oz'),(11,'cucumber',14,'number'),(12,'bacon',7,'g'),(13,'white bread',7,'number'),(14,'mayo',60,'tbsp'),(15,'romaine lettuce',7,'cups'),(16,'relish',365,'tbsp'),(17,'mustard',365,'tbsp'),(18,'apple cider vinegar',999,'tbsp'),(19,'hard boiled eggs',7,'number'),(20,'celery',14,'number'),(21,'onion',7,'cups'),(22,'dill',14,'tbsp');
 /*!40000 ALTER TABLE `food_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,6 +130,34 @@ LOCK TABLES `household` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `household_memeber`
+--
+
+DROP TABLE IF EXISTS `household_memeber`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `household_memeber` (
+  `AccountID` int NOT NULL,
+  `HouseHoldID` int NOT NULL,
+  `AccountName` varchar(45) DEFAULT NULL,
+  `Accesslevel` int DEFAULT NULL,
+  `ExpieryDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`AccountID`),
+  KEY `fk_householdID_mem_idx` (`HouseHoldID`),
+  CONSTRAINT `fk_householdID_mem` FOREIGN KEY (`HouseHoldID`) REFERENCES `household` (`HouseHoldID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `household_memeber`
+--
+
+LOCK TABLES `household_memeber` WRITE;
+/*!40000 ALTER TABLE `household_memeber` DISABLE KEYS */;
+/*!40000 ALTER TABLE `household_memeber` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `inventory`
 --
 
@@ -147,7 +176,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`InventoryID`),
   KEY `fk_userID_inv_idx` (`UserID`),
   CONSTRAINT `fk_userID_inv` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,8 +185,35 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (33,1,3,'2025-02-26','fresh','6','refrigerator','2025-03-07'),(34,2,6,'2025-02-27','fresh','6','refrigerator','2025-03-03'),(35,1,7,'2025-02-27','fresh','10','shelf','2025-03-03'),(36,1,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(37,2,4,'2025-02-26','fresh','4','shelf','2025-03-01'),(38,4,6,'2025-02-26','fresh','6400','refrigerator','2025-03-01'),(39,4,10,'2025-02-26','fresh','16','refrigerator','2025-03-01'),(41,1,1,'2025-03-23','fresh','5','refrigerator','2025-01-01'),(43,1,2,'2025-03-23','fresh','8','refrigerator','2025-03-30'),(53,3,5,'2025-06-08','fresh','5','refrigerator','2025-06-13'),(54,3,6,'2025-06-08','fresh','4','refrigerator','2025-06-15'),(55,3,11,'2025-06-08','fresh','2','refrigerator','2025-06-22'),(56,3,2,'2025-06-03','fresh','0','shelf','2025-06-10'),(60,3,3,'2025-06-09','fresh','4','refrigerator','2025-06-23'),(61,3,2,'2025-06-08','fresh','3','shelf','2025-06-15'),(62,3,7,'2025-04-09','fresh','7','refigerator','2025-04-09'),(63,3,7,'2025-04-09','fresh','7','refigerator','2025-04-12'),(64,3,7,'2025-04-09','fresh','7','refigerator','2025-04-16');
+INSERT INTO `inventory` VALUES (65,3,3,'2025-04-21','fresh','7','refriegerator','2025-04-27'),(66,3,7,'2025-04-21','fresh','7','shelf','2025-04-27'),(67,3,1,'2025-04-21','fresh','5','refrigerator','2025-04-28'),(68,3,10,'2025-04-21','fresh','0','refrigerator','2025-05-05'),(69,1,11,'2025-04-21','fresh','8','refrigerator','2025-05-05'),(70,1,9,'2025-04-19','fresh','7','refrigerator','2025-04-26'),(71,3,2,'2025-04-21','fresh','2','refrigerator','2025-04-28'),(72,1,6,'2025-04-19','fresh','8','refrigerator','2025-04-26');
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `messages` (
+  `messageID` int NOT NULL AUTO_INCREMENT,
+  `senderID` varchar(45) DEFAULT NULL,
+  `receiverID` varchar(45) DEFAULT NULL,
+  `text` varchar(281) DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`messageID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `messages`
+--
+
+LOCK TABLES `messages` WRITE;
+/*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+INSERT INTO `messages` VALUES (1,'FullMetal','Xx_Andrew_xX','Hey andrew, do you want some of this spinach that I just got the other day?','2025-04-22 00:59:58'),(2,'Xx_Andrew_xX','FullMetal','Sure why noy','2025-04-22 01:00:15'),(3,'Xx_Andrew_xX','FullMetal','*not','2025-04-22 01:00:17');
+/*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -196,9 +252,13 @@ DROP TABLE IF EXISTS `recipe`;
 CREATE TABLE `recipe` (
   `RecipeID` int NOT NULL AUTO_INCREMENT,
   `RecipeName` varchar(45) DEFAULT NULL,
-  `Instructions` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`RecipeID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `Instructions` text,
+  `UserID` int NOT NULL,
+  `RecipeLink` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`RecipeID`),
+  KEY `fk_idx` (`UserID`),
+  CONSTRAINT `FK_UserID` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -207,6 +267,7 @@ CREATE TABLE `recipe` (
 
 LOCK TABLES `recipe` WRITE;
 /*!40000 ALTER TABLE `recipe` DISABLE KEYS */;
+INSERT INTO `recipe` VALUES (1,'BLT','1. Cook your bacon. We recommend pan frying to a crispy golden brown.\n \n2. Slice and season your tomato. Slice the tomato into 1/3 inch slices and season with salt and pepper. If you would like place them on some paper towels to absorb some moisture.\n\n3. Toast 2 slices of bread.\n\n4. Build your BLT. Spread 1 tablespoon of mayo on each slice of bread. Place your lettuce on one slice and the layer with tomato slices and bacon. Finish off with the other slice of bread and cut your BLT to your liking.\n',3,'https://www.thekitchn.com/blt-recipe-23048109'),(2,'Potato Salad','1. Cut your potatoes into quarters and place them in a pot with water. Boil the water adding some salt. Cook for 13-15 minutes after boiling.\n\n2. Mix mayo, relish, mustard, apple cider vinegar, paprika, salt, and pepper until smooth. Chop eggs, celery, onions, and dill.\n\n3. After cooking the potatoes drain the water. Chop the potatoes into chunks and place them in a bowl. Mix in the ingredients from the previous step until evenly mixed. Add eggs, celery, onions, dill and mix again. Add seasonings to your liking.\n\n4. Refrigerate the potato salad for at least 4 hours but preferably 24 hours for a better taste.\n',3,'https://www.aspicyperspective.com/make-best-potato-salad-recipe/');
 /*!40000 ALTER TABLE `recipe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -219,7 +280,7 @@ DROP TABLE IF EXISTS `recipe_rec`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `recipe_rec` (
   `FoodItemID` int NOT NULL,
-  `QuantityRequired` int DEFAULT NULL,
+  `QuantityRequired` varchar(50) DEFAULT NULL,
   `RecipeID` int NOT NULL,
   PRIMARY KEY (`FoodItemID`,`RecipeID`),
   KEY `RecipeID_idx` (`RecipeID`),
@@ -234,6 +295,7 @@ CREATE TABLE `recipe_rec` (
 
 LOCK TABLES `recipe_rec` WRITE;
 /*!40000 ALTER TABLE `recipe_rec` DISABLE KEYS */;
+INSERT INTO `recipe_rec` VALUES (3,'1 tomato',1),(7,'5 lbs',2),(12,'3 slices',1),(13,'2 slices',1),(14,'2 tbsp',1),(14,'2 cups',2),(15,'1 large leaf',1),(16,'1 cup',2),(17,'2 tbsp',2),(18,'1 tbsp',2),(19,'5 eggs',2),(20,'3 stalks',2),(21,'1/2 cup',2),(22,'1 tbsp',2);
 /*!40000 ALTER TABLE `recipe_rec` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -280,7 +342,7 @@ CREATE TABLE `share_request` (
   KEY `fk_userID_shared_idx` (`RequestorUserID`),
   CONSTRAINT `fk_requserID_shared` FOREIGN KEY (`RequestorUserID`) REFERENCES `user` (`UserID`),
   CONSTRAINT `fk_shareditem_req` FOREIGN KEY (`SharedItemID`) REFERENCES `shared_item` (`SharedItemID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -309,7 +371,7 @@ CREATE TABLE `shared_item` (
   KEY `fk_inventoryID_shared_idx` (`InventoryItemID`),
   KEY `fk_userId_shared_idx` (`OwnerUserID`),
   CONSTRAINT `fk_userId_sharing` FOREIGN KEY (`OwnerUserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -339,7 +401,7 @@ CREATE TABLE `shelf_friend` (
   KEY `fk_userID_friend2_idx` (`UserID_2`),
   CONSTRAINT `fk_userID_friend1` FOREIGN KEY (`UserID_1`) REFERENCES `user` (`UserID`),
   CONSTRAINT `fk_userID_friend2` FOREIGN KEY (`UserID_2`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -348,6 +410,7 @@ CREATE TABLE `shelf_friend` (
 
 LOCK TABLES `shelf_friend` WRITE;
 /*!40000 ALTER TABLE `shelf_friend` DISABLE KEYS */;
+INSERT INTO `shelf_friend` VALUES (1,1,3,'2025-04-21 20:30:35','yes'),(2,3,1,'2025-04-21 20:30:35','yes'),(3,3,2,'2025-04-21 20:59:23','yes'),(4,2,3,'2025-04-21 20:59:23','yes');
 /*!40000 ALTER TABLE `shelf_friend` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,10 +430,9 @@ CREATE TABLE `user` (
   `email` varchar(45) NOT NULL,
   `lastLogin` datetime DEFAULT NULL,
   `creationDate` datetime DEFAULT NULL,
-  `creationDate` datetime DEFAULT NULL,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `userName` (`userName`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -379,9 +441,17 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-03-24 19:53:10','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-11 19:34:04','2024-12-14 00:00:00'),(3,'demo2_user','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-04-11 19:47:30','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(5,'newUser','thisName','newLastName','12','email.@email.com',NULL,NULL);
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-04-21 21:01:04','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-21 18:58:03','2024-12-14 00:00:00'),(3,'FullMetal','Edward','Elric','password12','equivalentExchange@yahoo.com','2025-04-21 21:01:31','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(8,'KonamiKing','John','Konami','321','bigbusiness@gmail.com',NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'livelyshelfsdb'
+--
+
+--
+-- Dumping routines for database 'livelyshelfsdb'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -392,4 +462,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-15 21:54:01
+-- Dump completed on 2025-04-22 13:09:54

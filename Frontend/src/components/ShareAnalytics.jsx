@@ -1,41 +1,58 @@
-import React, { useState, useEffect } from 'react'; // Import React hooks
-import { PieChart } from '@mui/x-charts/PieChart'; // Import PieChart
-import { BarChart } from '@mui/x-charts/BarChart'; // Import BarChart
-import './ShareAnalytics.css'; // Import CSS styles
-import axios from 'axios'; // Import Axios for API calls
+import React, { useState, useEffect } from 'react';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { BarChart } from '@mui/x-charts/BarChart';
+import './ShareAnalytics.css';
+import axios from 'axios';
 
 export default function ShareAnalytics() {
-    const [topSharedFood, setTopSharedFood] = useState([]); // State to store pie chart data
+    const [topSharedFood, setTopSharedFood] = useState([]);
+    const [allSharedFood, setAllSharedFood] = useState([]);
 
     // Retrieves the top 5 most shared food items from the database
     const getTopSharedFood = async (token) => {
         try {
             const response = await axios.get('http://localhost:80/Sharing/Analytics', {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Authorization header
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Map response data to match PieChart requirements
             const pieChartData = response.data.Analytics.map((item, index) => ({
-                id: index, // Unique ID for each slice
-                value: item.Quantity, // Quantity of shared food
-                label: item.FoodName, // Food name as label
+                id: index,
+                value: item.Quantity,
+                label: item.FoodName,
             }));
 
-            setTopSharedFood(pieChartData); // Update state with formatted data
+            setTopSharedFood(pieChartData);
         } catch (error) {
-            console.error('Error retrieving food items:', error); // Log errors
+            console.error('Error retrieving food items:', error);
+        }
+    };
+
+    // Retrieves all shared food items from the database
+    const getAllSharedFood = async (token) => {
+        try {
+            const response = await axios.get('http://localhost:80/Sharing/AllAnalytics', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const barChartData = response.data.Analytics.map((item) => ({
+                label: item.FoodName, // Food name for x-axis
+                value: item.Quantity, // Quantity shared for y-axis
+            }));
+
+            setAllSharedFood(barChartData);
+        } catch (error) {
+            console.error('Error retrieving food items:', error);
         }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken'); // Retrieve token from local storage
+        const token = localStorage.getItem('authToken');
         if (!token) {
-            console.error('No auth token found in localStorage'); // Handle missing token
+            console.error('No auth token found in localStorage');
             return;
         }
-        getTopSharedFood(token); // Fetch data when component mounts
+        getTopSharedFood(token);
+        getAllSharedFood(token);
     }, []);
 
     return (
@@ -44,20 +61,17 @@ export default function ShareAnalytics() {
             <div className="chart-container pie-section">
                 <h2 className="chart-title">Top 5 Most Shared Food Items</h2>
                 <PieChart
-                    colors={['#F05A7E', '#F6C794', '#FFF6B3', '#7C9D96', '#6FC2D0']} // Custom colors
+                    colors={['#F05A7E', '#F6C794', '#FFF6B3', '#7C9D96', '#6FC2D0']}
                     series={[
                         {
                             data: topSharedFood.length > 0
                                 ? topSharedFood
-                                : [{ id: 0, value: 1, label: 'No shared food!' }], // Handle empty state
+                                : [{ id: 0, value: 1, label: 'No shared food!' }],
                         },
                     ]}
                     slotProps={{
                         legend: {
-                            labelStyle: {
-                                fontSize: 14,
-                                fill: 'white', // Customize legend label
-                            },
+                            labelStyle: { fontSize: 14, fill: 'white' },
                         },
                     }}
                     width={400}
@@ -72,16 +86,16 @@ export default function ShareAnalytics() {
                     xAxis={[
                         {
                             scaleType: 'band',
-                            data: ['Apples', 'Bananas', 'Carrots', 'Tomatoes', 'Potatoes'], // Placeholder data
+                            data: allSharedFood.length > 0 ? allSharedFood.map((item) => item.label) : [],
                         },
                     ]}
                     series={[
                         {
-                            data: [10, 15, 8, 12, 6], // Placeholder values
-                            color: ['#F05A7E', '#F6C794', '#FFF6B3', '#7C9D96', '#6FC2D0'], // Individual bar colors
+                            data: allSharedFood.length > 0 ? allSharedFood.map((item) => item.value) : [],
+                            // color: allSharedFood.map((_, index) => ['#F05A7E', '#F6C794', '#FFF6B3', '#7C9D96', '#6FC2D0'][index % 5]),
                         },
                     ]}
-                    height={300} // Set Bar Chart height
+                    height={300}
                 />
             </div>
         </div>

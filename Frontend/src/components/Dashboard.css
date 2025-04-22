@@ -67,3 +67,49 @@
     font-weight: bold;
     color: rgb(131, 201, 155);
 }
+
+/* This lets the charts be beside each other*/
+.chart-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 1rem;
+    margin: 2rem auto;
+    width: 100%;
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #888 transparent;
+}
+
+/* This just holds the chart stuff*/
+.chart-box {
+    flex: 0 0 auto; 
+    width: 400px;
+    min-width: 350px;
+    max-width: 500px;
+    background-color: #3a3a3a;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-right: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    color: white;
+}
+
+/* The chart titles*/
+.trendHeader {
+    color: gold;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+/* Literally just here to make it so the navbar
+   doesn't overlap */
+.dashboard-stuff {
+    margin-left: 104px;
+    padding: 16px;
+}
+
+/* Note: 1rem is equivalent to about 16px; use what you feel like */
