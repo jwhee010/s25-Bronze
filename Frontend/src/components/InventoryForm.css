@@ -7,6 +7,7 @@
     right: 0;
     margin-right: 90px;
     color: gold;
+    z-index: 1;
 }
 
 .invbutton {
@@ -18,6 +19,7 @@
     border-radius: 5px;
     color: white;
     cursor: pointer;
+    z-index: 1;
 }
 
 .invbutton:hover {
@@ -33,10 +35,13 @@
     display: block;
     background-color: rgba(56, 74, 69, 0.881);
     width: 250px;
-    height: 280px;
+    height: 350px;
     font-size: medium;
     border-radius: 25px;
     padding: 15px;
+    position: fixed; 
+    transform: translateY(15%) translateX(2%); 
+    z-index: 999; 
 }
 
 .close {
@@ -50,4 +55,8 @@
     align-items: center; /* Center-align buttons horizontally */
     gap: 20px; /* Adds uniform vertical spacing between buttons */
     margin-top: 100px; /* Adjusts spacing above the button group */
+}
+
+.submit-spacing{
+    margin-bottom: 10px;
 }

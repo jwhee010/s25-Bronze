@@ -55,7 +55,6 @@ export default function InventoryForm({addNotification}) {
         itemQuantity: "",
         purchaseDate: "",
         stored: "",
-        shareBool: false,
     });
 
     const [removeFormData, setRemoveFormData] = useState({
@@ -248,17 +247,12 @@ const submitRemoveForm = async (e) => {
                                 required
                             />
                             <br />
-                            <label htmlFor="shareBool">Sharable?</label>
-                            <input
-                                type="checkbox"
-                                id="shareBool"
-                                checked={inventoryFormData.shareBool}
-                                onChange={storeInput}
-                            />
+                            
                             <br />
-                            <button type="submit" className="invbutton">
+                            <button type="submit" className="invbutton submit-spacing">
                                 Submit
                             </button>
+                            <br />
                             <button
                                 type="button"
                                 onClick={() => setActive(false)}
@@ -289,6 +283,7 @@ const submitRemoveForm = async (e) => {
                                 required
                             />
                             <br />
+                            
                             <label htmlFor="itemQuantity">Quantity</label>
                             <input
                                 type="number"
@@ -297,6 +292,7 @@ const submitRemoveForm = async (e) => {
                                 onChange={handleRemoveInput}
                                 required
                             />
+                            <br />
                             <br />
                             <label htmlFor="expirationDate">Expiration Date</label>
                             <input
@@ -307,7 +303,8 @@ const submitRemoveForm = async (e) => {
                                 required
                             />
                             <br />
-                            <button type="submit" className="invbutton">
+                            <br />
+                            <button type="submit" className="invbutton submit-spacing">
                                 Submit
                             </button>
                             <button
