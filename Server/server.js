@@ -498,7 +498,33 @@ app.post('/consumeFood', verifyToken, (req, res) => {
             if (err) {
                 return res.status(500).json({ message: 'Error updating food quantity' });
             }
-            res.status(200).json({ message: 'Food quantity updated successfully' });
+            const checkQuantityQuery = `
+                SELECT Quantity FROM inventory 
+                WHERE FoodItemID = ? AND UserID = ?;
+            `;
+
+            db.query(checkQuantityQuery, [FoodItemID, UserID], (err, result) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error checking quantity' });
+                }
+
+                if (result.length > 0 && result[0].Quantity <= 0) {
+                    const deleteQuery = `
+                        DELETE FROM inventory 
+                        WHERE FoodItemID = ? AND UserID = ?;
+                    `;
+
+                    db.query(deleteQuery, [FoodItemID, UserID], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error deleting item from inventory' });
+                        }
+
+                        return res.status(200).json({ message: 'Food item consumed and removed from inventory' });
+                    });
+                } else {
+                    return res.status(200).json({ message: 'Food quantity updated successfully' });
+                }
+            });
         });
     });
 });
@@ -512,7 +538,7 @@ app.get('/topWaste', verifyToken, async (req, res) => {
                  FROM analytics 
                  JOIN food_item ON analytics.FoodItemID = food_item.FoodItemID 
                  WHERE analytics.UserID = ? AND ExpirationStatus = 'expired'
-                 ORDER BY analytics.Quantity DESC
+                 ORDER BY CAST(analytics.Quantity AS UNSIGNED) DESC
                  LIMIT 5`;
 
     db.query(sql, [UserID], (error, results) => {
@@ -547,8 +573,10 @@ app.get('/expired', verifyToken, async (req, res) => {
 
 // update the given status of an item to expired
 app.post('/expireFood', verifyToken, (req, res) => {
-    const { FoodName, Action } = req.body;
+    const { FoodName, Action, Quantity} = req.body;
     const { UserID } = req.user;
+
+    console.log("Searching for food:", FoodName, "Amount: ", Quantity);
 
     const foodQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
 
@@ -564,16 +592,55 @@ app.post('/expireFood', verifyToken, (req, res) => {
     const { FoodItemID } = results[0];
 
     const query = `
-            UPDATE inventory 
-            SET ExpirationStatus = 'expired' 
-            WHERE FoodItemID = ? AND UserID = ?;
+            DELETE FROM inventory
+            WHERE FoodItemID = ? AND UserID = ? AND Quantity = ?;
         `;
 
-        db.query(query, [FoodItemID, UserID], (err, result) => {
+        db.query(query, [FoodItemID, UserID, Quantity], (err, result) => {
             if (err) {
                 return res.status(500).json({ message: 'Error updating food status' });
             }
-            res.status(200).json({ message: 'Food status updated to expired' });
+            const analyticsQuery = `
+                SELECT Quantity FROM analytics 
+                WHERE FoodItemID = ? AND UserID = ? AND ExpirationStatus = 'expired';
+            `;
+
+            db.query(analyticsQuery, [FoodItemID, UserID], (err, analyticsResults) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error retrieving analytics data' });
+                }
+
+                if (analyticsResults.length > 0) {
+                    const existingQuantity = parseInt(analyticsResults[0].Quantity, 10);
+                    const newQuantity = parseInt(existingQuantity + Quantity, 10);
+
+                    const updateAnalyticsQuery = `
+                        UPDATE analytics 
+                        SET Quantity = ? 
+                        WHERE FoodItemID = ? AND UserID = ? AND ExpirationStatus = 'expired';
+                    `;
+
+                    db.query(updateAnalyticsQuery, [newQuantity, FoodItemID, UserID], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error updating analytics table' });
+                        }
+                        res.status(200).json({ message: 'Food status updated' });
+                    });
+                } else {
+                    const current_date = new Date().toISOString().slice(0, 10);
+                    const insertAnalyticsQuery = `
+                        INSERT INTO analytics (FoodItemID, UserID, ExpirationStatus, Quantity, Status, DateExpired) 
+                        VALUES (?, ?, 'expired', ?, 'unshared', ?);
+                    `;
+
+                    db.query(insertAnalyticsQuery, [FoodItemID, UserID, Quantity, current_date], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error inserting into analytics table' });
+                        }
+                        res.status(200).json({ message: 'Food status updated and new analytics entry created' });
+                    });
+                }
+            });
         });
     });
 });
@@ -972,7 +1039,7 @@ app.get('/exp/recipe', verifyToken, (req, res) => {
                     WHERE
                         analytics.UserID = ?
                     AND analytics.Status = 'shared'
-                    ORDER BY analytics.Quantity DESC
+                    ORDER BY CAST(analytics.Quantity AS UNSIGNED) DESC
                     LIMIT 5;`
         db.query(sql, [UserID], (error, results) => {
             if (error) {

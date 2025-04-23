@@ -413,10 +413,10 @@ export default function Sharing() {
                 <table className="table-container">
                     <thead>
                         <tr>
-                            <th>Food Name</th>
-                            <th>Quantity</th>
-                            <th>Expiration Status</th>
-                            <th>Share</th>
+                            <th style={{ textAlign:"center"}}>Food Name</th>
+                            <th style={{ textAlign:"center"}}>Quantity</th>
+                            <th style={{ textAlign:"center"}}>Expiration Status</th>
+                            <th style={{ textAlign:"center"}}>Share</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -468,7 +468,11 @@ export default function Sharing() {
             <tbody>
                 {friendsSharing.map((item, index) => (
                     <tr key={index}>
-                        <td>{`${item.firstName} ${item.lastName} (${item.userName})`}</td>
+                        <td>
+                            {item.firstName} {item.lastName}
+                            <br />
+                            ({item.userName})
+                        </td>
                         <td>{item.FoodName}</td>
                         <td>{`${item.AvailableQuantity} ${item.DefaultUnit}`}</td>
                         <td>{item.Status}</td>
