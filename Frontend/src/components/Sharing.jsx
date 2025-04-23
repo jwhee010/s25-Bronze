@@ -452,7 +452,7 @@ export default function Sharing() {
                 <p>No food items available</p>
             )}
 
-    <h3>Requesut friends food</h3>
+    <h3>Reqeust friends food</h3>
 
     {friendsSharing.length > 0 ? (
         <table className="table-container">

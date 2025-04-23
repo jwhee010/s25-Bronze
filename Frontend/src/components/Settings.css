@@ -35,8 +35,6 @@
     background-color: rgba(56, 74, 69, 0.881);
     font-weight: bold;
     color: orange; /* Keep the orange color */
-    -webkit-text-stroke: 1px black; /* Add black border traced around letters */
-    text-shadow: 2px 2px 0px black; /* Add a shadow to simulate a black outline */
 }
 
 /* Table rows */
@@ -68,12 +66,10 @@
     font-size: 44px; /* Keep the Settings header the largest */
     text-align: center;
     margin-bottom: 20px;
-    color: orange; /* Match the orange color of other headers */
+    color: gold; /* Match the orange color of other headers */
     background-color: rgba(56, 74, 69, 0.881); /* Green background */
     padding: 12px; /* Slightly larger padding for the Settings header */
     border-radius: 8px; /* Uniform but slightly larger border radius */
-    -webkit-text-stroke: 1px black; /* Add black border traced around letters */
-    text-shadow: 2px 2px 0px black; /* Add a shadow for better visibility */
 }
 
 /* Section headers (for other headers like Calendar and Dashboard) */
