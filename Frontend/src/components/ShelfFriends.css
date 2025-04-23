@@ -1,0 +1,19 @@
+.shelfHeader{
+    color:gold;
+    font-weight: bold;
+    font-size: 40px;
+
+    margin: 0 auto;
+    text-align: center;
+
+    width:440px;
+    height:60px;
+
+    padding: 8px;
+    padding-top: 20px;
+    
+    margin-bottom: 30px;
+    background-color: rgba(56, 74, 69, 0.881);
+    border-radius: 15px;
+
+}
