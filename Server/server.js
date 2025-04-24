@@ -107,8 +107,8 @@ app.post('/signup',(req, res) =>{
     const {newUsername, newFirstname, newLastname, newPassword, newEmail} = req.body;
 
     const signUpQuery =`
-    Insert into livelyshelfsdb.user(userName, firstName, lastName, passwordHash, email)
-    values(?, ?, ?, ?, ?);
+    Insert into livelyshelfsdb.user(userName, firstName, lastName, passwordHash, email, creationDate)
+    values(?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
     `;
 
     db.query(signUpQuery, [newUsername, newFirstname, newLastname, newPassword, newEmail],(err, checkRes) =>{
