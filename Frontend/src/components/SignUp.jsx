@@ -85,12 +85,12 @@ function SignUp(){
 
             <div className="formMatting3">
             <label htmlFor="newUsername">Password:</label>
-            <input type="text" id="newPassword" value={newPassword}  onChange={(e) => setnewPassword(e.target.value)} required></input>
+            <input type="password" id="newPassword" value={newPassword}  onChange={(e) => setnewPassword(e.target.value)} required></input>
             </div>
 
             <div className="formMatting2">
             <label htmlFor="newUsername">Confirm Password:</label>
-            <input type="text" id="confirmPass" value={confirmPass} onChange={(e) => setconfirmPass(e.target.value)} required></input>
+            <input type="password" id="confirmPass" value={confirmPass} onChange={(e) => setconfirmPass(e.target.value)} required></input>
             </div>
 
             {errorConfirmPass && <p className="errSuccess">{errorConfirmPass}</p>}
