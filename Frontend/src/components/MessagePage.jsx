@@ -92,7 +92,7 @@ const MessagePage = () => {
     const formatTimestamp = (sqlTimestamp) => {
         const date = new Date(sqlTimestamp);
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        const month = String(date.getMonth() + 1).padStart(2, "0"); 
         const day = String(date.getDate()).padStart(2, "0");
         const hours = String(date.getHours()).padStart(2, "0");
         const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -114,13 +114,6 @@ const MessagePage = () => {
             {/* Messages Section */}
             <div className="content">
                 <div className="message-list">
-                    {/* {messages.map((msg, index) => (
-                        <div key={index} className="message-item">
-                            <span className="message-sender">{msg.senderID === senderID ? "You" : userName}:</span>
-                            <span className="message-text">{msg.text}</span>
-                            <div className="message-time">{msg.timestamp}</div>
-                        </div>
-                    ))} */}
                     {messages.map((msg, index) => (
                         <div
                             key={index}
@@ -130,7 +123,7 @@ const MessagePage = () => {
                                 {msg.senderID === senderID ? "You" : userName}:
                             </span>
                             <span className="message-text">{msg.text}</span>
-                            <div className="message-time">{formatTimestamp(msg.timestamp)}</div> {/* Converted timestamp */}
+                            <div className="message-time">{formatTimestamp(msg.timestamp)}</div> 
                         </div>
                     ))}
                 </div>
