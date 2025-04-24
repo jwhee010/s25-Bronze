@@ -69,6 +69,26 @@
     width: fit-content; /* Adjust width to fit message content */
 }
 
+/* Style user messages (green background) */
+.user-message {
+    background-color: #a0e7a0; /* Light green */
+    color: #083e08; /* Dark green text */
+    align-self: flex-end; /* Push user's messages to the right */
+    padding: 8px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+/* Style receiver messages (blue background) */
+.receiver-message {
+    background-color: #a0c4ff; /* Light blue */
+    color: #0b3d91; /* Dark blue text */
+    align-self: flex-start; /* Keep receiver's messages on the left */
+    padding: 8px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
 .message-sender {
     font-weight: bold; /* Bold the sender's name */
     margin-right: 0.5rem; /* Add spacing after the username */

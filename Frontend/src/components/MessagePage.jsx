@@ -89,6 +89,18 @@ const MessagePage = () => {
         navigate("/shelfFriends"); // Navigate back to the friend's list
     };
 
+    const formatTimestamp = (sqlTimestamp) => {
+        const date = new Date(sqlTimestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    };
+
+
     return (
         <div className="container">
             {/* Top Bar */}
@@ -102,11 +114,23 @@ const MessagePage = () => {
             {/* Messages Section */}
             <div className="content">
                 <div className="message-list">
-                    {messages.map((msg, index) => (
+                    {/* {messages.map((msg, index) => (
                         <div key={index} className="message-item">
                             <span className="message-sender">{msg.senderID === senderID ? "You" : userName}:</span>
                             <span className="message-text">{msg.text}</span>
                             <div className="message-time">{msg.timestamp}</div>
+                        </div>
+                    ))} */}
+                    {messages.map((msg, index) => (
+                        <div
+                            key={index}
+                            className={`message-item ${msg.senderID === senderID ? "user-message" : "receiver-message"}`}
+                        >
+                            <span className="message-sender">
+                                {msg.senderID === senderID ? "You" : userName}:
+                            </span>
+                            <span className="message-text">{msg.text}</span>
+                            <div className="message-time">{formatTimestamp(msg.timestamp)}</div> {/* Converted timestamp */}
                         </div>
                     ))}
                 </div>
