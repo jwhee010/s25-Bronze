@@ -17,12 +17,12 @@ const Navbar = () => {
                         <FaCalendar className="icon" />Inventory</Link>
                     </li>
                     <br/>
-                    <li className = "linkwrapper"><Link to="/shelfFriends">
-                        <FaUserGroup className="icon" />ShelfFriends</Link>
-                    </li>
-                    <br/>
                     <li className = "linkwrapper"><Link to="/recommendations">
                         <FaLightbulb className="icon" />Recommendations</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/shelfFriends">
+                        <FaUserGroup className="icon" />ShelfFriends</Link>
                     </li>
                     <br/>
                     <li className = "linkwrapper"><Link to="/settings">
