@@ -1,4 +1,5 @@
 import React from "react";
+import Navbar from "./Navbar";
 
 export default function Information() {
   const resources = [
@@ -26,6 +27,7 @@ export default function Information() {
 
   return (
     <div className="information-page">
+      <Navbar/>
       <h2>Combat Food Waste: Helpful Resources</h2>
       <ul>
         {resources.map((resource, index) => (

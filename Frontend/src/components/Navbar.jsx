@@ -25,6 +25,10 @@ const Navbar = () => {
                         <FaUserGroup className="icon" />ShelfFriends</Link>
                     </li>
                     <br/>
+                    <li className = "linkwrapper"><Link to="/information">
+                        <FaUserGroup className="icon" />Information</Link>
+                    </li>
+                    <br/>
                     <li className = "linkwrapper"><Link to="/settings">
                         <FaGear className="icon" />Settings</Link>
                     </li>

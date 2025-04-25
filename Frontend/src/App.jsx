@@ -11,6 +11,7 @@ import MessagePage from './components/MessagePage';import Recommendations from '
 import SignUp from './components/SignUp';
 import NotificationPane from './components/NotificationPane';
 import { useState } from 'react';
+import Information from './components/Information';
 
 function AppRoutes() {
   const [notifications, setNotifications] = useState([]);
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route path="/recommendations" element={<Recommendations/>}/>
         <Route path="/friends" element={<FriendList />} />
         <Route path="/messagepage/:userName" element={<MessagePage />} />
+        <Route path="/information" element={<Information />} />
       </Routes>
     </>
   );
