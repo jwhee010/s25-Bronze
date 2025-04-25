@@ -2,7 +2,7 @@
     background: linear-gradient(135deg, #157824, #63f165); /* Blue to purple gradient */
     border-radius: 1rem; /* Rounded corners for the container */
     width: 30rem; /* Set the container width */
-    height: 30rem; /* Set the container height */
+    height: 31rem; /* Set the container height */
     padding: 1rem; /* Add padding inside the container */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
     display: flex; /* Use Flexbox for layout */

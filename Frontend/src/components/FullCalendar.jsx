@@ -16,12 +16,15 @@ import FoodCheckform from './FoodCheckform.jsx';
 export default function Calendar() {
   const [foodItems, setFoodItems] = useState([]);
   const [foodQuantities, setFoodQuantities] = useState([]); // New state for food quantities
+  const [usePredictiveItems, setUsePredictiveItems] = useState(false) // for filtering the calendar by predictive waste items
 
   const [events, setFoodAsEvents] = useState([]); // for converting food items from database into events on the calendar
 
-  const getFoodItems = async (token) => {
+  const getFoodItems = async (token, usePredictiveItems = false) => {
     try {
-      const response = await axios.get('http://localhost:80/calendar', {
+      const chosenMethod = usePredictiveItems ? 'http://localhost:80/predictiveCalendar' : 'http://localhost:80/calendar';
+
+      const response = await axios.get(chosenMethod, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -29,10 +32,13 @@ export default function Calendar() {
 
       //console.log('Food items retrieved:', response.data.foodItems);
       setFoodItems(response.data.foodItems);
-
+      
+      // all of the extra `\xa0` were so I could get the purchase date to show up on a new line in the list view :)
       const events = response.data.foodItems.map(item => ({
-        title: `${item.FoodName} Quantity: ${item.Quantity}`,
-        date: item.Expiration
+        title: `${item.FoodName}` +'\xa0\xa0\xa0\xa0'+`Quantity: ${item.Quantity}` 
+        +'\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0' + `\nPurchase Date: ${item.PurchaseDate.slice(0, 10)}`,
+        date: item.Expiration.slice(0,10),
+        id: `${item.distance}_${item.FoodName}_${item.Expiration}`
       }));
 
       setFoodAsEvents(events);
@@ -62,12 +68,12 @@ export default function Calendar() {
     const token = localStorage.getItem('authToken');
 
     try {
-      getFoodItems(token);
+      getFoodItems(token, usePredictiveItems);
       getFoodQuantities(token); // ✅ Fetch food quantities on load
     } catch (error) {
       console.error('Token decoding error:', error);
     }
-  }, []);
+  }, [usePredictiveItems]);
 
 
    //Event Interaction, to mark items as used or spoiled
@@ -103,6 +109,10 @@ export default function Calendar() {
 
   return (
     <>
+      <button  className = "predictiveButton" onClick={() => setUsePredictiveItems(prev => !prev)}>
+          {usePredictiveItems ? 'Show Full Calendar' : 'Filter by Predictive Waste'}
+      </button>
+      
       <FullCalendar
         plugins={[dayGridPlugin, listPlugin]}
         initialView="dayGridMonth"
@@ -113,15 +123,51 @@ export default function Calendar() {
         }}
         events={events}
         // event styling:
-        eventBackgroundColor='#629c59'
-        eventColor='#629c59'
+        // eventBackgroundColor='#629c59'
+        // eventColor='#629c59'
 
         editable={true}
-        // eventLimit={false}
 
         eventMouseEnter= {function(info) {info.el.title = info.event.title + " "}}
 
         eventClick={handleEventClick}
+ 
+        eventDidMount={function(info)
+          {
+            const idParts = info.event.id.split('_');
+            const distance = parseInt(idParts[0]);
+
+            if(distance < 0)
+            {
+              //Grey Past Days
+              info.el.style.backgroundColor = '#848484';
+              info.el.style.borderColor = '#848484';
+
+            }
+            else if(distance >= 1 && distance<= 3)
+            {
+              //Red 1-3 days
+              info.el.style.backgroundColor = '#ee6461';
+              info.el.style.borderColor = '#ee6461';
+            }
+            else if(distance >= 4 && distance <= 7)
+            {
+            //Yellow 4-7 days
+              info.el.style.backgroundColor = '#eed661';
+              info.el.style.borderColor = '#eed661';
+
+            }
+            else
+            {
+              //Green 8+ days
+              info.el.style.backgroundColor = '#629c59';
+              info.el.style.borderColor = '#629c59';
+            }
+
+          }
+        } 
+
+       
       />
       {/* <div style={{ color: 'black' }}>
         <h2>Food Items</h2>

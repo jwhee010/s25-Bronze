@@ -1,0 +1,74 @@
+/* 
+    DO NOT DELETE THIS FILE!!! 
+ 
+    ShareAnalytics.jsx may be deprecated now, but
+    its css file is still in use.
+
+    ~ Jaylen
+
+*/
+
+/* General container for analytics */
+.analytics-container {
+    display: flex;
+    justify-content: space-around; /* Space between the charts */
+    align-items: center; /* Align charts vertically */
+    padding: 1rem;
+    background-color: #2c2c2c; /* Background color */
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Container for each chart section */
+.chart-container {
+    width: 45%; /* Both charts occupy equal space */
+    margin: 1rem;
+    padding: 1rem;
+    background-color: #3a3a3a; /* Chart background */
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+}
+
+/* Chart title styling */
+.chart-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+/* This lets the charts be beside each other*/
+.chart-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 1.5rem;
+    background-color: rgba(56, 74, 69, 0.881);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+/* This just holds the chart stuff*/
+.chart-box {
+    width: 45%;
+    min-width: 350px;
+    margin: 1rem;
+    padding: 1rem;
+    background-color: transparent;
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* The chart titles*/
+.trendHeader{
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: gold;
+}
+.css-172kpif-MuiResponsiveChart-container{
+    background-color: rgba(223, 164, 141, 0.826);
+    border-radius: 5px;
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHouse, FaCalendar, FaListCheck, FaUserGroup, FaGear } from 'react-icons/fa6';
+import { FaHouse, FaCalendar, FaListCheck, FaUserGroup, FaGear, FaLightbulb } from 'react-icons/fa6';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -15,6 +15,10 @@ const Navbar = () => {
                     <br/>
                     <li className = "linkwrapper"><Link to="/calendar">
                         <FaCalendar className="icon" />Inventory</Link>
+                    </li>
+                    <br/>
+                    <li className = "linkwrapper"><Link to="/recommendations">
+                        <FaLightbulb className="icon" />Recommendations</Link>
                     </li>
                     <br/>
                     <li className = "linkwrapper"><Link to="/shelfFriends">

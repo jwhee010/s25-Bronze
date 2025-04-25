@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const app = express();
 
+
 //app.use(cors());
 app.use(cors({
     origin: "http://localhost:5173", // Allow requests from your frontend URL
@@ -98,17 +99,74 @@ app.post('/login', (req, res) => {
     });
 });
 
+//-SignUp page-
+//Takes the information added to the SignUp page form and inserts it into the database's user table
+//newUsername must be unique, cannot match with a username in the database
+app.post('/signup',(req, res) =>{
+
+    const {newUsername, newFirstname, newLastname, newPassword, newEmail} = req.body;
+
+    const signUpQuery =`
+    Insert into livelyshelfsdb.user(userName, firstName, lastName, passwordHash, email, creationDate)
+    values(?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
+    `;
+
+    db.query(signUpQuery, [newUsername, newFirstname, newLastname, newPassword, newEmail],(err, checkRes) =>{
+        if(err)
+        {
+            console.log(err);
+            return res.status(500).json({message:'Error executing query'});
+        }
+        res.status(200).json({message:'Account Created Successfully!'});
+    });
+});
+
+
 // retrive food name and expiration date for display on the calendar
 // Retrieve food name and expiration date for display on the calendar
 app.get('/calendar', verifyToken, async (req, res) => {
     const { UserID } = req.user;
 
-    const sql = `SELECT inventory.Quantity, inventory.Expiration, food_item.FoodName
+    const sql = `SELECT inventory.Quantity, inventory.Expiration, inventory.PurchaseDate, food_item.FoodName, datediff( cast(inventory.Expiration As Date), CURRENT_DATE  ) As distance
                  FROM inventory 
                  JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
                  WHERE inventory.UserID = ?`;
 
     db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ foodItems: results });
+    });
+});
+
+// Calendar filtered by predictive waste (top 5 wasted) items
+app.get('/predictiveCalendar', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    // Double select query on the inside since Limit can't be used within a subquery for our SQL version
+    // without it, it gives this error:
+    // "This version of MySQL doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'"
+    const sql = `
+        SELECT inventory.Quantity, inventory.Expiration, inventory.PurchaseDate, food_item.FoodName,
+               datediff(cast(inventory.Expiration As Date), CURRENT_DATE) As distance
+        FROM inventory
+        JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+        WHERE inventory.UserID = ? AND food_item.FoodItemID IN (
+            SELECT FoodItemID FROM (
+                SELECT analytics.FoodItemID
+                FROM analytics
+                WHERE analytics.UserID = ? AND analytics.ExpirationStatus = 'expired'
+                GROUP BY analytics.FoodItemID
+                ORDER BY SUM(analytics.Quantity) DESC
+                LIMIT 5
+              ) As TopWastedItems
+          )`;
+
+    // second UserID for the second query
+    db.query(sql, [UserID, UserID], (error, results) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ message: 'Error executing query' });
@@ -136,6 +194,9 @@ app.get('/food-quantity', verifyToken, async (req, res) => {
         res.status(200).json({ foodQuantities: results });
     });
 });
+
+/// Add/Remove functionalioty 
+
 // ------------------- FRIEND ROUTES - ---------------------
 app.get('/friends', verifyToken, (req, res) => {
     const { UserID } = req.user;
@@ -171,28 +232,57 @@ app.get('/friends', verifyToken, (req, res) => {
       return res.status(400).json({ message: 'Friend ID is required' });
     }
   
-    const sql = 'INSERT INTO friends (user_id, friend_id) VALUES (?, ?)';
-    db.query(sql, [userId, friendId], (error, result) => {
+    // Ensure that they do not add themselves
+    if(userId == friendId){
+        return res.status(400).json({ message: 'You cannot add yourself as a friend!' });
+    }
+
+    // Ensure duplicate friend entries aren't added
+    const checkDuplicateSql = `SELECT * FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?)`;
+    
+    db.query(checkDuplicateSql, [userId, friendId], (checkError, checkResult) => {
+        if(checkError){
+            return res.status(500).json({ message: 'Error checking existing friendship' });
+        }
+
+        if (checkResult.length > 0) {
+            return res.status(400).json({ message: 'This user is already your friend!' });
+        }
+    
+
+    // create variables to be inserted into the shelf_friend table
+    const date = new Date();
+    const friendStatus = 'yes';
+
+    const sql = `INSERT INTO shelf_friend (UserID_1, UserID_2, DateConnected, FriendStatus) VALUES (?, ?, ?, ?), (?, ?, ?, ?)`;
+    
+    // This values container could have been done for remove friend as well,
+    // it's just that the remove friend did not need as many values
+    const values = [userId, friendId, date, friendStatus, friendId, userId, date, friendStatus];
+
+    db.query(sql, values, (error, result) => {
       if (error) {
         console.error('Error adding friend', error);
         return res.status(500).json({ message: 'Error adding friend' });
       }
       res.status(200).json({ message: 'Friend added successfully' });
     });
+    });
   });
   
   app.post('/friends/remove', verifyToken, (req, res) => {
-    const { friendId } = req.body;
+    const { UserID_2 } = req.body;
     const userId = req.user.UserID;
   
-    console.log(`Remove Friend Request: userId=${userId}, friendId=${friendId}`);
+    console.log(`Remove Friend Request: user_id = ${userId}, friendId = ${UserID_2}`);
   
-    if (!friendId) {
+    if (!UserID_2) {
       return res.status(400).json({ message: 'Friend ID is required' });
     }
   
-    const sql = 'DELETE FROM friends WHERE user_id = ? AND friend_id = ?';
-    db.query(sql, [userId, friendId], (error, result) => {
+    const sql = `DELETE FROM shelf_friend WHERE (UserID_1 = ? AND UserID_2 = ?) OR (UserID_1 = ? AND UserID_2 = ?)`;
+    
+    db.query(sql, [userId, UserID_2, UserID_2, userId], (error, result) => {
       if (error) {
         console.error('Error executing query:', error);
         return res.status(500).json({ message: 'Error removing friend' });
@@ -208,11 +298,37 @@ app.get('/friends', verifyToken, (req, res) => {
   });
   
 
-/// Add or update quantity of Food Item in Inventory and display updated Inventory
+app.get('/friends', verifyToken, (req, res) => {
+    const userId = req.user.UserID;
+    console.log(` Fetch Friends Request for userId=${userId}`);
+
+    const sql = `
+        SELECT u.UserID, u.Username 
+        FROM user u
+        JOIN shelf_friend sf ON u.UserID = sf.friend_id
+        WHERE sf.user_id = ?
+    `;
+
+    db.query(sql, [userId], (error, results) => {
+        if (error) {
+            console.error(' Error fetching friends:', error);
+            return res.status(500).json({ message: 'Error fetching friends' });
+        }
+        console.log('Friends fetched:', results);
+        res.status(200).json(results);
+    });
+});
+
+
+// Add or update quantity of Food Item in Inventory
 app.post('/addOrUpdateFood', verifyToken, (req, res) => {
     const { UserID } = req.user;
-    const {FoodName, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus} = req.body;
-    
+    const { FoodName, PurchaseDate, Quantity, Storage, ExpirationStatus } = req.body;
+
+    console.log("UserID:", UserID);
+    console.log("Request Body:", { FoodName, PurchaseDate, Quantity, Storage, ExpirationStatus });
+
+    // Query to retrieve FoodItemID and DefaultShelfLife
     const foodQuery = `SELECT FoodItemID, DefaultShelfLife FROM food_item WHERE FoodName = ?`;
 
     db.query(foodQuery, [FoodName], (err, results) => {
@@ -224,56 +340,135 @@ app.post('/addOrUpdateFood', verifyToken, (req, res) => {
             return res.status(400).json({ message: 'Food item not found in database' });
         }
 
-        const {FoodItemID, DefaultShelfLife} = results[0];
-        
-        // declares a variable for the expiration date by using
-        // the purchase date as a base
+        const { FoodItemID, DefaultShelfLife } = results[0];
+
+        // Calculate expiration date
         let expirationDate = new Date(PurchaseDate);
-
-        // adds the default shelf life of the item to the expiration date
         expirationDate.setDate(expirationDate.getDate() + DefaultShelfLife);
+        const formattedExpiration = expirationDate.toISOString().split('T')[0];
 
-        // Makes the date into the YYYY-MM-DD format for MySQL
-        let formattedExpiration = expirationDate.toISOString().split('T')[0];
+        // Check if the food item with the same purchase date exists in the inventory
+        const checkInventoryQuery = `
+            SELECT Quantity FROM inventory
+            WHERE UserID = ? AND FoodItemID = ? AND Storage = ? AND PurchaseDate = ?`;
 
-
-        const query = `
-        INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, Quantity, Expiration, Storage, ExpirationStatus) VALUES (?, ?, ?, ?, ?, ?, ?) 
-        ON DUPLICATE KEY UPDATE
-            Quantity = Quantity + VALUES(Quantity),
-            Expiration = VALUES(Expiration),
-            Storage = VALUES(Storage),
-            ExpirationStatus = VALUES(ExpirationStatus);`;
-
-        db.query(query, [UserID, FoodItemID, PurchaseDate, Quantity, formattedExpiration, Storage, ExpirationStatus], (err, result) => {
+        db.query(checkInventoryQuery, [UserID, FoodItemID, Storage, PurchaseDate], (err, inventoryResults) => {
             if (err) {
-                res.status(500).json({ message: 'An error occurred while adding or updating the food item.' });
+                return res.status(500).json({ message: 'Error checking inventory.' });
+            }
+
+            if (inventoryResults.length > 0) {
+                // Food item exists with the same purchase date, update the record
+                const updateQuery = `
+                    UPDATE inventory
+                    SET Quantity = Quantity + ?, Expiration = ?, ExpirationStatus = ?
+                    WHERE UserID = ? AND FoodItemID = ? AND Storage = ? AND PurchaseDate = ?`;
+
+                db.query(updateQuery, [Quantity, formattedExpiration, ExpirationStatus, UserID, FoodItemID, Storage, PurchaseDate], (err, updateResult) => {
+                    if (err) {
+                        return res.status(500).json({ message: 'Error updating inventory.' });
+                    }
+                    res.status(200).json({ message: 'Food item quantity updated successfully.' });
+                });
             } else {
-                res.status(200).json({ message: 'Food item added or updated successfully.' });
+                // Food item does not exist with the same purchase date, insert a new record
+                const insertQuery = `
+                    INSERT INTO inventory (UserID, FoodItemID, PurchaseDate, ExpirationStatus, Quantity, Storage, Expiration) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+                db.query(insertQuery, [UserID, FoodItemID, PurchaseDate, ExpirationStatus, Quantity, Storage, formattedExpiration], (err, insertResult) => {
+                    if (err) {
+                        return res.status(500).json({ message: 'Error adding food item to inventory.' });
+                    }
+                    res.status(200).json({ message: 'Food item added successfully.' });
+                });
             }
         });
     });
 });
 
+
 // Remove quantity of Food Item from Inventory and display updated Inventory
-app.post('/removeFoodQuantity', (req, res) => {
-    const { InventoryID, UserID, FoodID, quantityToRemove } = req.body;
+app.post('/removeFoodQuantity', verifyToken, (req, res) => {
+    const { FoodName, Quantity, ExpirationDate } = req.body;
+    const UserID = req.user.UserID; // Retrieved from the JWT token in the middleware
 
-    const updateQuery = `
-        UPDATE inventory 
-            SET Quantity = Quantity - ?
-            WHERE InventoryID = ? AND UserID = ? AND FoodID = ?;
-        SELECT * FROM livelyshelfsdb.inventory;
-    `;
+    // Validate inputs
+    if (!FoodName || !Quantity || Quantity <= 0 || !ExpirationDate) {
+        return res.status(400).json({ message: 'Invalid request. Ensure FoodName, Quantity, and ExpirationDate are valid.' });
+    }
 
-    db.query(query, [InventoryID], (err, result) => {
+    // Resolve FoodItemID from FoodName
+    const getFoodItemIDQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
+
+    db.query(getFoodItemIDQuery, [FoodName], (err, foodItemResults) => {
         if (err) {
-            res.status(500).json({ message: 'An error occurred while removing the food from inventory.' });
-        } else {
-            res.status(200).json({ message: 'Food removed from inventory successfully.' });
+            console.error('Error fetching FoodItemID:', err);
+            return res.status(500).json({ message: 'Error processing the request.' });
         }
+
+        if (foodItemResults.length === 0) {
+            return res.status(404).json({ message: 'Food item not found.' });
+        }
+
+        const FoodItemID = foodItemResults[0].FoodItemID;
+
+        // Update the inventory, including ExpirationDate in the WHERE clause
+        const updateQuery = `
+            UPDATE inventory
+            SET Quantity = Quantity - ?
+            WHERE UserID = ? AND FoodItemID = ? AND Expiration = ? AND Quantity >= ?;
+        `;
+
+        db.query(updateQuery, [Quantity, UserID, FoodItemID, ExpirationDate, Quantity], (err, updateResults) => {
+            if (err) {
+                console.error('Error updating inventory:', err);
+                return res.status(500).json({ message: 'Error updating inventory.' });
+            }
+
+            // If quantity drops to zero or below, delete the corresponding record
+            const deleteQuery = `
+                DELETE FROM inventory
+                WHERE UserID = ? AND FoodItemID = ? AND Expiration = ? AND Quantity <= 0;
+            `;
+
+            db.query(deleteQuery, [UserID, FoodItemID, ExpirationDate], (err, deleteResults) => {
+                if (err) {
+                    console.error('Error deleting inventory item:', err);
+                    return res.status(500).json({ message: 'Error deleting inventory item.' });
+                }
+
+                // Response based on deletion
+                if (deleteResults.affectedRows > 0) {
+                    res.status(200).json({ message: 'Food item removed completely from inventory as quantity reached zero.' });
+                } else {
+                    res.status(200).json({ message: 'Food item quantity updated successfully!' });
+                }
+            });
+        });
     });
 });
+
+// yet another disgusting getter function to clutter up this file (outputs users inventory as an array of item names)
+app.get('/itemName', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `SELECT DISTINCT food_item.FoodName
+                 FROM inventory
+                 JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                 WHERE inventory.UserID = ?`;
+
+    db.query(query, [UserID], (error, results) => {
+        if (error) {
+            console.error("Error fetching item names:", error);
+            return res.status(500).json({ message: 'Error retrieving item names' });
+        }
+
+        const itemNames = results.map(row => row.FoodName);
+        res.status(200).json({ itemNames });
+    });
+});
+
 
 // update quantity of items consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
@@ -303,7 +498,33 @@ app.post('/consumeFood', verifyToken, (req, res) => {
             if (err) {
                 return res.status(500).json({ message: 'Error updating food quantity' });
             }
-            res.status(200).json({ message: 'Food quantity updated successfully' });
+            const checkQuantityQuery = `
+                SELECT Quantity FROM inventory 
+                WHERE FoodItemID = ? AND UserID = ?;
+            `;
+
+            db.query(checkQuantityQuery, [FoodItemID, UserID], (err, result) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error checking quantity' });
+                }
+
+                if (result.length > 0 && result[0].Quantity <= 0) {
+                    const deleteQuery = `
+                        DELETE FROM inventory 
+                        WHERE FoodItemID = ? AND UserID = ?;
+                    `;
+
+                    db.query(deleteQuery, [FoodItemID, UserID], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error deleting item from inventory' });
+                        }
+
+                        return res.status(200).json({ message: 'Food item consumed and removed from inventory' });
+                    });
+                } else {
+                    return res.status(200).json({ message: 'Food quantity updated successfully' });
+                }
+            });
         });
     });
 });
@@ -317,7 +538,7 @@ app.get('/topWaste', verifyToken, async (req, res) => {
                  FROM analytics 
                  JOIN food_item ON analytics.FoodItemID = food_item.FoodItemID 
                  WHERE analytics.UserID = ? AND ExpirationStatus = 'expired'
-                 ORDER BY analytics.Quantity DESC
+                 ORDER BY CAST(analytics.Quantity AS UNSIGNED) DESC
                  LIMIT 5`;
 
     db.query(sql, [UserID], (error, results) => {
@@ -352,8 +573,10 @@ app.get('/expired', verifyToken, async (req, res) => {
 
 // update the given status of an item to expired
 app.post('/expireFood', verifyToken, (req, res) => {
-    const { FoodName, Action } = req.body;
+    const { FoodName, Action, Quantity} = req.body;
     const { UserID } = req.user;
+
+    console.log("Searching for food:", FoodName, "Amount: ", Quantity);
 
     const foodQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
 
@@ -369,17 +592,76 @@ app.post('/expireFood', verifyToken, (req, res) => {
     const { FoodItemID } = results[0];
 
     const query = `
-            UPDATE inventory 
-            SET ExpirationStatus = 'expired' 
-            WHERE FoodItemID = ? AND UserID = ?;
+            DELETE FROM inventory
+            WHERE FoodItemID = ? AND UserID = ? AND Quantity = ?;
         `;
 
-        db.query(query, [FoodItemID, UserID], (err, result) => {
+        db.query(query, [FoodItemID, UserID, Quantity], (err, result) => {
             if (err) {
                 return res.status(500).json({ message: 'Error updating food status' });
             }
-            res.status(200).json({ message: 'Food status updated to expired' });
+            const analyticsQuery = `
+                SELECT Quantity FROM analytics 
+                WHERE FoodItemID = ? AND UserID = ? AND ExpirationStatus = 'expired';
+            `;
+
+            db.query(analyticsQuery, [FoodItemID, UserID], (err, analyticsResults) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error retrieving analytics data' });
+                }
+
+                if (analyticsResults.length > 0) {
+                    const existingQuantity = parseInt(analyticsResults[0].Quantity, 10);
+                    const newQuantity = parseInt(existingQuantity + Quantity, 10);
+
+                    const updateAnalyticsQuery = `
+                        UPDATE analytics 
+                        SET Quantity = ? 
+                        WHERE FoodItemID = ? AND UserID = ? AND ExpirationStatus = 'expired';
+                    `;
+
+                    db.query(updateAnalyticsQuery, [newQuantity, FoodItemID, UserID], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error updating analytics table' });
+                        }
+                        res.status(200).json({ message: 'Food status updated' });
+                    });
+                } else {
+                    const current_date = new Date().toISOString().slice(0, 10);
+                    const insertAnalyticsQuery = `
+                        INSERT INTO analytics (FoodItemID, UserID, ExpirationStatus, Quantity, Status, DateExpired) 
+                        VALUES (?, ?, 'expired', ?, 'unshared', ?);
+                    `;
+
+                    db.query(insertAnalyticsQuery, [FoodItemID, UserID, Quantity, current_date], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error inserting into analytics table' });
+                        }
+                        res.status(200).json({ message: 'Food status updated and new analytics entry created' });
+                    });
+                }
+            });
         });
+    });
+});
+
+//getter for account creation date for incentives calculation
+app.get('/getCreationDate', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const query = `SELECT creationDate FROM user WHERE UserID = ?`;
+
+    db.query(query, [UserID], (error, results) => {
+        if (error) {
+            console.error("Error fetching Account Creation Date:", error);
+            return res.status(500).json({ message: 'Error retrieving Account Creation Date' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ creationDate: results[0].creationDate })
     });
 });
 
@@ -387,10 +669,18 @@ app.post('/expireFood', verifyToken, (req, res) => {
 // selects the foods that a user can share
 app.get('/Sharing', verifyToken, async(req, res) => {
     const {UserID} = req.user;
-    const sql = `SELECT inventory.InventoryID, food_item.FoodName, inventory.Quantity, inventory.ExpirationStatus 
-                    FROM inventory
-                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID 
-                    WHERE inventory.UserID = ? AND ExpirationStatus = "fresh"`;
+    const sql = `SELECT 
+                        inventory.InventoryID,
+                        food_item.FoodName,
+                        inventory.Quantity,
+                        inventory.ExpirationStatus
+                 FROM
+                        inventory
+                            JOIN
+                        food_item ON inventory.FoodItemID = food_item.FoodItemID
+                 WHERE
+                        inventory.UserID = ?
+                        AND ExpirationStatus = 'fresh'`;
     
 
     db.query(sql, [UserID], (error, result) => {
@@ -459,12 +749,27 @@ app.delete('/Sharing/UnShareFood', verifyToken, async(req,res) =>{
 // query returns friends username, first name, last name, food item, the quantity of the food item
 app.get('/Sharing/Friends', verifyToken, async(req,res) => {
     const {UserID} = req.user;
-    const sql = `SELECT user.userName, user.firstName, user.lastName, food_item.FoodName, shared_item.Status, shared_item.AvailableQuantity, food_item.DefaultUnit, shared_item.SharedItemID from shelf_friend
-                join shared_item on shelf_friend.UserID_2 = shared_item.OwnerUserID
-                join inventory on shared_item.InventoryItemID = inventory.InventoryID
-                join food_item on inventory.FoodItemID = food_item.FoodItemID
-                join user on shared_item.OwnerUserID = user.UserID
-                where UserID_1 = ? and FriendStatus = "yes"`
+    const sql = `SELECT 
+    user.userName,
+    user.firstName,
+    user.lastName,
+    food_item.FoodName,
+    shared_item.Status,
+    shared_item.AvailableQuantity,
+    food_item.DefaultUnit,
+    shared_item.SharedItemID
+FROM
+    shelf_friend
+        JOIN
+    shared_item ON shelf_friend.UserID_2 = shared_item.OwnerUserID
+        JOIN
+    inventory ON shared_item.InventoryItemID = inventory.InventoryID
+        JOIN
+    food_item ON inventory.FoodItemID = food_item.FoodItemID
+        JOIN
+    user ON shared_item.OwnerUserID = user.UserID
+WHERE
+    UserID_1 = ? AND FriendStatus = 'yes'`
 
     db.query(sql, [UserID], (error, result) => {
         if(error) {
@@ -542,8 +847,11 @@ app.get('/friendsFoodRequests', verifyToken, async(req,res) => {
     user.firstName,
     user.lastName,
     food_item.FoodName,
+    food_item.FoodItemID,
     inventory.Quantity,
-    inventory.InventoryID
+    inventory.InventoryID,
+    inventory.ExpirationStatus,
+    inventory.Expiration
 FROM
     share_request
         JOIN
@@ -566,39 +874,205 @@ WHERE
     })
 });
 
-//accept food request
 app.post('/Sharing/AcceptRequest', verifyToken, (req, res) => {
-    const { RequestorUserID, SharedItemID, InventoryID } = req.body;
+    const { UserID } = req.user;
+    const {
+        RequestorUserID, SharedItemID, InventoryID,
+        Quantity, FoodItemID, ExpirationStatus, Expiration
+    } = req.body;
 
-    // 1. Update inventory ownership
+    console.log("👀 Incoming body:", req.body);
+    console.log("🔐 Authenticated UserID:", UserID);
+
     const updateUser = `UPDATE inventory SET UserID = ? WHERE InventoryID = ?`;
     db.query(updateUser, [RequestorUserID, InventoryID], (err, result1) => {
         if (err) {
-            return res.status(500).json({ message: 'Error transferring ownership' });
+            console.error("🔥 Error updating inventory:", err);
+            return res.status(500).json({ message: 'Error transferring ownership', error: err });
         }
 
-        // 2. Delete the specific food request
-        const deleteRequests = `DELETE FROM  WHERE SharedItemID = ?`;
+        const deleteRequests = `DELETE FROM share_request WHERE SharedItemID = ?`;
         db.query(deleteRequests, [SharedItemID], (err, result2) => {
             if (err) {
-                return res.status(500).json({ message: 'Error deleting food request' });
+                console.error("🔥 Error deleting request:", err);
+                return res.status(500).json({ message: 'Error deleting food request', error: err });
             }
 
-            // 3. Unshare the food item
             const unshareItem = `DELETE FROM shared_item WHERE InventoryItemID = ?`;
             db.query(unshareItem, [InventoryID], (err, result3) => {
                 if (err) {
-                    return res.status(500).json({ message: 'Error unsharing item' });
+                    console.error("🔥 Error unsharing item:", err);
+                    return res.status(500).json({ message: 'Error unsharing item', error: err });
                 }
 
-                // ✅ All steps succeeded — send one response
-                res.status(200).json({ message: 'Request accepted and item updated, request deleted, and unshared.' });
+                if (!UserID || !FoodItemID || !Quantity || !ExpirationStatus || !Expiration) {
+                    console.error("❌ Missing data for analytics:", {
+                        UserID, FoodItemID, Quantity, ExpirationStatus, Expiration
+                    });
+                    return res.status(400).json({ message: 'Missing required data for analytics' });
+                }
+
+                const updateAnalytics = `INSERT INTO analytics 
+                    (UserID, FoodItemID, Quantity, ExpirationStatus, Status, DateExpired)
+                    VALUES (?, ?, ?, ?, 'shared', ?)
+                    ON DUPLICATE KEY UPDATE Quantity = Quantity + ?`;
+
+                db.query(updateAnalytics,
+                    [UserID, FoodItemID, Quantity, ExpirationStatus, Expiration, Quantity],
+                    (err, result4) => {
+                        if (err) {
+                            console.error("🔥 Error updating analytics:", err);
+                            return res.status(500).json({ message: 'Error updating analytics', error: err });
+                        }
+
+                        res.status(200).json({ message: 'Request accepted and analytics updated.' });
+                    }
+                );
             });
         });
     });
 });
 
+app.get('/expiring', verifyToken, (req, res) => {
+    const { UserID } = req.user;
 
+    const sql = `SELECT inventory.FoodItemID, inventory.Expiration, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`
+
+    db.query(sql, [ UserID ], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ expiringItems: results });
+    });
+});
+
+app.get('/recipe', verifyToken, async(req, res) => {
+    const { UserID } = req.user;
+
+    const expiringItems = `SELECT inventory.FoodItemID, inventory.Expiration, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`;
+    
+    db.query(expiringItems, [UserID], (error, expiringResult) => {
+        if (error) {
+            console.log("Error fetching food items: ", error);
+            return res.status(500).json({message: 'Error fetching expring items'});
+        }
+
+        if (expiringResult.length === 0) {
+            return res.status(200).json({recipes: []});
+        }
+
+        const expiringFoodItemIDs = expiringResult.map(item => item.FoodItemID);
+
+        const reqcipeQuery =  `SELECT DISTINCT RecipeID
+                                FROM recipe_rec
+                                WHERE FoodItemID IN (?)`;
+
+        db.query(reqcipeQuery, [expiringFoodItemIDs], (error, recipeResult) => {
+            if (error) {
+                console.log("error getting recipe IDs", error);
+                return res.status(500).json({message: "Error getting recipe IDs"});
+            }
+
+            const recipeIDs = recipeResult.map(row => row.RecipeID);
+
+            if (recipeIDs.length === 0) {
+                return res.status(200).json({ recipes: []});
+            }
+
+            const sql = `SELECT  recipe.RecipeID, recipe.RecipeName, recipe.Instructions, recipe.RecipeLink,
+                    recipe_rec.FoodItemID, food_item.FoodName, recipe_rec.QuantityRequired
+                    FROM recipe
+                    JOIN recipe_rec  ON recipe.RecipeID = recipe_rec.RecipeID
+                    JOIN food_item ON recipe_rec.FoodItemID = food_item.FoodItemID
+                    WHERE recipe.RecipeID IN (?)`;
+
+            db.query(sql, [recipeIDs], (error, result) => {
+                if (error) {
+                    console.log("error getting recipes: ", error);
+                    return res.status(500).json({message: "Error getting recipes"});
+                }
+
+                res.status(200).json({ recipes: result });
+            });
+        });
+    });
+});
+
+app.get('/exp/recipe', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT inventory.FoodItemID, inventory.Expiration, inventory.Quantity, food_item.FoodName
+                    FROM inventory
+                    JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
+                    WHERE STR_TO_DATE(inventory.Expiration, '%Y-%m-%d') BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+                    AND inventory.UserID = ?`
+    
+    db.query(sql, [ UserID ], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({message: 'Error executing query'});
+        }
+
+        res.status(200).json({ expiringSoon: results});
+    });
+});
+
+    app.get('/Sharing/Analytics', verifyToken, (req, res) => {
+        const { UserID } = req.user;
+
+        const sql = `SELECT 
+                        food_item.FoodName, analytics.Quantity
+                    FROM
+                        analytics
+                    JOIN
+                        food_item ON analytics.FoodItemID = food_item.FoodItemID
+                    WHERE
+                        analytics.UserID = ?
+                    AND analytics.Status = 'shared'
+                    ORDER BY CAST(analytics.Quantity AS UNSIGNED) DESC
+                    LIMIT 5;`
+        db.query(sql, [UserID], (error, results) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: 'Error executing query' });
+            }
+            
+            res.status(200).json({ Analytics: results });
+        });
+    });
+
+    app.get('/Sharing/AllAnalytics', verifyToken, (req, res) => {
+        const { UserID } = req.user;
+    
+        const sql = `SELECT 
+                            food_item.FoodName, analytics.Quantity
+                        FROM
+                            analytics
+                        JOIN
+                            food_item ON analytics.FoodItemID = food_item.FoodItemID
+                        WHERE
+                            analytics.UserID = ?
+                        AND analytics.Status = 'shared'
+                        ORDER BY analytics.Quantity DESC;`
+        db.query(sql, [UserID], (error, results) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: 'Error executing query' });
+            }
+    
+            res.status(200).json({ Analytics: results });
+        });
+    });
 
 
 //*********************************************************** */
@@ -642,7 +1116,79 @@ app.post('/messages', verifyToken, async (req, res) => {
   
   
 
+// Change user email
+app.post('/settings/changeEmail', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const { newEmail } = req.body;
 
+    if (!newEmail) {
+        return res.status(400).json({ message: 'New email is required' });
+    }
+
+    const sql = `UPDATE user SET email = ? WHERE UserID = ?`;
+
+    db.query(sql, [newEmail, UserID], (error, result) => {
+        if (error) {
+            console.error('Error updating email:', error);
+            return res.status(500).json({ message: 'Error updating email' });
+        }
+
+        res.status(200).json({ message: 'Email updated successfully' });
+    });
+});
+
+// Empty inventory
+app.delete('/settings/emptyInventory', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `DELETE FROM inventory WHERE UserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if (error) {
+            console.error('Error emptying inventory:', error);
+            return res.status(500).json({ message: 'Error emptying inventory' });
+        }
+
+        res.status(200).json({ message: 'Inventory emptied successfully' });
+    });
+});
+
+// Reset analytics
+app.delete('/settings/resetAnalytics', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `DELETE FROM analytics WHERE UserID = ?`;
+
+    db.query(sql, [UserID], (error, result) => {
+        if (error) {
+            console.error('Error resetting analytics:', error);
+            return res.status(500).json({ message: 'Error resetting analytics' });
+        }
+
+        res.status(200).json({ message: 'Analytics reset successfully' });
+    });
+});
+
+// Change first and last name
+app.post('/settings/changeName', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+    const { newFirstName, newLastName } = req.body;
+
+    if (!newFirstName || !newLastName) {
+        return res.status(400).json({ message: 'Both first and last names are required' });
+    }
+
+    const sql = `UPDATE user SET firstName = ?, lastName = ? WHERE UserID = ?`;
+
+    db.query(sql, [newFirstName, newLastName, UserID], (error, result) => {
+        if (error) {
+            console.error('Error updating name:', error);
+            return res.status(500).json({ message: 'Error updating name' });
+        }
+
+        res.status(200).json({ message: 'Name updated successfully' });
+    });
+});
 
 
 // //*********************************************************** */

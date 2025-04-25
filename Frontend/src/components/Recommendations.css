@@ -1,0 +1,126 @@
+.RecommendHeader{
+    color:gold;
+    font-weight: bold;
+    font-size: 40px;
+
+    margin: 0 auto;
+    text-align: center;
+
+    width:490px;
+    height:70px;
+
+    padding: 8px;
+    padding-top: 20px;
+    
+    margin-bottom: 30px;
+    background-color: rgba(56, 74, 69, 0.881);
+    border-radius: 10px;
+
+}
+
+
+.nearSpoilWrapper{
+    height: 350px;
+    width: 600px;
+
+    margin-left: 55px;
+    padding-top: 10px;
+
+    background-color: rgba(62, 44, 40, 0.881);
+    border-radius: 10px;
+
+    text-align: center;
+    color:rgb(213, 126, 102);
+    font-weight: bold;
+    font-size: 30px;
+    font-family: monospace;
+}
+
+.spoilList{
+    height: 220px;
+    width: 560px;
+
+    border-radius: 10px;
+
+    margin: 20px;
+
+    overflow-y: scroll;
+
+    background-color: rgb(94, 94, 94);
+
+    text-align: left;
+    font-size: large;
+    font-family: monospace;
+}
+
+p{
+    margin-left: 5px;
+    color:rgb(213, 126, 102);
+}
+
+.Recipewrapper{
+    height: 630px;
+    width: 700px;
+
+    padding-top: 10px;
+    padding: 5px;
+
+    background-color: rgba(67, 65, 54, 0.881);
+    color:goldenrod;
+    border-radius: 10px;
+
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    font-family: monospace;
+
+}
+
+.recipeBox{
+    height: 500px;
+    width: 660px;
+
+    border-radius: 10px;
+
+    margin: 20px;
+
+    overflow-y: scroll;
+
+    background-color: rgb(95, 95, 95);
+
+    text-align: left;
+    font-size: large;
+    font-family: monospace;
+}
+
+/* recipe formatting */
+.recipeh1{
+    font-size:x-large;
+    font-weight: bold;
+    text-align: center;
+    color:goldenrod;
+}
+
+.ingredientsh1{
+    font-size: larger;
+    font-weight: bold;
+    color:antiquewhite;
+}
+
+.ingp{
+    font-size: large;
+    color:antiquewhite;
+}
+
+.directionh1{
+    font-size: larger;
+    font-weight: bold;
+    color:rgb(227, 181, 121);
+}
+
+.drp{
+    font-size: large;
+    color:rgb(227, 181, 121);
+    word-wrap: break-word;
+    white-space: pre-line;
+}

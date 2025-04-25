@@ -1,0 +1,167 @@
+/* General container styling */
+.table-container {
+    width: 100%;
+    margin: 25px auto;
+    font-size: 18px; /* Increase the base font size */
+}
+
+.settings-container {
+    font-family: monospace;
+    font-size: large;
+    width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(56, 74, 69, 0.881); /* Consistent background color */
+    border: 2px solid rgb(93, 145, 111);
+    border-radius: 10px;
+    color: antiquewhite;
+}
+
+/* Table styling */
+.table-container table {
+    width: 100%; /* Make table width uniform */
+    border-collapse: collapse;
+}
+
+.table-container th, .table-container td {
+    border: 1px solid hsl(0, 43%, 5%); /* Make borders smaller */
+    padding: 10px; /* Adjust padding for uniformity */
+    text-align: left;
+    font-size: 20px; /* Keep text size consistent */
+}
+
+/* Header cells */
+.table-container th {
+    background-color: rgba(56, 74, 69, 0.881);
+    font-weight: bold;
+    color: orange; /* Keep the orange color */
+}
+
+/* Table rows */
+.table-container tr {
+    background-color: rgba(56, 74, 69, 0.881);
+}
+
+.table-container tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Buttons */
+.table-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 12px; /* Adjust padding for smaller buttons */
+    font-size: 16px; /* Adjust button text size */
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Smaller border radius */
+}
+
+.table-container button:hover {
+    background-color: #45a049;
+}
+
+/* Settings header styling */
+.settings-container h1 {
+    font-size: 44px; /* Keep the Settings header the largest */
+    text-align: center;
+    margin-bottom: 20px;
+    color: gold; /* Match the orange color of other headers */
+    background-color: rgba(56, 74, 69, 0.881); /* Green background */
+    padding: 12px; /* Slightly larger padding for the Settings header */
+    border-radius: 8px; /* Uniform but slightly larger border radius */
+}
+
+/* Section headers (for other headers like Calendar and Dashboard) */
+.table-container h3 {
+    font-size: 28px; /* Slightly smaller than Settings header */
+    text-align: center;
+    color: orange; /* Match the orange color */
+    background-color: rgba(56, 74, 69, 0.881); /* Green background */
+    padding: 8px; /* Smaller padding for uniformity */
+    border-radius: 5px; /* Smaller border radius */
+    width: 70%; /* Reduce the width of other headers */
+    margin: 15px auto; /* Keep consistent vertical spacing */
+    -webkit-text-stroke: 1px black; /* Add black border traced around letters */
+    text-shadow: 2px 2px 0px black; /* Add a shadow for better visibility */
+}
+
+/* Section styling for Update Email, Update Name, Empty Inventory, and Reset Analytics */
+.table-container .settings-section {
+    width: 66%; /* Reduce width by 1/3 */
+    margin: 15px auto; /* Center the sections */
+    padding: 10px; /* Add padding for spacing */
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent white background */
+    border-radius: 5px; /* Add rounded corners */
+    text-align: center;
+}
+
+/* Header styling */
+.settings-header {
+    color: goldenrod;
+    font-weight: bold;
+    font-size: 40px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Section headers */
+.settings-section-header {
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(213, 126, 102);
+    margin-bottom: 10px;
+}
+
+/* Input fields */
+.settings-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid rgb(93, 145, 111);
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: rgba(76, 63, 55, 0.953);
+    color: antiquewhite;
+}
+
+.settings-input:focus {
+    outline: none;
+    border-color: goldenrod;
+    box-shadow: 0 0 5px goldenrod;
+}
+
+/* Buttons */
+.settings-button {
+    background-color: rgb(105, 183, 126);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.settings-button:hover {
+    background-color: rgb(80, 150, 100);
+}
+
+.settings-button:active {
+    background-color: rgb(54, 120, 80);
+}
+
+/* Button container for spacing */
+.settings-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Divider between sections */
+.settings-divider {
+    height: 2px;
+    background-color: rgb(93, 145, 111);
+    margin: 20px 0;
+}

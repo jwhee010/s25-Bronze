@@ -5,7 +5,10 @@ import './Dashboard.css';
 import { jwtDecode } from 'jwt-decode'; // for token decoding
 import InvTrendLineChart from './InvTrendLineChart';
 import InvTrendPieChartWaste from './InvTrendPieChartWaste';
-
+import NotificationPane from './NotificationPane';
+import TemporaryDrawer from './NotificationPane';
+import SharePieChart from './SharePieChart';
+import ShareBarChart from './ShareBarChart';
 
 function Dashboard() {
     const navigate = useNavigate(); // Initialize useNavigate
@@ -20,14 +23,14 @@ function Dashboard() {
     useEffect(() => {
         // retrieve the locally stored token
         const token = localStorage.getItem('authToken');
-        
+
         if (!token) {
             // If there's no token, go back to the to login page
             navigate('/login');
         } else {
             try {
                 const decodedToken = jwtDecode(token);  // Decode the token to get user data
-                
+
                 // set the user data from the token
                 setUser({
                     firstName: decodedToken.firstName,
@@ -53,58 +56,60 @@ function Dashboard() {
         // navigates back to the login
         navigate('/login');
     };
-    
+
     return (
         <>
-       
-        <div className={`relative min-h-screen flex`}>
-            <Navbar />
-            <h1 className="mainheader" >
-                Dashboard<br/>
-                {/* fetch the firstname and lastname of the user who logged in */}
-                <div>
-                    <h2 className='greeting'>Welcome, {user.firstName} {user.lastName}</h2> 
-                    <h2 className='email'>Email: {user.email}</h2>  {/* Display email */}
-                </div>
-            </h1>
-            {/* <div className="container max-w-screen-xl mx-auto flex flex-col justify-center items-center dashwrapper">
-                <p className = "navigation">Navigation</p>
+
+            <div className={`relative min-h-screen flex`}>
                 <Navbar />
-            </div> */}
+                <div className="dashboard-stuff">
+                    {/*<NotificationPane/>*/}
+                    <h1 className="mainheader" >
+                        Dashboard<br />
+                        {/* fetch the firstname and lastname of the user who logged in */}
+                        <div>
+                            <h2 className='greeting'>Welcome, {user.firstName} {user.lastName}</h2>
+                            <h2 className='email'>Email: {user.email}</h2>  {/* Display email */}
+                        </div>
+                    </h1>
 
-                {/* Trends charts---------- */}
-              <h3 className='trendHeader'>
-                Here&apos;s How Much You&apos;ve Wasted 
-                <br/>
-                During This Year
-            
-              </h3>
-                <InvTrendLineChart/>
-            <h3 className='trendHeader'>
-                Top Five Items 
-                <br/>
-                You&apos;ve Wasted The Most
-                <br/> 
-            </h3>
-            <InvTrendPieChartWaste/>
+                    {/* Line and Bar charts */}
+                    <div className="chart-row">
+                        <div className="chart-box">
+                            <h3 className="trendHeader">
+                                Here&apos;s How Much You&apos;ve Wasted
+                                <br />
+                                During This Year
+                            </h3>
+                            <InvTrendLineChart />
+                        </div>
+                        <div className="chart-box">
+                            <h3 className="trendHeader">Total Shared Quantity <br></br>Per Food Item</h3>
+                            <ShareBarChart />
+                        </div>
+                    </div>
 
-            <button onClick={handleLogout} className="logout">
-                   Logout
-            </button>
+                    {/* Pie Charts */}
+                    <div className="chart-row">
+                        <div className="chart-box">
+                            <h3 className="trendHeader">Top 5 Wasted Items</h3>
+                            <InvTrendPieChartWaste />
+                        </div>
+                        <div className="chart-box">
+                            <h3 className="trendHeader">Top 5 Most Shared Items</h3>
+                            <SharePieChart />
+                        </div>
+                    </div>
+
+                    <button onClick={handleLogout} className="logout">
+                        Logout
+                    </button>
 
 
+                </div>
 
-
-        </div>
+            </div>
         </>
-        // <div className={`relative min-h-screen flex`}>
-        //     <div className="container max-w-screen-xl mx-auto flex flex-col justify-center items-center">
-        //         <p className='text-4xl '>Main Page</p>
-        //         <button onClick={handleLogout} className=" bg-blue-500 text-white mt-12 py-2 px-12 rounded-md hover:bg-blue-600">
-        //             Logout
-        //         </button>
-        //     </div>
-        // </div>
     );
 }
 
