@@ -115,14 +115,16 @@
 
 /* Input fields */
 .settings-input {
-    width: 100%;
+    display: block;
+    margin: 0 auto; /* Centers the input box horizontally */
+    width: 80%; /* Adjust width as needed */
     padding: 10px;
-    margin-bottom: 15px;
     border: 1px solid rgb(93, 145, 111);
     border-radius: 5px;
     font-size: 16px;
     background-color: rgba(76, 63, 55, 0.953);
     color: antiquewhite;
+    text-align: center; /* Centers the text inside the input box */
 }
 
 .settings-input:focus {

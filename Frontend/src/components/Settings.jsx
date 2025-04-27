@@ -40,22 +40,26 @@ const Settings = () => {
     };
 
     const handleEmptyInventory = async () => {
-        try {
-            const response = await axios.delete('http://localhost:80/settings/emptyInventory');
-            alert(response.data.message);
-        } catch (error) {
-            console.error(error);
-            alert('Error emptying inventory');
+        if (window.confirm("Are you sure you would like to reset your inventory?")) {
+            try {
+                const response = await axios.delete('http://localhost:80/settings/emptyInventory');
+                alert(response.data.message);
+            } catch (error) {
+                console.error(error);
+                alert('Error resetting inventory');
+            }
         }
     };
 
     const handleResetAnalytics = async () => {
-        try {
-            const response = await axios.delete('http://localhost:80/settings/resetAnalytics');
-            alert(response.data.message);
-        } catch (error) {
-            console.error(error);
-            alert('Error resetting analytics');
+        if (window.confirm("Are you sure you would like to reset your analytics?")) {
+            try {
+                const response = await axios.delete('http://localhost:80/settings/resetAnalytics');
+                alert(response.data.message);
+            } catch (error) {
+                console.error(error);
+                alert('Error resetting analytics');
+            }
         }
     };
 
@@ -76,11 +80,11 @@ const Settings = () => {
                 />
                 <div className="settings-button-container">
                     <button className="settings-button" onClick={handleChangeEmail}>
-                        Change Email
+                        Submit
                     </button>
                 </div>
             </div>
-
+ 
             <div className="settings-divider"></div>
 
             {/* Change Name Section */}
@@ -102,19 +106,19 @@ const Settings = () => {
                 />
                 <div className="settings-button-container">
                     <button className="settings-button" onClick={handleChangeName}>
-                        Change Name
+                        Submit
                     </button>
                 </div>
             </div>
 
             <div className="settings-divider"></div>
 
-            {/* Empty Inventory Section */}
+            {/* Reset Inventory Section */}
             <div className="settings-section">
-                <h2 className="settings-section-header">Empty Inventory</h2>
+                <h2 className="settings-section-header">Reset Inventory</h2>
                 <div className="settings-button-container">
                     <button className="settings-button" onClick={handleEmptyInventory}>
-                        Empty Inventory
+                        Reset
                     </button>
                 </div>
             </div>
@@ -126,7 +130,7 @@ const Settings = () => {
                 <h2 className="settings-section-header">Reset Analytics</h2>
                 <div className="settings-button-container">
                     <button className="settings-button" onClick={handleResetAnalytics}>
-                        Reset Analytics
+                        Reset
                     </button>
                 </div>
             </div>
