@@ -1,0 +1,23 @@
+.dialogHeadr{
+    color:gold;
+    font-family: monospace;
+    font-size: xx-large;
+    font-weight: bold;
+
+    margin-left: 155px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+}
+
+.diaContHeadr{
+    color:rgb(255, 242, 168);
+    font-family: monospace;
+    font-size: xx-large;
+    font-weight: bold;
+
+    
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+}

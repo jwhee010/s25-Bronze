@@ -9,6 +9,7 @@ import NotificationPane from './NotificationPane';
 import TemporaryDrawer from './NotificationPane';
 import SharePieChart from './SharePieChart';
 import ShareBarChart from './ShareBarChart';
+import EventDialog from './EventDialog';
 
 function Dashboard() {
     const navigate = useNavigate(); // Initialize useNavigate
@@ -72,6 +73,11 @@ function Dashboard() {
                             <h2 className='email'>Email: {user.email}</h2>  {/* Display email */}
                         </div>
                     </h1>
+
+                    <div>
+                        {/* --Report Component-- */}
+                        <EventDialog></EventDialog>
+                    </div>
 
                     {/* Line and Bar charts */}
                     <div className="chart-row">
