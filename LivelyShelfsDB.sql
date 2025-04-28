@@ -90,7 +90,7 @@ CREATE TABLE `food_item` (
   `DefaultShelfLife` int DEFAULT NULL,
   `DefaultUnit` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`FoodItemID`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +99,7 @@ CREATE TABLE `food_item` (
 
 LOCK TABLES `food_item` WRITE;
 /*!40000 ALTER TABLE `food_item` DISABLE KEYS */;
-INSERT INTO `food_item` VALUES (1,'apple',7,'number'),(2,'banana',7,'number'),(3,'tomato',14,'number'),(4,'carrot',21,'nuumber'),(5,'broccoli',5,'oz'),(6,'spinach',7,'oz'),(7,'potato',84,'number'),(8,'orange',28,'number'),(9,'strawberries',7,'oz'),(10,'blueberries',14,'oz'),(11,'cucumber',14,'number'),(12,'bacon',7,'g'),(13,'white bread',7,'number'),(14,'mayo',60,'tbsp'),(15,'romaine lettuce',7,'cups'),(16,'relish',365,'tbsp'),(17,'mustard',365,'tbsp'),(18,'apple cider vinegar',999,'tbsp'),(19,'hard boiled eggs',7,'number'),(20,'celery',14,'number'),(21,'onion',7,'cups'),(22,'dill',14,'tbsp');
+INSERT INTO `food_item` VALUES (1,'apple',7,'number'),(2,'banana',7,'number'),(3,'tomato',14,'number'),(4,'carrot',21,'nuumber'),(5,'broccoli',5,'oz'),(6,'spinach',7,'oz'),(7,'potato',84,'number'),(8,'orange',28,'number'),(9,'strawberries',7,'oz'),(10,'blueberries',14,'oz'),(11,'cucumber',14,'number'),(12,'bacon',7,'g'),(13,'white bread',7,'number'),(14,'mayo',60,'tbsp'),(15,'romaine lettuce',7,'cups'),(16,'relish',365,'tbsp'),(17,'mustard',365,'tbsp'),(18,'apple cider vinegar',999,'tbsp'),(19,'hard boiled eggs',7,'number'),(20,'celery',14,'number'),(21,'onion',7,'cups'),(22,'dill',14,'tbsp'),(23,'lemon juice',7,'number'),(24,'olive oil',90,'tbsp'),(25,'cinnamon',999,'tsp'),(26,'milk',5,'cup'),(27,'lemon',7,'number'),(28,'sugar',999,'tsp');
 /*!40000 ALTER TABLE `food_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -253,12 +253,9 @@ CREATE TABLE `recipe` (
   `RecipeID` int NOT NULL AUTO_INCREMENT,
   `RecipeName` varchar(45) DEFAULT NULL,
   `Instructions` text,
-  `UserID` int NOT NULL,
   `RecipeLink` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`RecipeID`),
-  KEY `fk_idx` (`UserID`),
-  CONSTRAINT `FK_UserID` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`RecipeID`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,7 +264,7 @@ CREATE TABLE `recipe` (
 
 LOCK TABLES `recipe` WRITE;
 /*!40000 ALTER TABLE `recipe` DISABLE KEYS */;
-INSERT INTO `recipe` VALUES (1,'BLT','1. Cook your bacon. We recommend pan frying to a crispy golden brown.\n \n2. Slice and season your tomato. Slice the tomato into 1/3 inch slices and season with salt and pepper. If you would like place them on some paper towels to absorb some moisture.\n\n3. Toast 2 slices of bread.\n\n4. Build your BLT. Spread 1 tablespoon of mayo on each slice of bread. Place your lettuce on one slice and the layer with tomato slices and bacon. Finish off with the other slice of bread and cut your BLT to your liking.\n',3,'https://www.thekitchn.com/blt-recipe-23048109'),(2,'Potato Salad','1. Cut your potatoes into quarters and place them in a pot with water. Boil the water adding some salt. Cook for 13-15 minutes after boiling.\n\n2. Mix mayo, relish, mustard, apple cider vinegar, paprika, salt, and pepper until smooth. Chop eggs, celery, onions, and dill.\n\n3. After cooking the potatoes drain the water. Chop the potatoes into chunks and place them in a bowl. Mix in the ingredients from the previous step until evenly mixed. Add eggs, celery, onions, dill and mix again. Add seasonings to your liking.\n\n4. Refrigerate the potato salad for at least 4 hours but preferably 24 hours for a better taste.\n',3,'https://www.aspicyperspective.com/make-best-potato-salad-recipe/');
+INSERT INTO `recipe` VALUES (1,'BLT','1. Cook your bacon. We recommend pan frying to a crispy golden brown.\n \n2. Slice and season your tomato. Slice the tomato into 1/3 inch slices and season with salt and pepper. If you would like place them on some paper towels to absorb some moisture.\n\n3. Toast 2 slices of bread.\n\n4. Build your BLT. Spread 1 tablespoon of mayo on each slice of bread. Place your lettuce on one slice and the layer with tomato slices and bacon. Finish off with the other slice of bread and cut your BLT to your liking.\n','https://www.thekitchn.com/blt-recipe-23048109'),(2,'Potato Salad','1. Cut your potatoes into quarters and place them in a pot with water. Boil the water adding some salt. Cook for 13-15 minutes after boiling.\n\n2. Mix mayo, relish, mustard, apple cider vinegar, paprika, salt, and pepper until smooth. Chop eggs, celery, onions, and dill.\n\n3. After cooking the potatoes drain the water. Chop the potatoes into chunks and place them in a bowl. Mix in the ingredients from the previous step until evenly mixed. Add eggs, celery, onions, dill and mix again. Add seasonings to your liking.\n\n4. Refrigerate the potato salad for at least 4 hours but preferably 24 hours for a better taste.\n','https://www.aspicyperspective.com/make-best-potato-salad-recipe/'),(3,'Sauteed Broccoli','1. Chop broccoli into florets. 2. Heat 2 tablespoons of olive oil in a pan. 3. Cook the broccoli for 2 minutes, then cover and continue to cook for 6 minutes. Stir occasionally. 4. Add lemon garnish and season to your liking.','https://dishingouthealth.com/sauteed-broccoli-recipe/'),(4,'Applesauce','1. Wash apples and chop into small chunks. 2. Add chopped apples, cinnamon, and water to a pot and cook until simmering. Simmer for 15-20 minutes and stir occasionally. 3. Remove from the heat and allow to cool. After the apples have cooled blend for a smooth applesauce. 4. Add lemon juice and let cool in the fridge for a few hours.','https://www.budgetbytes.com/homemade-applesauce/'),(5,'Sauteed Carrots and Spinach','1. Wash and slice carrots into rounds. 2. Heat pan on medium heat. Add the carrots and cook for 2-3 minutes. Reduce heat to low and continue to cook carrots until they are soft. 3. Add spinach in slowly and cook until it wilts. 4. Add seasonings to your liking and then enjoy.','https://thenessykitchen.com/sauteed-carrots-and-spinach/'),(6,'Mixed Fruit Smoothie','1. Combine strawberries, blueberries, a banana, and your choice of milk in a blender. 2. Blend until smooth and enjoy.','https://www.eatingwell.com/recipe/271088/strawberry-blueberry-banana-smoothie/'),(7,'Orange Marmalade','1. Wash oranges and lemon, cut oranges into quarters. 2. Use a food processor to puree oranges. 3. Add oranges to a pan on meduim heat, add lemon zest and juice. Add water and sugar and stir. 4. Boil the mixutre and simmer for around 35 minutes. 4. When it is done it should be soft and gel like, put in jars and cool or freeze to your liking.','https://tastesbetterfromscratch.com/orange-marmalade/'),(8,'Cucumber Salad','1. Thinly slice cucumbers and onion. 2. Salt cucumbers and rest to drain water from the cucumbers. 3. Toss cucumbers and onion with vinegar and sugar.','https://www.thekitchn.com/cucumber-salad-recipe-23651421');
 /*!40000 ALTER TABLE `recipe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -295,7 +292,7 @@ CREATE TABLE `recipe_rec` (
 
 LOCK TABLES `recipe_rec` WRITE;
 /*!40000 ALTER TABLE `recipe_rec` DISABLE KEYS */;
-INSERT INTO `recipe_rec` VALUES (3,'1 tomato',1),(7,'5 lbs',2),(12,'3 slices',1),(13,'2 slices',1),(14,'2 tbsp',1),(14,'2 cups',2),(15,'1 large leaf',1),(16,'1 cup',2),(17,'2 tbsp',2),(18,'1 tbsp',2),(19,'5 eggs',2),(20,'3 stalks',2),(21,'1/2 cup',2),(22,'1 tbsp',2);
+INSERT INTO `recipe_rec` VALUES (1,'6 apples',4),(2,'1 banana',6),(3,'1 tomato',1),(4,'2 mediume carrots',5),(5,'6 cups',3),(6,'4 cups',5),(7,'5 lbs',2),(8,'4 oranges',7),(9,'1/2 cup',6),(10,'1/2 cup',6),(12,'3 slices',1),(13,'2 slices',1),(14,'2 tbsp',1),(14,'2 cups',2),(14,'2 medium cucumbers',8),(15,'1 large leaf',1),(16,'1 cup',2),(17,'2 tbsp',2),(18,'1 tbsp',2),(18,'3 tablespoons',8),(19,'5 eggs',2),(20,'3 stalks',2),(21,'1/2 cup',2),(21,'1 onion',8),(22,'1 tbsp',2),(23,'2 tablespoons',3),(23,'2 teaspoons',4),(24,'2 tablespoons',3),(25,'1/4 teaspoon',4),(26,'3/4 cup',6),(27,'1 lemon',7),(28,'4 cups',7),(28,'2 teaspoons',8);
 /*!40000 ALTER TABLE `recipe_rec` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -341,7 +338,7 @@ CREATE TABLE `share_request` (
   KEY `fk_invetoryItem_shared_idx` (`SharedItemID`),
   KEY `fk_userID_shared_idx` (`RequestorUserID`),
   CONSTRAINT `fk_requserID_shared` FOREIGN KEY (`RequestorUserID`) REFERENCES `user` (`UserID`),
-  CONSTRAINT `fk_shareditem_req` FOREIGN KEY (`SharedItemID`) REFERENCES `shared_item` (`SharedItemID`)
+  CONSTRAINT `fk_shareditem_req` FOREIGN KEY (`SharedItemID`) REFERENCES `shared_item` (`SharedItemID`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -442,7 +439,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-04-23 02:44:00','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-21 18:58:03','2024-12-14 00:00:00'),(3,'FullMetal','Edward','Elric','98765','equivalentExchange@yahoo.com','2025-04-23 02:44:17','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(8,'KonamiKing','John','Konami','321','heyguys@gmail.com','2025-04-23 00:28:10',NULL),(10,'itsGreg','Greg','Harlow','757','happycamper@gmail.com','2025-04-23 02:26:08',NULL);
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-04-23 02:44:00','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-21 18:58:03','2024-12-14 00:00:00'),(3,'FullMetal','Edward','Elric','98765','equivalentExchange@yahoo.com','2025-04-28 18:04:23','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(8,'KonamiKing','John','Konami','321','heyguys@gmail.com','2025-04-23 00:28:10',NULL),(10,'itsGreg','Greg','Harlow','757','happycamper@gmail.com','2025-04-23 02:26:08',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -463,4 +460,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-23  2:49:53
+-- Dump completed on 2025-04-28 18:15:30
