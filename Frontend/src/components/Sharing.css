@@ -26,7 +26,7 @@
 }
 
 .table-container tr:hover {
-    background-color: #f1f1f1;
+    background-color: #1ed479;
 }
 
 
@@ -51,5 +51,28 @@
 }
 
 .table-container td:last-child {
+    text-align: center;
+}
+
+.bubble-text {
+    background-color:  rgba(56, 74, 69, 0.881);;
+    padding: 10px 20px;
+    border-radius: 20px;
+    display: block;
+    color: #faae0a;
+    font-weight: 500;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.bubble-heading {
+    background-color: rgba(56, 74, 69, 0.881);
+    padding: 15px 30px;
+    border-radius: 25px;
+    display: block;
+    color: #faae0a; 
+    font-weight: bold;
+    margin: 30px 0 10px 0;
+    font-size: 24px;
     text-align: center;
 }
