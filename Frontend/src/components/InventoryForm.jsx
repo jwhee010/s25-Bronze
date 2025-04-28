@@ -152,6 +152,7 @@ export default function InventoryForm({addNotification}) {
         // Notify user of success
         alert("Food item added or updated successfully!");
         closeItem();
+        window.location.reload();
     } catch (error) {
         // Handle specific errors
         if (error.message === "No token found in localStorage. Please log in first.") {
@@ -194,6 +195,7 @@ const submitRemoveForm = async (e) => {
         alert('Food removal recorded successfully!');
         console.log('Response:', removeResponse.data);
         closeRemoveForm();
+        window.location.reload();
     } catch (error) {
         console.error('Error removing food item:', error);
         alert('Failed to remove food item.');
@@ -230,8 +232,9 @@ const submitRemoveForm = async (e) => {
                             />
                             <br />
                             <label htmlFor="purchaseDate">Purchase Date</label>
+                            <br />
                             <input
-                                type="text"
+                                type="date"
                                 id="purchaseDate"
                                 value={inventoryFormData.purchaseDate}
                                 onChange={storeInput}

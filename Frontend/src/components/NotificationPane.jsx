@@ -52,11 +52,7 @@ export default function NotificationPane({notifications}) {
         <div className='notifBox'>
           {expiringItems.map((item, index) => (
             <div key={ index } >
-              <p>
-                <span>{item.Expiration}:</span>
-                <br />
-                <span>Your {item.FoodName} is expriring soon on {item.Expiration}</span>
-              </p>
+              <p>Your {item.FoodName} is expriring soon on {item.Expiration}</p>
               <Divider />
             </div>
           ))}
