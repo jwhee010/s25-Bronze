@@ -210,7 +210,7 @@ export default function InventoryForm(props) {
           >
             {foodItems.map((item, index) => (
               <option key={index} value={item.FoodName}>
-                {item.FoodName}
+                {item.FoodName} {item.Expiration.split("-").slice(1).join("-")}
               </option>
             ))}
           </select>

@@ -519,13 +519,59 @@ app.post('/consumeFood', verifyToken, (req, res) => {
                             return res.status(500).json({ message: 'Error deleting item from inventory' });
                         }
 
-                        return res.status(200).json({ message: 'Food item consumed and removed from inventory' });
+                        addOrUpdateAnalytics();
+
+                        //return res.status(200).json({ message: 'Food item consumed and removed from inventory' });
                     });
                 } else {
-                    return res.status(200).json({ message: 'Food quantity updated successfully' });
+                    addOrUpdateAnalytics();
+                    //return res.status(200).json({ message: 'Food quantity updated successfully' });
                 }
             });
         });
+
+        function addOrUpdateAnalytics() {
+            const analyticsQuery = `
+                SELECT Quantity FROM analytics 
+                WHERE FoodItemID = ? AND UserID = ? AND ExpirationStatus = 'consumed';
+            `;
+
+            db.query(analyticsQuery, [FoodItemID, UserID], (err, analyticsResults) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error retrieving analytics data' });
+                }
+
+                if (analyticsResults.length > 0) {
+                    const existingQuantity = parseInt(analyticsResults[0].Quantity, 10);
+                    const newQuantity = existingQuantity + parseInt(Quantity, 10);
+
+                    const updateAnalyticsQuery = `
+                        UPDATE analytics 
+                        SET Quantity = ? 
+                        WHERE FoodItemID = ? AND UserID = ? AND ExpirationStatus = 'consumed';
+                    `;
+
+                    db.query(updateAnalyticsQuery, [newQuantity, FoodItemID, UserID], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error updating analytics table' });
+                        }
+                        res.status(200).json({ message: 'Food quantity updated and analytics recorded' });
+                    });
+                } else {
+                    const insertAnalyticsQuery = `
+                        INSERT INTO analytics (FoodItemID, UserID, ExpirationStatus, Quantity, Status, DateExpired) 
+                        VALUES (?, ?, 'consumed', ?, 'unshared', NULL);
+                    `;
+
+                    db.query(insertAnalyticsQuery, [FoodItemID, UserID, Quantity], (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Error inserting into analytics table' });
+                        }
+                        res.status(200).json({ message: 'Food quantity updated and analytics entry created' });
+                    });
+                }
+            });
+        }
     });
 });
 
