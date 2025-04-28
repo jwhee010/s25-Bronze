@@ -85,6 +85,7 @@ export default function InventoryForm(props) {
       console.log("Response from server:", response.data);
       alert(`${quantity} of ${selectedFoodItem} consumed!`);
       closeItem();
+      window.location.reload();
     } catch (error) {
       console.error("Error consuming food item:", error);
       alert(`Failed to consume food item: ${error.message}`);
@@ -126,6 +127,7 @@ export default function InventoryForm(props) {
       console.log("Response from server:", response.data);
       alert(`${quantity} of ${selectedFoodItem} spoiled!`);
       closeItem();
+      window.location.reload();
     } catch (error) {
       console.error("Error spoiling food item:", error);
       alert(`Failed to spoil food item: ${error.message}`);
