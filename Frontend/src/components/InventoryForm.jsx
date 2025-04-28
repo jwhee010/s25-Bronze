@@ -232,8 +232,9 @@ const submitRemoveForm = async (e) => {
                             />
                             <br />
                             <label htmlFor="purchaseDate">Purchase Date</label>
+                            <br />
                             <input
-                                type="text"
+                                type="date"
                                 id="purchaseDate"
                                 value={inventoryFormData.purchaseDate}
                                 onChange={storeInput}
