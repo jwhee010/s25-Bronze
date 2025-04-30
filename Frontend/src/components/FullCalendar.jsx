@@ -144,7 +144,7 @@ export default function Calendar() {
               info.el.style.borderColor = '#848484';
 
             }
-            else if(distance >= 1 && distance<= 3)
+            else if(distance >= 0 && distance<= 3)
             {
               //Red 1-3 days
               info.el.style.backgroundColor = '#ee6461';
