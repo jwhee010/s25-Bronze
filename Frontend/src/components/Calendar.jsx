@@ -13,23 +13,6 @@ const Calendar = ({addNotification}) => {
         <div>
             <Navbar />
             {/*<NotificationPane/>*/}
-            <h1 className = "calKey">Legend
-                <p className='keyStatement'>Days till
-                    <br/>
-                    Expiration
-                </p>
-                <Divider sx={{ borderBottomWidth: 2}} />
-
-                <p className="greybox">expired</p>
-            
-                <p className='redbox'>1-3</p>
-                
-                <p className='yellowbox'>4-7</p>
-                
-                <p className ='greenbox'>8+</p>
-                
-            </h1>
-            <h1 className='calendarHeader'>Calendar</h1>
             
             <FullCalendar/>
             <InventoryForm addNotification={addNotification}/>

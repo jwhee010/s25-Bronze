@@ -124,7 +124,101 @@ width:600px;
   }
 
 .predictiveButton {
-    background-color: rgb(105, 183, 126);
+    background-color: rgb(55, 80, 59);
+    color:rgb(164, 202, 171);
+    display: inline-block;
+
     margin-bottom: 30px;
+    margin-left: 320px;
+    margin-bottom: -10px;
+    height: 50px;
+    width: 260px;
+    font-weight: bold;
+    font-size: 15px;
 }
 
+.predictiveButton:hover{
+    background-color: rgb(29, 42, 31);
+    border-color: rgb(29, 42, 31);;
+}
+
+/* calendar key */
+.calKey{
+    background-color: rgba(71, 65, 61, 0.814);
+    border-radius: 20px;
+    margin-top: 50px;
+    margin-bottom: -50px;
+
+    width: 260px;
+    height: 50px;
+}
+
+.keyHeader{
+    font-size: medium;
+    font-weight: bold;
+    color:gold;
+    font-family: monospace;
+    padding: 0;
+    margin: 0;
+}
+
+.keyStatement{
+    font-size:large;
+    color:rgb(230, 230, 230);
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+.greybox{
+    background-color: #848484;
+    height: 18px;
+    width: 70px;
+    color:aliceblue;
+    border-radius: 5px; 
+    display: inline-block; 
+    padding: 0;
+    margin: 0;
+    margin-left: 5px;
+}
+
+.redbox{
+    background-color: #ee6461;
+    height: 18px;
+    width: 35px;
+    color:aliceblue;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    margin-left: 5px;
+}
+
+.yellowbox{
+    background-color: #eed661;
+    height: 18px;
+    width: 35px;
+    color:aliceblue;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    margin-left: 5px;
+
+}
+
+.greenbox{
+    background-color: #629c59;
+    height: 18px;
+    width: 35px;
+    color:aliceblue;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    margin-left: 5px;
+}
+
+.keyText{
+    font-size: medium;   
+}
