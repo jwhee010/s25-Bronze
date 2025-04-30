@@ -11,6 +11,10 @@ export default function InventoryForm(props) {
 
   const [quantity, setQuantity] = useState("");
 
+  const [selectedExpiration, setSelectedExpiration] = useState("");
+  
+  const [selectedOption, setSelectedOption] = useState("");
+
   const getFoodItems = async (token) => {
     try{
       const response = await axios.get('http://localhost:80/calendar', {
@@ -38,7 +42,12 @@ export default function InventoryForm(props) {
   }, []);
 
   const handleFoodSelection = (e) => {
-    setSelectedFoodItem(e.target.value);
+    const value = e.target.value;
+    setSelectedOption(value);
+
+    const [name, expiration] = value.split("||");
+    setSelectedFoodItem(name);
+    setSelectedExpiration(expiration);
   };
 
   const handleQuantityChange = (e) => {
@@ -74,6 +83,7 @@ export default function InventoryForm(props) {
           FoodName: selectedFoodItem,
           Quantity: parseInt(quantity),
           Action: "consume",
+          Expiration: selectedExpiration,
         },
         {
           headers: {
@@ -205,11 +215,12 @@ export default function InventoryForm(props) {
           <select
             name="foodItem"
             id="foodItem"
-            value={selectedFoodItem}
+            value={selectedOption}
             onChange={handleFoodSelection}
           >
+            <option value="" disabled hidden>-- Select Food --</option>
             {foodItems.map((item, index) => (
-              <option key={index} value={item.FoodName}>
+              <option key={index} value={`${item.FoodName}||${item.Expiration}`}>
                 {item.FoodName} {item.Expiration.split("-").slice(1).join("-")}
               </option>
             ))}

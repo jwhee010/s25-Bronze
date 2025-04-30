@@ -472,12 +472,18 @@ app.get('/itemName', verifyToken, (req, res) => {
 
 // update quantity of items consumed
 app.post('/consumeFood', verifyToken, (req, res) => {
-    const { FoodName, Quantity, Action } = req.body;
+    const { FoodName, Quantity, Action, Expiration} = req.body;
     const { UserID } = req.user;
 
-    const foodQuery = `SELECT FoodItemID FROM food_item WHERE FoodName = ?`;
+    const InventoryQuery = `
+        SELECT InventoryID, FoodItemID
+        FROM inventory
+        WHERE FoodItemID = (SELECT FoodItemID FROM food_item WHERE FoodName = ?)
+          AND Expiration = ? 
+          AND UserID = ?;
+    `;
 
-    db.query(foodQuery, [FoodName], (err, results) => {
+    db.query(InventoryQuery, [FoodName, Expiration, UserID], (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'Error retrieving FoodItemID' });
         }
@@ -486,48 +492,48 @@ app.post('/consumeFood', verifyToken, (req, res) => {
             return res.status(400).json({ message: 'Food item not found in database' });
         }
 
-    const { FoodItemID } = results[0];
+        const { InventoryID, FoodItemID } = results[0];
 
-    const query = `
-            UPDATE inventory 
-            SET Quantity = Quantity - ? 
-            WHERE FoodItemID = ? AND UserID = ?;
-        `;
-
-        db.query(query, [Quantity, FoodItemID, UserID], (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: 'Error updating food quantity' });
-            }
-            const checkQuantityQuery = `
-                SELECT Quantity FROM inventory 
-                WHERE FoodItemID = ? AND UserID = ?;
+        const query = `
+                UPDATE inventory 
+                SET Quantity = Quantity - ? 
+                WHERE InventoryID = ?;
             `;
 
-            db.query(checkQuantityQuery, [FoodItemID, UserID], (err, result) => {
+            db.query(query, [Quantity, InventoryID], (err, result) => {
                 if (err) {
-                    return res.status(500).json({ message: 'Error checking quantity' });
+                    return res.status(500).json({ message: 'Error updating food quantity' });
                 }
+                const checkQuantityQuery = `
+                    SELECT Quantity FROM inventory 
+                    WHERE InventoryID = ?;
+                `;
 
-                if (result.length > 0 && result[0].Quantity <= 0) {
-                    const deleteQuery = `
-                        DELETE FROM inventory 
-                        WHERE FoodItemID = ? AND UserID = ?;
-                    `;
+                db.query(checkQuantityQuery, [InventoryID], (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ message: 'Error checking quantity' });
+                    }
 
-                    db.query(deleteQuery, [FoodItemID, UserID], (err, result) => {
-                        if (err) {
-                            return res.status(500).json({ message: 'Error deleting item from inventory' });
-                        }
+                    if (result.length > 0 && result[0].Quantity <= 0) {
+                        const deleteQuery = `
+                            DELETE FROM inventory 
+                            WHERE InventoryID = ?;
+                        `;
 
+                        db.query(deleteQuery, [InventoryID], (err, result) => {
+                            if (err) {
+                                return res.status(500).json({ message: 'Error deleting item from inventory' });
+                            }
+
+                            addOrUpdateAnalytics();
+
+                            //return res.status(200).json({ message: 'Food item consumed and removed from inventory' });
+                        });
+                    } else {
                         addOrUpdateAnalytics();
-
-                        //return res.status(200).json({ message: 'Food item consumed and removed from inventory' });
-                    });
-                } else {
-                    addOrUpdateAnalytics();
-                    //return res.status(200).json({ message: 'Food quantity updated successfully' });
-                }
-            });
+                        //return res.status(200).json({ message: 'Food quantity updated successfully' });
+                    }
+                });
         });
 
         function addOrUpdateAnalytics() {
