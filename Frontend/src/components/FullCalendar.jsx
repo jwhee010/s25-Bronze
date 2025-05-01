@@ -114,7 +114,7 @@ export default function Calendar() {
                        {/* Calendar Key */}
                     <h1 className='calendarHeader'>Calendar</h1>
                       <p className = "calKey">
-                               <p className='keyHeader'>Days Left Till Expiration Key</p> 
+                               <p className='keyHeader'>Days Until Expiration Legend</p> 
                         <p className='keyStatement'>
                            
                         <p className="greybox">expired</p>
