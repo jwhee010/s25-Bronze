@@ -407,7 +407,7 @@ export default function Sharing() {
 
     return (
         <div>
-            <h3>Share your food</h3>
+            <h3 className="bubble-heading">Share your food</h3>
             
             {foodItems.length > 0 ? (
                 <table className="table-container">
@@ -449,10 +449,10 @@ export default function Sharing() {
 
                 </table>
             ) : (
-                <p>No food items available</p>
+                <p className="bubble-text">No food items available</p>
             )}
 
-    <h3>Reqeust friends food</h3>
+    <h3 className="bubble-heading">Reqeust friends food</h3>
 
     {friendsSharing.length > 0 ? (
         <table className="table-container">
@@ -498,10 +498,10 @@ export default function Sharing() {
             </tbody>
         </table>
     ) : (
-        <p>No shared food items available.</p>
+        <p className="bubble-text">No shared food items available.</p>
     )}
     
-    <h3>Food Requests</h3>
+    <h3 className="bubble-heading">Food Requests</h3>
 
     {friendsFoodRequests.length > 0 ? (<table className="table-container">
         <thead>
@@ -523,7 +523,7 @@ export default function Sharing() {
             ))}
         </tbody>
     </table>) : (
-        <p>No Requests</p>
+        <p className="bubble-text">No Requests</p>
     )}
 </div>
     );

@@ -7,7 +7,7 @@ const ShelfFriends = () => {
     return  (
         <div>
             <Navbar />
-            <h1 className = "shelfHeader">ShelfFriends</h1>
+            <h1 className = "shelfHeader">Shelf Friends</h1>
             <FriendList/>
             <Sharing/>
         </div>

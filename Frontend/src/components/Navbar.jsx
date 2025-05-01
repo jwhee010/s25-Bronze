@@ -22,7 +22,7 @@ const Navbar = () => {
                     </li>
                     <br/>
                     <li className = "linkwrapper"><Link to="/shelfFriends">
-                        <FaUserGroup className="icon" />ShelfFriends</Link>
+                        <FaUserGroup className="icon" />Shelf Friends</Link>
                     </li>
                     <br/>
                     <li className = "linkwrapper"><Link to="/settings">
