@@ -110,12 +110,12 @@ export default function Calendar() {
   return (
     <>
 
-               <p>
+               <div className='divMarg'>
                        {/* Calendar Key */}
                     <h1 className='calendarHeader'>Calendar</h1>
-                      <p className = "calKey">
-                               <p className='keyHeader'>Days Until Expiration Legend</p> 
-                        <p className='keyStatement'>
+                      <div className = "calKey">
+                               <div className='keyHeader'>Days Until Expiration Legend</div> 
+                        <div className='keyStatement'>
                            
                         <p className="greybox">expired</p>
 
@@ -124,14 +124,14 @@ export default function Calendar() {
                         <p className='yellowbox'>4-7</p>
                         
                         <p className ='greenbox'>8+</p>
-                        </p>
+                        </div>
         
-                    </p>
+                    </div>
 
                     <button  className = "predictiveButton" onClick={() => setUsePredictiveItems(prev => !prev)}>
                       {usePredictiveItems ? 'Show Full Calendar' : 'Filter by Predictive Waste'}
                     </button>
-      </p>
+      </div>
       <FullCalendar
         plugins={[dayGridPlugin, listPlugin]}
         initialView="dayGridMonth"

@@ -64,8 +64,10 @@ const Settings = () => {
     };
 
     return (
-        <div className="settings-container">
+        <div>
             <Navbar />
+        <div className="settings-container">
+            
             <h1 className="settings-header">Settings</h1>
 
             {/* Change Email Section */}
@@ -134,6 +136,7 @@ const Settings = () => {
                     </button>
                 </div>
             </div>
+        </div>
         </div>
     );
 };
