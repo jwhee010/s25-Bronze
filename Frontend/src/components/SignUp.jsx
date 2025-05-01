@@ -103,7 +103,7 @@ function SignUp(){
         </form>
         </div>
 
-        <button onClick={returnHandle}>Back to Login</button>
+        <button onClick={returnHandle} className="backToLogin">Back to Login</button>
 
        </div>
 
