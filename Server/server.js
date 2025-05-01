@@ -1243,6 +1243,46 @@ app.post('/settings/changeName', verifyToken, (req, res) => {
 });
 
 
+app.get('/consumedData', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    const consumedReportQuery = `
+                 SELECT analytics.FoodItemID, analytics.Quantity, food_item.FoodName
+                 FROM analytics
+                 JOIN food_item ON analytics.FoodItemID = food_item.FoodItemID 
+                 WHERE analytics.UserID = ? AND ExpirationStatus = 'consumed'
+                 `;
+
+    db.query(consumedReportQuery, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ consumedItems: results });
+    });
+});
+
+app.get('/wastedData', verifyToken, async (req, res) => {
+    const { UserID } = req.user;
+
+    const wastedReportQuery = `
+                 SELECT analytics.FoodItemID, analytics.Quantity, food_item.FoodName
+                 FROM analytics
+                 JOIN food_item ON analytics.FoodItemID = food_item.FoodItemID 
+                 WHERE analytics.UserID = ? AND ExpirationStatus = 'expired'
+                 `;
+
+    db.query(wastedReportQuery, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ wastedItems: results });
+    });
+});
+
 // //*********************************************************** */
 // // Handle WebSocket connections here
 // io.on("connection", (socket) => {

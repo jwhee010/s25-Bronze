@@ -21,3 +21,37 @@
     margin-bottom: 0px;
 
 }
+
+.diaContSubHeader{
+    color:#cccccc;
+    font-family: monospace;
+    font-size:x-large;
+    margin-bottom: 7px;
+}
+
+.diaContSubHeader2{
+    color:#cccccc;
+    font-family: monospace;
+    font-weight: 'normal';
+    font-size: '15px';
+    margin-top:-10px
+}
+
+.goodItem{
+    color: rgb(41, 164, 41);
+    font-weight: bold;
+}
+
+.okayItem{
+    color: yellow;
+    font-weight: bold;
+}
+
+.badItem{
+    color: red;
+    font-weight: bold;
+}
+
+.basicReportText{
+    color:#b0b0b0;
+}
