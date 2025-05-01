@@ -55,3 +55,9 @@
 .basicReportText{
     color:#b0b0b0;
 }
+
+.shoppingListTxt{
+    color: white;
+    font-family: monospace;
+    font-weight: normal;
+}

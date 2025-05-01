@@ -28,6 +28,86 @@ function EventDialog() {
 
     const [consumedItems, setConsumedItems] = useState([]);
     const [wastedItems, setWastedItems] = useState([]);
+    const [reportData, setReportData] = useState  ({
+        good: [],
+        okay: [],
+        bad: [],
+        shoppingList: [],
+    });
+
+    function processItems(consumedItems, wastedItems) {
+        const itemMap = {};
+        const shoppingList = [];
+
+        consumedItems.forEach(item => {
+            if (!itemMap[item.FoodItemID]) {
+                itemMap[item.FoodItemID] = { FoodName: item.FoodName, consumed: 0, wasted: 0 };
+            }
+            itemMap[item.FoodItemID].consumed += item.Quantity;
+        });
+
+        wastedItems.forEach(item => {
+            if (!itemMap[item.FoodItemID]) {
+                itemMap[item.FoodItemID] = { FoodName: item.FoodName, consumed: 0, wasted: 0 };
+            }
+            itemMap[item.FoodItemID].wasted += item.Quantity;
+        });
+
+        const good = [];
+        const okay = [];
+        const bad = [];
+
+        Object.entries(itemMap).forEach(([id, { FoodName, consumed, wasted }]) => {
+            const total = Number(consumed) + Number(wasted);
+
+            // This part accounts for no data to report
+            if (total === 0) return (
+                <h2>Insufficient data to report on. Start eating!</h2>
+            );
+
+            const percentage = consumed / total;
+            const percentStr = Math.round(percentage * 100);
+
+            const standardQuantity = 10;
+            const recommendedQuantity = Math.round(standardQuantity * percentage);
+            console.log(recommendedQuantity);
+
+            const shoppingItem = (
+                <span>
+                    <span style={{ color: 'rgb(255, 242, 168)', fontWeight: 'bold'}}>{FoodName}</span> - We recommend you buy 
+                    <span style={{ color: 'rgb(255, 242, 168)', fontWeight: 'bold'}}> {recommendedQuantity}</span> servings
+                </span>
+            );
+
+            if (consumed === 0) {
+                bad.push(<span className='basicReportText'>
+                    <span className='badItem'>{FoodName}</span> – your wastage rate is <span className='badItem'>100%</span>.
+                </span>)
+            } else if (wasted === 0) {
+                good.push(<span className='basicReportText'>
+                    <span className='goodItem'>{FoodName}</span> – your consumption rate is <span className='goodItem'>100%</span>!
+                </span>)
+                shoppingList.push(shoppingItem);
+            } else if (percentage >= 0.7) {
+                good.push(<span className='basicReportText'>
+                    <span className='goodItem'>{FoodName}</span> – your consumption rate is <span className='goodItem'>{percentStr}%</span>.
+                </span>);
+                shoppingList.push(shoppingItem);
+            } else if (percentage >= 0.5) {
+                okay.push(<span className='basicReportText'>
+                    <span className='okayItem'>{FoodName}</span> – your consumption rate is <span className='okayItem'>{percentStr}%</span>.
+                </span>);
+                shoppingList.push(shoppingItem);
+            } else {
+                const wastePercent = Math.round((wasted / total) * 100);
+                bad.push(<span className='basicReportText'>
+                    <span className='badItem'>{FoodName}</span> – your wastage rate is <span className='badItem'>{wastePercent}%</span>.
+                </span>);
+            }
+        });
+
+        return { good, okay, bad, shoppingList };
+    };
 
     const getConsumedItems = async (token) => {
         try {
@@ -55,12 +135,42 @@ function EventDialog() {
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
+        
+        const processData = async () => {
+            try {
+                getConsumedItems(token);
+                getWastedItems(token);
+    
+                const [consumedResult, wastedResult] = await Promise.all([
+                    axios.get('http://localhost:80/consumedData', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get('http://localhost:80/wastedData', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                ]);
+    
+                const consumedItems = consumedResult.data.consumedItems;
+                const wastedItems = wastedResult.data.wastedItems;
+    
+                setConsumedItems(consumedItems);
+                setWastedItems(wastedItems);
+    
+                const processed = processItems(consumedItems, wastedItems);
+                setReportData(processed);
+            } catch (error){
+            console.error('An error occured while retrieving report data.', error);
+            }
+        };
         try {
             getConsumedItems(token);
             getWastedItems(token);
+
         } catch (error) {
             console.error('An error occured while retrieving report data.', error);
         }
+
+        processData();
     }, []);
 
 
@@ -114,7 +224,7 @@ function EventDialog() {
                 }}>
 
                     <div>
-                        <h1 className='diaContHeadr'>Shopping?</h1>
+                        {/*<h1 className='diaContHeadr'>Shopping?</h1>
 
                         <p>Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
@@ -124,9 +234,9 @@ function EventDialog() {
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
-                        </p>
+                        </p>*/}
 
-                        <h1 className="diaContHeadr">You Have Items Expiring Soon</h1>
+                        {/*<h1 className="diaContHeadr">You Have Items Expiring Soon</h1>
 
                         <p>!Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
@@ -136,9 +246,39 @@ function EventDialog() {
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
                             !Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test!
-                        </p>
+                        </p>*/}
 
                         <h1 className="diaContHeadr">Your Waste Habits</h1>
+
+                           {/*{reportData.good.length > 0 && (
+                                <>
+                                    <h2 className='diaContSubHeader'>You&apos;re doing <b style={{ color: 'rgb(41, 164, 41)' }}>good</b> with:</h2>
+                                    <h3 className='diaContSubHeader2'>
+                                        (It&apos;s okay to buy more of these)
+                                    </h3>
+                                    <ul>{reportData.good.map((message, i) => <li key={`good-${i}`}>{message}</li>)}</ul>
+                                </>
+                            )}
+
+                            {reportData.okay.length > 0 && (
+                                <>
+                                    <h2 className='diaContSubHeader'>You&apos;re doing <b style={{ color: 'yellow' }}>okay</b> with:</h2>
+                                    <h3 className='diaContSubHeader2'>
+                                        (It&apos;s okay to buy these, but try not to buy as much)
+                                    </h3>
+                                    <ul>{reportData.okay.map((message, i) => <li key={`okay-${i}`}>{message}</li>)}</ul>
+                                </>
+                            )}
+
+                            {reportData.bad.length > 0 && (
+                                <>
+                                    <h2 className='diaContSubHeader'>You&apos;re doing  <b style={{ color: 'red' }}>bad</b> with:</h2>
+                                    <h3 className='diaContSubHeader2'>
+                                        (Maybe reconsider buying these)
+                                    </h3>
+                                    <ul>{reportData.bad.map((message, i) => <li key={`bad-${i}`}>{message}</li>)}</ul>
+                                </>
+                            )}*/}
 
                         {(() => {
 
@@ -169,7 +309,6 @@ function EventDialog() {
 
                             Object.entries(itemMap).forEach(([id, { FoodName, consumed, wasted }]) => {
                                 const total = Number(consumed) + Number(wasted);
-                                console.log(`The total for "${FoodName}"  is: ` + total);
 
                                 // This part accounts for no data to report
                                 if (total === 0) return (
@@ -237,6 +376,15 @@ function EventDialog() {
                                 </div>
                             );
                         })()}
+
+                        <h1 className='diaContHeadr'>Shopping?</h1>
+
+                        <p className='diaContSubHeader'>Here are some foods we recommend you buy - you have been using more of them than you wasted!</p>
+                        <ul>
+                            {reportData.shoppingList.map((item, i) => (
+                                <li key={`shop-${i}`}>{item}</li>
+                            ))}
+                        </ul>
                     </div>
                 </DialogContent>
 
