@@ -1,104 +1,3 @@
-// import "./MessagePage.css";
-
-// import React, { useState, useEffect } from "react"; // Import useEffect for decoding the token
-// import { useParams, useNavigate } from "react-router-dom"; // To access the route parameters
-// import {jwtDecode} from "jwt-decode"; // Import jwt-decode
-
-// const MessagePage = () => {
-//   const navigate = useNavigate();
-//   const { userName } = useParams(); // Extract userName from the URL (if passed)
-
-//   const [messages, setMessages] = useState([]); // State to store messages
-//   const [inputMessage, setInputMessage] = useState(""); // State to store the current input
-//   const [senderUsername, setSenderUsername] = useState(""); // State to store the sender's username
-
-//   // Decode the token to get the username
-//   useEffect(() => {
-//     const token = localStorage.getItem("authToken"); // Retrieve the token from localStorage
-//     if (token) {
-//       try {
-//         const decoded = jwtDecode(token); // Decode the token
-//         setSenderUsername(decoded.username); // Extract and set the username
-//       } catch (err) {
-//         console.error("Error decoding token:", err);
-//       }
-//     }
-//   }, []);
-
-//   // Navigation logic to go back or anywhere else
-//   const goBackToFriendList = () => {
-//     navigate("/shelfFriends"); // Adjust the route based on your setup
-//     console.log("Returning to Friend List");
-//   };
-
-//   // Handle message input change
-//   const handleInputChange = (event) => {
-//     setInputMessage(event.target.value);
-//   };
-
-//   // Handle sending a message
-//   const handleSendMessage = () => {
-//     if (inputMessage.trim() !== "") {
-//       const timestamp = new Date().toLocaleTimeString(); // Get the current time
-//       const newMessage = { text: inputMessage, time: timestamp, sender: senderUsername }; // Use senderUsername
-//       setMessages((prevMessages) => [...prevMessages, newMessage]); // Add the new message to the list
-//       setInputMessage(""); // Clear the input field
-//     }
-//   };
-
-//   return (
-//     <div className="container">
-//       {/* Top Bar */}
-//       <div className="top-bar">
-//         <div className="friend-name">{userName}:</div>
-//         <button className="back-button" onClick={goBackToFriendList}>
-//           Go Back
-//         </button>
-//       </div>
-
-//       {/* Main Text List */}
-//       <div className="content">
-//         {/* Render Messages */}
-//         <div className="message-list">
-//           {messages.map((msg, index) => (
-//             <div key={index} className="message-item">
-//               <span className="message-sender">{msg.sender}: </span>
-//               <span className="message-text">{msg.text}</span>
-//               <div className="message-time">{msg.time}</div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* Bottom Bar */}
-//       <div className="input-section">
-//         <div className="message-input">
-//           <input
-//             type="text"
-//             className="input-field"
-//             placeholder="Type your message..."
-//             value={inputMessage}
-//             onChange={handleInputChange} // Update state as user types
-//             onKeyDown={(e) => {
-//               if (e.key === "Enter") {
-//                 handleSendMessage(); // Call the sendMessage function when Enter is pressed
-//               }
-//             }}
-//           />
-//           <button className="send-button" onClick={handleSendMessage}>
-//             Send
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MessagePage;
-
-//******************************************************************************* */
-
-
 import "./MessagePage.css";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -190,6 +89,18 @@ const MessagePage = () => {
         navigate("/shelfFriends"); // Navigate back to the friend's list
     };
 
+    const formatTimestamp = (sqlTimestamp) => {
+        const date = new Date(sqlTimestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); 
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    };
+
+
     return (
         <div className="container">
             {/* Top Bar */}
@@ -204,10 +115,15 @@ const MessagePage = () => {
             <div className="content">
                 <div className="message-list">
                     {messages.map((msg, index) => (
-                        <div key={index} className="message-item">
-                            <span className="message-sender">{msg.senderID === senderID ? "You" : userName}:</span>
+                        <div
+                            key={index}
+                            className={`message-item ${msg.senderID === senderID ? "user-message" : "receiver-message"}`}
+                        >
+                            <span className="message-sender">
+                                {msg.senderID === senderID ? "You" : userName}:
+                            </span>
                             <span className="message-text">{msg.text}</span>
-                            <div className="message-time">{msg.timestamp}</div>
+                            <div className="message-time">{formatTimestamp(msg.timestamp)}</div> 
                         </div>
                     ))}
                 </div>
@@ -234,122 +150,3 @@ const MessagePage = () => {
 };
 
 export default MessagePage;
-
-
-
-
-
-
-
-//******************************************************************************** */
-
-
-// import React, { useState, useEffect } from "react";
-// import { useLocation } from "react-router-dom";
-// import {jwtDecode} from "jwt-decode";
-// import { io } from "socket.io-client";
-
-// import "./MessagePage.css";
-
-
-
-
-
-// const MessagePage = () => {
-//   const location = useLocation();
-//   const { friendID } = location.state || {}; // Get the friend's ID from navigation state
-
-//   const [socket, setSocket] = useState(null);
-//   const [messages, setMessages] = useState([]);
-//   const [inputMessage, setInputMessage] = useState("");
-//   const [senderID, setSenderID] = useState(null);
-
-//   // Decode the token and set up the socket connection
-//   useEffect(() => {
-//     const token = localStorage.getItem("authToken");
-//     if (token) {
-//       const decoded = jwtDecode(token);
-//       setSenderID(decoded.id); // Extract sender ID from the token
-
-//       // Connect to Socket.IO server
-//       const socketConnection = io("http://localhost:3000"); // Replace with your server address
-//       setSocket(socketConnection);
-
-//       // Join the private room
-//       const roomName = [decoded.id, friendID].sort().join("-");
-//       socketConnection.emit("joinRoom", { senderID: decoded.id, receiverID: friendID });
-
-//       // Listen for incoming messages
-//       socketConnection.on("receiveMessage", (data) => {
-//         setMessages((prevMessages) => [...prevMessages, data]); // Append received message to the list
-//       });
-
-//       return () => {
-//         socketConnection.disconnect(); // Cleanup the connection on component unmount
-//       };
-//     }
-//   }, [friendID]);
-
-//   // Handle sending a message
-//   const handleSendMessage = () => {
-//     if (socket && inputMessage.trim() !== "") {
-//       const timestamp = new Date().toLocaleTimeString();
-//       const roomName = [senderID, friendID].sort().join("-");
-      
-//       // Emit the message to the server
-//       socket.emit("sendMessage", {
-//         roomName,
-//         senderID,
-//         message: inputMessage,
-//         timestamp,
-//       });
-
-//       // Update local message state
-//       setMessages((prevMessages) => [
-//         ...prevMessages,
-//         { senderID, message: inputMessage, timestamp },
-//       ]);
-//       setInputMessage(""); // Clear input field
-//     }
-//   };
-
-//   return (
-//     <div className="container">
-//       <div className="top-bar">
-//         <div className="friend-name">{friendID}:</div>
-//       </div>
-      
-//       <div className="content">
-//         <div className="message-list">
-//           {messages.map((msg, index) => (
-//             <div key={index} className="message-item">
-//               <span className="message-sender">
-//                 {msg.senderID === senderID ? "You" : "Friend"}: 
-//               </span>
-//               <span className="message-text">{msg.message}</span>
-//               <div className="message-time">{msg.timestamp}</div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-      
-//       <div className="input-section">
-//         <input
-//           type="text"
-//           className="input-field"
-//           placeholder="Type your message..."
-//           value={inputMessage}
-//           onChange={(e) => setInputMessage(e.target.value)}
-//           onKeyDown={(e) => {
-//             if (e.key === "Enter") handleSendMessage();
-//           }}
-//         />
-//         <button className="send-button" onClick={handleSendMessage}>
-//           Send
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MessagePage;

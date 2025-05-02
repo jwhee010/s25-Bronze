@@ -15,22 +15,6 @@ app.use(cors({
 
 app.use(express.json())
 
-//********************************************************* */
-
-// //Real Time Messaging Websocket
-// const http = require('http');
-// const { Server } = require('socket.io');
-
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//     cors: {
-//         origin: "http://localhost:5173", // Frontend URL
-//         methods: ["GET", "POST"], // Allowed HTTP methods
-//     },
-// });
-
-//********************************************************** */
-
 // This requirement will utilize a MySQL database 
 // from the db.js of each individual team member, locally.
 const db = require('./config/db');
@@ -1079,10 +1063,10 @@ app.get('/exp/recipe', verifyToken, (req, res) => {
     });
 });
 
-    app.get('/Sharing/Analytics', verifyToken, (req, res) => {
-        const { UserID } = req.user;
+app.get('/Sharing/Analytics', verifyToken, (req, res) => {
+    const { UserID } = req.user;
 
-        const sql = `SELECT 
+    const sql = `SELECT 
                         food_item.FoodName, analytics.Quantity
                     FROM
                         analytics
@@ -1093,39 +1077,38 @@ app.get('/exp/recipe', verifyToken, (req, res) => {
                     AND analytics.Status = 'shared'
                     ORDER BY CAST(analytics.Quantity AS UNSIGNED) DESC
                     LIMIT 5;`
-        db.query(sql, [UserID], (error, results) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).json({ message: 'Error executing query' });
-            }
-            
-            res.status(200).json({ Analytics: results });
-        });
-    });
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
 
-    app.get('/Sharing/AllAnalytics', verifyToken, (req, res) => {
-        const { UserID } = req.user;
-    
-        const sql = `SELECT 
-                            food_item.FoodName, analytics.Quantity
-                        FROM
-                            analytics
-                        JOIN
-                            food_item ON analytics.FoodItemID = food_item.FoodItemID
-                        WHERE
-                            analytics.UserID = ?
-                        AND analytics.Status = 'shared'
-                        ORDER BY analytics.Quantity DESC;`
-        db.query(sql, [UserID], (error, results) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).json({ message: 'Error executing query' });
-            }
-    
-            res.status(200).json({ Analytics: results });
-        });
+        res.status(200).json({ Analytics: results });
     });
+});
 
+app.get('/Sharing/AllAnalytics', verifyToken, (req, res) => {
+    const { UserID } = req.user;
+
+    const sql = `SELECT 
+                        food_item.FoodName, analytics.Quantity
+                    FROM
+                        analytics
+                    JOIN
+                        food_item ON analytics.FoodItemID = food_item.FoodItemID
+                    WHERE
+                        analytics.UserID = ?
+                    AND analytics.Status = 'shared'
+                    ORDER BY analytics.Quantity DESC;`
+    db.query(sql, [UserID], (error, results) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Error executing query' });
+        }
+
+        res.status(200).json({ Analytics: results });
+    });
+});
 
 //*********************************************************** */
 
