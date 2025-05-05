@@ -57,6 +57,17 @@ function EventDialog({open, onClose}) {
         const okay = [];
         const bad = [];
 
+        // this is the base case
+        if (consumedItems.length === 0 && wastedItems.length === 0) {
+            return {
+                good: [],
+                okay: [],
+                bad: [],
+                shoppingList: [],
+                message: "No data to report on!" 
+            };
+        }
+
         Object.entries(itemMap).forEach(([id, { FoodName, consumed, wasted }]) => {
             const total = Number(consumed) + Number(wasted);
 
@@ -336,47 +347,55 @@ function EventDialog({open, onClose}) {
 
                             return (
                                 <div>
-                                    {good.length > 0 && (
-                                        <>
-                                            <h2 className='diaContSubHeader'>You&apos;re doing <b style={{ color: 'rgb(41, 164, 41)' }}>good</b> with:</h2>
-                                            <h3 className='diaContSubHeader2'>
-                                                (It&apos;s okay to buy more of these)
-                                            </h3>
-                                            <ul>{good.map((message, i) => <li key={`good-${i}`}>{message}</li>)}</ul>
-                                        </>
-                                    )}
 
-                                    {okay.length > 0 && (
-                                        <>
-                                            <h2 className='diaContSubHeader'>You&apos;re doing <b style={{ color: 'yellow' }}>okay</b> with:</h2>
-                                            <h3 className='diaContSubHeader2'>
-                                                (It&apos;s okay to buy these, but try not to buy as much)
-                                            </h3>
-                                            <ul>{okay.map((message, i) => <li key={`okay-${i}`}>{message}</li>)}</ul>
-                                        </>
-                                    )}
+                                    {reportData.message && <h2>{reportData.message}</h2>}
 
-                                    {bad.length > 0 && (
-                                        <>
-                                            <h2 className='diaContSubHeader'>You&apos;re doing  <b style={{ color: 'red' }}>bad</b> with:</h2>
-                                            <h3 className='diaContSubHeader2'>
-                                                (Maybe reconsider buying these)
-                                            </h3>
-                                            <ul>{bad.map((message, i) => <li key={`bad-${i}`}>{message}</li>)}</ul>
-                                        </>
-                                    )}
+                                    {!reportData.message && (<>
+
+                                        {good.length > 0 && (
+                                            <>
+                                                <h2 className='diaContSubHeader'>You&apos;re doing <b style={{ color: 'rgb(41, 164, 41)' }}>good</b> with:</h2>
+                                                <h3 className='diaContSubHeader2'>
+                                                    (It&apos;s okay to buy more of these)
+                                                </h3>
+                                                <ul>{good.map((message, i) => <li key={`good-${i}`}>{message}</li>)}</ul>
+                                            </>
+                                        )}
+
+                                        {okay.length > 0 && (
+                                            <>
+                                                <h2 className='diaContSubHeader'>You&apos;re doing <b style={{ color: 'yellow' }}>okay</b> with:</h2>
+                                                <h3 className='diaContSubHeader2'>
+                                                    (It&apos;s okay to buy these, but try not to buy as much)
+                                                </h3>
+                                                <ul>{okay.map((message, i) => <li key={`okay-${i}`}>{message}</li>)}</ul>
+                                            </>
+                                        )}
+
+                                        {bad.length > 0 && (
+                                            <>
+                                                <h2 className='diaContSubHeader'>You&apos;re doing  <b style={{ color: 'red' }}>bad</b> with:</h2>
+                                                <h3 className='diaContSubHeader2'>
+                                                    (Maybe reconsider buying these)
+                                                </h3>
+                                                <ul>{bad.map((message, i) => <li key={`bad-${i}`}>{message}</li>)}</ul>
+                                            </>
+                                        )}
+                                    </>)}
                                 </div>
                             );
                         })()}
 
-                        <h1 className='diaContHeadr'>Shopping?</h1>
+                        {reportData.shoppingList.length > 0 && ( <>
+                            <h1 className='diaContHeadr'>Shopping?</h1>
 
-                        <p className='diaContSubHeader'>Here are some foods we recommend you buy - you have been using more of them than you wasted!</p>
-                        <ul>
-                            {reportData.shoppingList.map((item, i) => (
-                                <li key={`shop-${i}`}>{item}</li>
-                            ))}
-                        </ul>
+                            <p className='diaContSubHeader'>Here are some foods we recommend you buy - you have been using more of them than you wasted!</p>
+                            <ul>
+                                {reportData.shoppingList.map((item, i) => (
+                                    <li key={`shop-${i}`}>{item}</li>
+                                ))}
+                            </ul>
+                        </> )}
                     </div>
                 </DialogContent>
 
