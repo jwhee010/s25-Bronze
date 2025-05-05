@@ -73,7 +73,7 @@ CREATE TABLE `analytics` (
 
 LOCK TABLES `analytics` WRITE;
 /*!40000 ALTER TABLE `analytics` DISABLE KEYS */;
-INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','4','unshared','2025-04-26'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-02-11'),(3,4,'expired','5','unshared','2025-01-15'),(3,3,'expired','7','unshared','2025-01-25'),(3,7,'consumed','6','unshared',NULL),(3,9,'consumed','3','unshared',NULL),(3,1,'expired','5','unshared','2025-03-25'),(3,2,'expired','2','unshared','2025-01-16'),(1,1,'fresh','5','shared','2025-01-01'),(1,10,'fresh','5','shared','2025-05-05'),(3,6,'fresh','8','shared','2025-04-26'),(3,10,'fresh','16','shared','2025-05-06'),(3,7,'fresh','7','shared','2025-04-27'),(3,3,'fresh','7','shared','2025-04-27'),(3,1,'fresh','5','shared','2025-04-28'),(3,2,'fresh','2','shared','2025-04-28'),(3,12,'fresh','4','shared','2025-04-28'),(3,21,'expired','1','unshared','2025-04-23');
+INSERT INTO `analytics` VALUES (1,2,'expired','4','unshared','2025-01-25'),(1,3,'expired','2','unshared','2025-01-25'),(1,5,'expired','6','unshared','2025-03-25'),(1,8,'consumed','2','unshared',NULL),(1,6,'consumed','5','unshared',NULL),(1,2,'consumed','3','unshared',NULL),(1,10,'expired','1','unshared','2025-03-25'),(1,9,'expired','8','unshared','2025-03-25'),(3,8,'expired','2','unshared','2025-04-26'),(3,11,'expired','2','unshared','2025-03-25'),(3,6,'expired','9','unshared','2025-02-11'),(3,4,'expired','5','unshared','2025-01-15'),(3,3,'expired','7','unshared','2025-01-25'),(3,1,'expired','4','unshared','2025-03-25'),(3,2,'expired','2','unshared','2025-01-16'),(1,1,'fresh','5','shared','2025-01-01'),(1,10,'fresh','5','shared','2025-05-05'),(3,6,'fresh','8','shared','2025-04-26'),(3,10,'fresh','16','shared','2025-05-06'),(3,7,'fresh','7','shared','2025-04-27'),(3,3,'fresh','7','shared','2025-04-27'),(3,1,'fresh','4','shared','2025-04-28'),(3,2,'fresh','2','shared','2025-04-28'),(3,12,'fresh','4','shared','2025-04-28'),(3,21,'expired','2','unshared','2025-04-23'),(3,10,'consumed','6','unshared',NULL),(3,11,'consumed','3','unshared',NULL),(3,1,'consumed','9','unshared',NULL),(3,3,'consumed','21','unshared',NULL),(3,6,'consumed','5','unshared',NULL),(1,12,'fresh','4','shared','2025-04-28'),(3,13,'expired','2','unshared','2025-02-23'),(3,2,'consumed','1','unshared',NULL),(3,21,'consumed','3','unshared',NULL),(3,8,'consumed','2','unshared',NULL),(3,13,'consumed','12','unshared',NULL);
 /*!40000 ALTER TABLE `analytics` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -176,7 +176,7 @@ CREATE TABLE `inventory` (
   PRIMARY KEY (`InventoryID`),
   KEY `fk_userID_inv_idx` (`UserID`),
   CONSTRAINT `fk_userID_inv` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -185,7 +185,7 @@ CREATE TABLE `inventory` (
 
 LOCK TABLES `inventory` WRITE;
 /*!40000 ALTER TABLE `inventory` DISABLE KEYS */;
-INSERT INTO `inventory` VALUES (65,1,3,'2025-04-21','fresh','7','refriegerator','2025-04-27'),(66,1,7,'2025-04-21','fresh','3','shelf','2025-04-27'),(67,1,1,'2025-04-21','fresh','5','refrigerator','2025-04-28'),(68,1,10,'2025-04-21','fresh','12','refrigerator','2025-05-05'),(69,1,11,'2025-04-21','fresh','8','refrigerator','2025-05-05'),(70,1,9,'2025-04-19','fresh','7','refrigerator','2025-04-26'),(71,1,2,'2025-04-21','fresh','2','refrigerator','2025-04-28'),(72,1,6,'2025-04-19','fresh','8','refrigerator','2025-04-26'),(73,1,12,'2025-04-21','fresh','4','refrigerator','2025-04-28'),(74,1,10,'2025-04-22','fresh','4','refrigerator','2025-05-06'),(84,3,2,'2025-04-17','fresh','2','shelf','2025-04-24'),(85,3,5,'2025-04-23','fresh','4','shelf','2025-04-28'),(86,3,11,'2025-04-23','fresh','3','refrigerator','2025-05-07'),(87,3,1,'2025-04-23','fresh','6','refrigerator','2025-04-30'),(89,3,3,'2025-04-13','fresh','2','refrigerator','2025-04-27'),(91,3,7,'2025-02-02','fresh','10','shelf','2025-04-26'),(93,3,8,'2025-03-24','expired','3','refrigerator','2025-04-21'),(94,3,4,'2025-04-18','fresh','6','refrigerator','2025-05-09');
+INSERT INTO `inventory` VALUES (65,1,3,'2025-04-21','fresh','7','refriegerator','2025-04-27'),(66,1,7,'2025-04-21','fresh','3','shelf','2025-04-27'),(67,1,1,'2025-04-21','fresh','5','refrigerator','2025-04-28'),(68,1,10,'2025-04-21','fresh','12','refrigerator','2025-05-05'),(69,1,11,'2025-04-21','fresh','8','refrigerator','2025-05-05'),(70,1,9,'2025-04-19','fresh','7','refrigerator','2025-04-26'),(71,1,2,'2025-04-21','fresh','2','refrigerator','2025-04-28'),(72,1,6,'2025-04-19','fresh','8','refrigerator','2025-04-26'),(74,1,10,'2025-04-22','fresh','4','refrigerator','2025-05-06'),(102,1,5,'2025-05-04','fresh','4','refrigerator','2025-05-09'),(147,3,8,'2025-04-05','fresh','2','refrigerator','2025-05-03'),(148,3,2,'2025-04-29','fresh','2','shelf','2025-05-06'),(152,3,7,'2025-02-14','fresh','3','3','2025-05-08'),(153,3,5,'2025-05-05','fresh','4','refrigerator','2025-05-10'),(154,3,6,'2025-05-05','fresh','5','refrigerator','2025-05-12'),(156,3,3,'2025-04-25','fresh','4','refrigerator','2025-05-09'),(157,3,11,'2025-05-05','fresh','2','refrigerator','2025-05-19'),(158,3,1,'2025-05-05','fresh','5','refrigerator','2025-05-12'),(159,3,4,'2025-04-24','fresh','2','refrigerator','2025-05-15'),(170,1,12,'2025-05-01','fresh','4','refrigerator','2025-05-08');
 /*!40000 ALTER TABLE `inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +203,7 @@ CREATE TABLE `messages` (
   `text` varchar(281) DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`messageID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +212,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES (1,'FullMetal','Xx_Andrew_xX','Hey andrew, do you want some of this spinach that I just got the other day?','2025-04-22 00:59:58'),(2,'Xx_Andrew_xX','FullMetal','Sure why noy','2025-04-22 01:00:15'),(3,'Xx_Andrew_xX','FullMetal','*not','2025-04-22 01:00:17');
+INSERT INTO `messages` VALUES (1,'FullMetal','Xx_Andrew_xX','Hey andrew, do you want some of this spinach that I just got the other day?','2025-04-22 00:59:58'),(2,'Xx_Andrew_xX','FullMetal','Sure why noy','2025-04-22 01:00:15'),(3,'Xx_Andrew_xX','FullMetal','*not','2025-04-22 01:00:17'),(4,'FullMetal','Xx_Andrew_xX','hey want some of my food','2025-05-01 22:27:07'),(5,'Xx_Andrew_xX','FullMetal','yeah sure','2025-05-01 22:27:49'),(6,'FullMetal','Xx_Andrew_xX','heyyy','2025-05-02 01:09:29');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -339,7 +339,7 @@ CREATE TABLE `share_request` (
   KEY `fk_userID_shared_idx` (`RequestorUserID`),
   CONSTRAINT `fk_requserID_shared` FOREIGN KEY (`RequestorUserID`) REFERENCES `user` (`UserID`),
   CONSTRAINT `fk_shareditem_req` FOREIGN KEY (`SharedItemID`) REFERENCES `shared_item` (`SharedItemID`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -348,6 +348,7 @@ CREATE TABLE `share_request` (
 
 LOCK TABLES `share_request` WRITE;
 /*!40000 ALTER TABLE `share_request` DISABLE KEYS */;
+INSERT INTO `share_request` VALUES (14,16,1,'2025-05-01 00:00:00',NULL);
 /*!40000 ALTER TABLE `share_request` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -368,7 +369,7 @@ CREATE TABLE `shared_item` (
   KEY `fk_inventoryID_shared_idx` (`InventoryItemID`),
   KEY `fk_userId_shared_idx` (`OwnerUserID`),
   CONSTRAINT `fk_userId_sharing` FOREIGN KEY (`OwnerUserID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -377,7 +378,7 @@ CREATE TABLE `shared_item` (
 
 LOCK TABLES `shared_item` WRITE;
 /*!40000 ALTER TABLE `shared_item` DISABLE KEYS */;
-INSERT INTO `shared_item` VALUES (13,73,1,4,'fresh'),(14,66,1,3,'fresh');
+INSERT INTO `shared_item` VALUES (14,66,1,3,'fresh'),(16,94,3,6,'fresh'),(17,91,3,10,'fresh'),(18,170,1,4,'fresh'),(19,72,1,8,'fresh');
 /*!40000 ALTER TABLE `shared_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -399,7 +400,7 @@ CREATE TABLE `shelf_friend` (
   KEY `fk_userID_friend2_idx` (`UserID_2`),
   CONSTRAINT `fk_userID_friend1` FOREIGN KEY (`UserID_1`) REFERENCES `user` (`UserID`),
   CONSTRAINT `fk_userID_friend2` FOREIGN KEY (`UserID_2`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -430,7 +431,7 @@ CREATE TABLE `user` (
   `creationDate` datetime DEFAULT NULL,
   PRIMARY KEY (`UserID`),
   UNIQUE KEY `userName` (`userName`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -439,7 +440,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-04-23 02:44:00','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-21 18:58:03','2024-12-14 00:00:00'),(3,'FullMetal','Edward','Elric','98765','equivalentExchange@yahoo.com','2025-04-28 18:04:23','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(8,'KonamiKing','John','Konami','321','heyguys@gmail.com','2025-04-23 00:28:10',NULL),(10,'itsGreg','Greg','Harlow','757','happycamper@gmail.com','2025-04-23 02:26:08',NULL);
+INSERT INTO `user` VALUES (1,'Xx_Andrew_xX','Andrew','Benham','54321','abenham@gmail.com','2025-05-05 00:48:19','2025-01-17 00:00:00'),(2,'XX_UrDone','Jaylen','Wheeler','coolPassword','jaylen.wheeler@gmail.com','2025-04-21 18:58:03','2024-12-14 00:00:00'),(3,'FullMetal','Edward','Elric','98765','equivalentExchange@yahoo.com','2025-05-05 01:04:46','2023-09-11 00:00:00'),(4,'B1gman_Blastoise','Brock','Harison','DryingPan','indigo.league@hotmail.com','2025-03-24 19:54:08','2025-04-11 00:00:00'),(8,'KonamiKing','John','Konami','321','heyguys@gmail.com','2025-04-23 00:28:10',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -460,4 +461,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-28 18:15:30
+-- Dump completed on 2025-05-05  1:06:50

@@ -24,9 +24,9 @@ export default function IncentiveNotifications() {
       const messages = [];
 
       if (difference >= 12) {
-        messages.push("You've been a LivelyShelfs member for one year! You can now receive a 50% monthly discount!");
+        messages.push("You've been a LivelyShelfs member for one year! A 50% discount will be applied to your next month!");
       } else if (difference >= 3) {
-        messages.push("You've been a LivelyShelfs member for three months! You can now receive a 20% monthly discount!");
+        messages.push("You've been a LivelyShelfs member for three months! A 20% discount will be applied to your next month!");
       }
 
       setIncentiveMessages(messages);

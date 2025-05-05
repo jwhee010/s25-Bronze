@@ -1184,7 +1184,7 @@ app.delete('/settings/emptyInventory', verifyToken, (req, res) => {
             return res.status(500).json({ message: 'Error emptying inventory' });
         }
 
-        res.status(200).json({ message: 'Inventory emptied successfully' });
+        res.status(200).json({ message: 'Inventory reset successfully' });
     });
 });
 
