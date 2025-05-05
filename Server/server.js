@@ -440,7 +440,7 @@ app.get('/itemName', verifyToken, (req, res) => {
     const query = `SELECT DISTINCT food_item.FoodName
                  FROM inventory
                  JOIN food_item ON inventory.FoodItemID = food_item.FoodItemID
-                 WHERE inventory.UserID = ?`;
+                 WHERE inventory.UserID = ? AND inventory.Expiration >= CURDATE()`;
 
     db.query(query, [UserID], (error, results) => {
         if (error) {

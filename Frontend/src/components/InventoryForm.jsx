@@ -103,6 +103,7 @@ export default function InventoryForm({addNotification}) {
     e.preventDefault();
 
         try {
+            let messages = [];
 
             const foodName = inventoryFormData.itemName;
             
@@ -110,7 +111,7 @@ export default function InventoryForm({addNotification}) {
 
             // Alerts user if a food item is commonly wasted on form submission
             if(isWasted) {
-                addNotification(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`);
+                messages.push(`"${foodName}" is a commonly wasted food item, be mindful of your waste!`);
             }
 
             const token = localStorage.getItem("authToken");
@@ -124,7 +125,7 @@ export default function InventoryForm({addNotification}) {
             const ownedItems = ownedItemsRes.data.itemNames.map(name => name.toLowerCase());
     
             if (ownedItems.includes(foodName.toLowerCase())) {
-                addNotification(`You already have "${foodName}" in your inventory.`);
+                messages.push(`You already have "${foodName}" in your inventory.`);
             }
 
             const response = await axios.post(
@@ -146,6 +147,7 @@ export default function InventoryForm({addNotification}) {
                 }
             );
 
+            messages.forEach(msg => addNotification(msg));
         // Debug log for response
         console.log("Response Data:", response.data);
 

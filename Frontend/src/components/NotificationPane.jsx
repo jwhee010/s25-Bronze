@@ -60,7 +60,7 @@ export default function NotificationPane({notifications}) {
 
         <div className='notifBox'>
           {notifications.map((notification, index) => (
-            <div key={index}>
+            <div key={notification.message}>
               <p>{notification.message}</p>
               <Divider />
             </div>

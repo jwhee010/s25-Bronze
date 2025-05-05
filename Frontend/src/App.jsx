@@ -13,12 +13,34 @@ import NotificationPane from './components/NotificationPane';
 import { useState } from 'react';
 
 function AppRoutes() {
-  const [notifications, setNotifications] = useState([]);
+
+  const [notifications, setNotifications] = useState(() => {
+    const stored = sessionStorage.getItem('notifications');
+    return stored ? JSON.parse(stored) : [];
+  });
 
   const addNotification = (message) => {
-    setNotifications((prev) => [ ...prev, { message }]);
+
+    // this part checks for a duplicate message
+    if (notifications.some((notif) => notif.message === message)) {
+      return;
+    }
+    // this part ensures that each new notification is added before reload
+    setNotifications(prev => {
+      const updated = [...prev, { message }];
+      sessionStorage.setItem('notifications', JSON.stringify(updated));
+      return updated;
+    });
   };
+  
   const location = useLocation();
+  
+  // resets the token and notifications
+  const logout = () => {
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('notifications');
+    setNotifications([]); 
+  };
 
   return (
     <>
@@ -30,7 +52,7 @@ function AppRoutes() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp/>}/>
-        <Route path="/main" element={<Dashboard notifications={notifications} />} />
+        <Route path="/main" element={<Dashboard notifications={notifications}  logout={logout} />} />
         <Route path="/calendar" element={<Calendar addNotification={addNotification}/>} />
         <Route path="/shelfFriends" element={<ShelfFriends />} />
         <Route path="/settings" element={<Settings />} />

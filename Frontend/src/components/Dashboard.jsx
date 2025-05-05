@@ -11,7 +11,7 @@ import SharePieChart from './SharePieChart';
 import ShareBarChart from './ShareBarChart';
 import EventDialog from './EventDialog';
 
-function Dashboard() {
+function Dashboard({logout}) {
     const navigate = useNavigate(); // Initialize useNavigate
 
     // Initialize firstname, lastname, email
@@ -52,8 +52,7 @@ function Dashboard() {
     const handleLogout = () => {
 
         // remove the token when logging out
-        localStorage.removeItem('authToken');
-
+        logout();
         // navigates back to the login
         navigate('/login');
     };
