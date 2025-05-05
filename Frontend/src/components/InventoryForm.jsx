@@ -6,12 +6,12 @@ import { common } from "@mui/material/colors";
 export default function InventoryForm({addNotification}) {
     const [active, setActive] = useState(false); // For Add Form
     const [activeRemove, setActiveRemove] = useState(false); // For Remove Form
-    const [commonlyWasted, setWastedFood] = useState([]);
+    const [commonlyWasted, setCommonlyWasted] = useState([]);
 
     // Retrieve top 5 wasted food from the database, originally done by Jaylen
     const getWastedFood = async (token) => {
         try {
-            const response = await axios.get("http://localhost:80/topWaste", {
+            const response = await axios.get('http://localhost:80/topWaste', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -20,10 +20,10 @@ export default function InventoryForm({addNotification}) {
             const wastedFood = response.data.foodItems.map((item, index) => ({
                 id: index,
                 value: item.Quantity,
-                label: item.FoodName,
+                label: item.FoodName
             }));
 
-            setWastedFood(wastedFood);
+            setCommonlyWasted(wastedFood);
         } catch (error) {
             console.error("Error retrieving food items:", error);
         }
@@ -201,7 +201,6 @@ const submitRemoveForm = async (e) => {
         alert('Failed to remove food item.');
     }
 };
-
 
     // Final JSX structure with buttons and forms
     return (
