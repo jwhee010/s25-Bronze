@@ -35,10 +35,11 @@ function AppRoutes() {
   
   const location = useLocation();
   
-  // resets the token and notifications
+  // resets the token, notifications, and automatic report pop up
   const logout = () => {
     localStorage.removeItem('authToken');
     sessionStorage.removeItem('notifications');
+    sessionStorage.removeItem('eventDialogShown');
     setNotifications([]); 
   };
 

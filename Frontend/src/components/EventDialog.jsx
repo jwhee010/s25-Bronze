@@ -14,17 +14,17 @@ import {
 } from "@mui/material";
 
 // reference for Dialog https://www.scaler.com/topics/mui-dialog/
-function EventDialog() {
-    const [open, setOpen] = useState(true);
-    // const[eventName] = props;
+function EventDialog({open, onClose}) {
+    // const [open, setOpen] = useState(true);
+    // // const[eventName] = props;
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    // const handleClickOpen = () => {
+    //     setOpen(true);
+    // };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+    // const handleClose = () => {
+    //     setOpen(false);
+    // };
 
     const [consumedItems, setConsumedItems] = useState([]);
     const [wastedItems, setWastedItems] = useState([]);
@@ -181,15 +181,7 @@ function EventDialog() {
             {/* --Dashboard button-- */}
 
 
-            <Button onClick={handleClickOpen} sx={{
-                m: 'auto', background: "#c94908", color: "white", width: 200, height: 50,
-                fontFamily: "monospace", fontSize: 15, fontWeight: 'bold',
-                ':hover': { background: "white", color: "#eb5234" }, borderRadius: 10
-            }}>
-                -Open Your Report-
-            </Button>
-
-            <Dialog open={open} onClose={handleClose} onLoad={handleClickOpen}>
+            <Dialog open={open} onClose={onClose}>
 
                 {/* --Title-- */}
 
@@ -402,7 +394,7 @@ function EventDialog() {
                         backgroundColor: 'transparent'
                     }
                 }}>
-                    <Button variant="contained" onClick={handleClose} sx={{ m: 'auto', background: "#5fba76" }}>
+                    <Button variant="contained" onClick={onClose} sx={{ m: 'auto', background: "#5fba76" }}>
                         Close
                     </Button>
 

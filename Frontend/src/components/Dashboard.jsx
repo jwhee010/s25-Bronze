@@ -10,6 +10,7 @@ import TemporaryDrawer from './NotificationPane';
 import SharePieChart from './SharePieChart';
 import ShareBarChart from './ShareBarChart';
 import EventDialog from './EventDialog';
+import {Button} from "@mui/material";
 
 function Dashboard({logout}) {
     const navigate = useNavigate(); // Initialize useNavigate
@@ -20,6 +21,16 @@ function Dashboard({logout}) {
         lastName: '',
         email: '',
     });
+    
+
+    const [showEventDialog, setShowEventDialog] = useState(() => {
+        return sessionStorage.getItem('eventDialogShown') !== 'true';
+    });
+    
+    const handleCloseEventDialog = () => {
+        setShowEventDialog(false);
+        sessionStorage.setItem('eventDialogShown', 'true');
+    };
 
     useEffect(() => {
         // retrieve the locally stored token
@@ -75,7 +86,15 @@ function Dashboard({logout}) {
 
                     <div>
                         {/* --Report Component-- */}
-                        <EventDialog></EventDialog>
+                        <EventDialog open={showEventDialog} onClose={handleCloseEventDialog} />
+
+                        <Button onClick={() => setShowEventDialog(true)} sx={{
+                                m: 'auto', background: "#c94908", color: "white", width: 200, height: 50,
+                                fontFamily: "monospace", fontSize: 15, fontWeight: 'bold',
+                                ':hover': { background: "white", color: "#eb5234" }, borderRadius: 10
+                            }}>
+                            -Open Your Report-
+                        </Button>
                     </div>
 
                     {/* Line and Bar charts */}
